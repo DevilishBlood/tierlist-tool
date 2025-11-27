@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тир-лист по ссылкам на игры</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #020617;
+            color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-size: 20px; /* ca. 150% Look */
+        }
+
+        /* Haupt-Layout */
+        .container {
+            margin: 52px 30px;
+            max-width: 1400px;
+            width: 100%;
+            background: #020617;
+            border-radius: 24px;
+            padding: 34px;
+            box-shadow: 0 32px 70px rgba(0, 0, 0, 0.95);
+            border: 1px solid #1f2937;
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                margin: 24px 14px;
+                padding: 22px;
+            }
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 2.1rem;
+        }
+
+        .subtitle {
+            margin-top: 0;
+            margin-bottom: 22px;
+            font-size: 1.02rem;
+            color: #9ca3af;
+            line-height: 1.7;
+        }
+
+        label {
+            display: block;
+            font-size: 1.02rem;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: 14px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 1.02rem;
+        }
+
+        input[type="text"]::placeholder { color: #6b7280; }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px #38bdf8;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: 14px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 1.02rem;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea::placeholder { color: #6b7280; }
+
+        textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px #38bdf8;
+        }
+
+        button {
+            padding: 13px 24px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #a855f7, #22d3ee);
+            color: #020617;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+            box-shadow: 0 16px 36px rgba(168, 85, 247, 0.45);
+        }
+
+        button:hover {
+            filter: brightness(1.07);
+            transform: translateY(-2px);
+            box-shadow: 0 22px 50px rgba(168, 85, 247, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 26px rgba(168, 85, 247, 0.35);
+        }
+
+        button[disabled] {
+            opacity: 0.55;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+            filter: none;
+        }
+
+        .btn-secondary {
+            background: #111827;
+            color: #e5e7eb;
+            box-shadow: none;
+            border: 1px solid #4b5563;
+        }
+
+        .btn-secondary:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.85);
+        }
+
+        /* kleiner Icon-Button (Löschen / Reload) */
+        .btn-icon {
+            min-width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 999px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: #e5e7eb;
+            font-size: 18px;
+            line-height: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+        }
+
+        .btn-icon + .btn-icon {
+            margin-left: 6px;
+        }
+
+        .btn-icon:hover {
+            background: #1f2937;
+            border-color: #9ca3af;
+            box-shadow: 0 0 0 0;
+            transform: translateY(0);
+        }
+
+        .btn-icon.danger:hover {
+            background: #b91c1c;
+            border-color: #ef4444;
+        }
+
+        .status {
+            margin-top: 14px;
+            font-size: 0.98rem;
+            padding: 12px 14px;
+            border-radius: 12px;
+        }
+
+        .status.info {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.6);
+            color: #bfdbfe;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.7);
+            color: #fecaca;
+        }
+
+        .status.success {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.7);
+            color: #bbf7d0;
+        }
+
+        .section-title {
+            font-size: 1.12rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .small-hint {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .list {
+            margin-top: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #111827;
+            background: #020617;
+            margin-bottom: 10px;
+        }
+
+        .game-thumb {
+            width: 110px;
+            height: 62px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #020617;
+            border: 1px solid #1f2937;
+        }
+
+        .game-info { flex: 1; min-width: 0; }
+
+        .game-title {
+            font-size: 1.02rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-url {
+            font-size: 0.86rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tier-controls {
+            margin-top: 14px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .finished-list {
+            margin-top: 16px;
+            border-radius: 16px;
+            border: 1px solid #111827;
+            padding: 12px;
+            background: #020617;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 11px;
+            border-radius: 12px;
+        }
+
+        .rank-number {
+            width: 34px;
+            text-align: right;
+            font-size: 0.96rem;
+            color: #9ca3af;
+        }
+
+        .rank-title {
+            font-size: 1.03rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rank-badge {
+            font-size: 0.86rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid #4b5563;
+            color: #9ca3af;
+            margin-left: auto;
+        }
+
+        /* Tier-Tabelle */
+
+        .tier-table { margin-top: 20px; }
+
+        .tier-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tier-table-wrapper {
+            border-radius: 20px;
+            border: 1px solid #111827;
+            overflow: hidden;
+            background: #020617;
+        }
+
+        .tier-row {
+            display: flex;
+            min-height: 96px;
+            border-bottom: 1px solid #111827;
+        }
+
+        .tier-row:last-child { border-bottom: none; }
+
+        .tier-label-cell {
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #020617;
+        }
+
+        .tier-items-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px 12px;
+        }
+
+        .tier-item-img {
+            width: 140px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #020617;
+            border: 1px solid #1f2937;
+        }
+
+        /* Vollbild-Vergleichsmodus */
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: #020617;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 24px;
+            z-index: 50;
+        }
+
+        .overlay-inner {
+            max-width: 1100px;
+            width: 100%;
+            background: #020617;
+            border-radius: 22px;
+            padding: 26px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        .overlay-title {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        .overlay-subtitle {
+            margin: 0 0 18px;
+            font-size: 0.98rem;
+            color: #9ca3af;
+        }
+
+        .overlay-status {
+            font-size: 0.96rem;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+
+        .compare-card {
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            background: #020617;
+            padding: 14px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            transition: transform 0.08s ease, box-shadow 0.08s ease,
+                        border-color 0.08s ease, background 0.08s ease;
+        }
+
+        .compare-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+            border-color: #38bdf8;
+            background: #020a23;
+        }
+
+        .compare-card img {
+            width: 100%;
+            height: 260px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #020617;
+            border: 1px solid #111827;
+        }
+
+        .compare-label {
+            font-size: 0.86rem;
+            color: #9ca3af;
+        }
+
+        .compare-name {
+            font-size: 1.02rem;
+            font-weight: 500;
+        }
+
+        .overlay-footer {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* Ganz am Ende: hidden überschreibt alles */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+    <!-- Linke Seite -->
+    <div>
+        <h1>Тир-лист по ссылкам на игры</h1>
+        <p class="subtitle">
+            1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>
+            2. Загружай метаданные и добавляй игры в список.<br>
+            3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
+        </p>
+
+        <!-- Einzeln -->
+        <label for="urlInput">URL игры</label>
+        <input id="urlInput"
+               type="text"
+               placeholder="Например: https://store.steampowered.com/app/570/Dota_2/">
+        <div style="margin-top: 12px; display:flex; gap:14px; flex-wrap:wrap;">
+            <button id="addButton" type="button">Загрузить и добавить игру</button>
+            <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
+        </div>
+
+        <!-- Mehrere Links -->
+        <label for="multiInput" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
+        <textarea id="multiInput"
+                  placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
+        <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <button id="addManyButton" type="button" class="btn-secondary">
+                Загрузить все ссылки
+            </button>
+            <span class="small-hint">
+                Пустые строки будут пропущены.
+            </span>
+        </div>
+
+        <div id="status" class="status hidden"></div>
+
+        <div style="margin-top: 28px;">
+            <div class="section-title">
+                <span>Собранные игры</span>
+                <span class="small-hint" id="gameCountHint">0 игр</span>
+            </div>
+            <div class="list" id="gameList"></div>
+            <div class="tier-controls">
+                <button id="startTierButton" type="button" disabled>
+                    Начать тир-лист
+                </button>
+                <span class="small-hint">
+                    Нужно минимум 2 игры.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rechte Seite (Ergebnis) -->
+    <div>
+        <div class="section-title">
+            <span>Результат тир-листа</span>
+            <span class="small-hint" id="progressInfo">Ещё не запущено</span>
+        </div>
+
+        <div id="finishedPanel" class="finished-list hidden">
+            <div class="small-hint" style="margin-bottom:8px;">
+                Отсортированный список (1 = любимая игра):
+            </div>
+            <div id="rankList"></div>
+        </div>
+
+        <div id="tierTableSection" class="tier-table hidden">
+            <div class="tier-table-header">
+                <span class="small-hint">
+                    Визуальный тир-лист (S / A / B / C / D).
+                </span>
+                <button id="downloadTierImageButton" type="button" class="btn-secondary">
+                    Скачать таблицу как картинку
+                </button>
+            </div>
+            <div id="tierTableWrapper" class="tier-table-wrapper"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Vollbild-Vergleich -->
+<div id="compareOverlay" class="overlay hidden">
+    <div class="overlay-inner">
+        <h1 class="overlay-title">Сравнение игр</h1>
+        <p class="overlay-subtitle">
+            Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.
+        </p>
+        <div id="fsStatus" class="overlay-status"></div>
+        <div class="compare-grid">
+            <div class="compare-card" id="fsCardLeft">
+                <div class="compare-label">Левый выбор</div>
+                <img id="fsImgLeft" src="" alt="">
+                <div class="compare-name" id="fsNameLeft">—</div>
+            </div>
+            <div class="compare-card" id="fsCardRight">
+                <div class="compare-label">Правый выбор</div>
+                <img id="fsImgRight" src="" alt="">
+                <div class="compare-name" id="fsNameRight">—</div>
+            </div>
+        </div>
+        <div class="overlay-footer">
+            <span id="fsProgress">0 сравнений</span>
+            <button id="fsCancel" type="button" class="btn-secondary">Отменить</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+    // ---------- Zustand ----------
+    const games = []; // { id, title, image, url }
+    let nextId = 1;
+
+    let sortedIndices = [];
+    let currentNewIndex = null;
+    let low = 0, high = 0, mid = 0;
+    let compareActive = false;
+    let comparisonsDone = 0;
+
+    const TIER_CONFIG = [
+        { label: "S", color: "#f97316" },
+        { label: "A", color: "#facc15" },
+        { label: "B", color: "#22c55e" },
+        { label: "C", color: "#38bdf8" },
+        { label: "D", color: "#a855f7" }
+    ];
+
+    function russianGameWord(count) {
+        const mod10 = count % 10;
+        const mod100 = count % 100;
+        if (mod10 === 1 && mod100 !== 11) return "игра";
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "игры";
+        return "игр";
+    }
+
+    function getTierLabelByIndex(index, total) {
+        if (total <= 1) return "S";
+        const ratio = index / (total - 1);
+        if (ratio <= 0.2) return "S";
+        if (ratio <= 0.4) return "A";
+        if (ratio <= 0.6) return "B";
+        if (ratio <= 0.8) return "C";
+        return "D";
+    }
+
+    // Titel bereinigen (v.a. Steam)
+    function cleanTitle(rawTitle, url) {
+        let t = (rawTitle || "").trim();
+        if (!t) return t;
+
+        if (url && url.includes("store.steampowered.com")) {
+            t = t.replace(/ on Steam$/i, "");
+            t = t.replace(/^Save \d+% on /i, "");
+            t = t.replace(/^Buy /i, "");
+        }
+        return t.trim();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById("status");
+        el.textContent = msg;
+        el.className = "status " + type;
+        el.classList.remove("hidden");
+    }
+
+    function hideStatus() {
+        document.getElementById("status").classList.add("hidden");
+    }
+
+    function updateGameCount() {
+        const count = games.length;
+        document.getElementById("gameCountHint").textContent =
+            count + " " + russianGameWord(count);
+        document.getElementById("startTierButton").disabled = count < 2;
+    }
+
+    // Tierlist-Ergebnis zurücksetzen
+    function resetTierResults() {
+        sortedIndices = [];
+        currentNewIndex = null;
+        comparisonsDone = 0;
+        compareActive = false;
+
+        document.getElementById("finishedPanel").classList.add("hidden");
+        document.getElementById("tierTableSection").classList.add("hidden");
+        document.getElementById("rankList").innerHTML = "";
+        document.getElementById("tierTableWrapper").innerHTML = "";
+        document.getElementById("progressInfo").textContent = "Ещё не запущено";
+    }
+
+    // EINZELNES SPIEL LÖSCHEN
+    function deleteGame(index) {
+        games.splice(index, 1);
+        resetTierResults();
+        renderGameList();
+    }
+
+    // EINZELNES SPIEL RELOADEN
+    async function reloadGame(index) {
+        const g = games[index];
+        if (!g) return;
+
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+
+        hideStatus();
+        showStatus("Обновляю игру: " + (g.title || g.url), "info");
+
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
+
+        let finalUrl = g.url || "";
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = "https://" + finalUrl;
+        }
+
+        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
+
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
+
+            const rawTitle = data.title || "(нет названия)";
+            const url = data.url || finalUrl;
+            const title = cleanTitle(rawTitle, url);
+            const image = data.image || "";
+
+            games[index].title = title;
+            games[index].image = image;
+            games[index].url   = url;
+
+            resetTierResults();
+            renderGameList();
+            showStatus("Игра обновлена: " + title, "success");
+        } catch (err) {
+            console.error(err);
+            showStatus(
+                "Не удалось обновить игру: " + err.message,
+                "error"
+            );
+        } finally {
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+        }
+    }
+
+    function renderGameList() {
+        const listEl = document.getElementById("gameList");
+        listEl.innerHTML = "";
+
+        games.forEach((g, index) => {
+            const row = document.createElement("div");
+            row.className = "game-item";
+
+            const img = document.createElement("img");
+            img.className = "game-thumb";
+            img.crossOrigin = "anonymous";
+            img.src = g.image || "";
+            img.alt = g.title || "Изображение";
+
+            const info = document.createElement("div");
+            info.className = "game-info";
+
+            const title = document.createElement("div");
+            title.className = "game-title";
+            title.textContent = g.title || "(без названия)";
+
+            const url = document.createElement("div");
+            url.className = "game-url";
+            url.textContent = g.url;
+
+            info.appendChild(title);
+            info.appendChild(url);
+
+            const badge = document.createElement("div");
+            badge.className = "rank-badge";
+            badge.textContent = "#" + (index + 1);
+
+            const reloadBtn = document.createElement("button");
+            reloadBtn.type = "button";
+            reloadBtn.className = "btn-icon";
+            reloadBtn.textContent = "⟳";
+            reloadBtn.title = "Обновить игру";
+            reloadBtn.addEventListener("click", () => reloadGame(index));
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "btn-icon danger";
+            delBtn.textContent = "×";
+            delBtn.title = "Удалить игру";
+            delBtn.addEventListener("click", () => deleteGame(index));
+
+            row.appendChild(img);
+            row.appendChild(info);
+            row.appendChild(badge);
+            row.appendChild(reloadBtn);
+            row.appendChild(delBtn);
+
+            listEl.appendChild(row);
+        });
+
+        updateGameCount();
+    }
+
+    // Hilfsfunktion: eine URL laden und als Spiel hinzufügen
+    async function fetchAndAddGame(rawUrl) {
+        let finalUrl = (rawUrl || "").trim();
+        if (!finalUrl) {
+            return { success: false, skipped: true, error: "empty" };
+        }
+
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = "https://" + finalUrl;
+        }
+
+        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
+
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
+
+            const rawTitle = data.title || "(нет названия)";
+            const url = data.url || finalUrl;
+            const title = cleanTitle(rawTitle, url);
+            const image = data.image || "";
+
+            games.push({ id: nextId++, title, image, url });
+            renderGameList();
+
+            return { success: true, title };
+        } catch (err) {
+            console.error(err);
+            return { success: false, skipped: false, error: err.message };
+        }
+    }
+
+    // EINZELNE URL
+    async function addGameFromUrl() {
+        const inputEl = document.getElementById("urlInput");
+        const rawUrl = inputEl.value.trim();
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+
+        if (!rawUrl) {
+            showStatus("Пожалуйста, введите URL.", "error");
+            return;
+        }
+
+        resetTierResults();
+        hideStatus();
+        showStatus("Загружаю метаданные…", "info");
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
+
+        const result = await fetchAndAddGame(rawUrl);
+
+        if (result.success) {
+            showStatus("Игра добавлена: " + result.title, "success");
+            inputEl.value = "";
+        } else if (!result.skipped) {
+            showStatus("Ошибка загрузки: " + result.error, "error");
+        }
+
+        addBtn.disabled = false;
+        if (addManyBtn) addManyBtn.disabled = false;
+    }
+
+    // MEHRERE URLS
+    async function addGamesFromMultiInput() {
+        const multiEl = document.getElementById("multiInput");
+        const text = multiEl.value;
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+
+        const lines = text
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+        if (!lines.length) {
+            showStatus("Нет ссылок для добавления. Введите хотя бы одну строку.", "error");
+            return;
+        }
+
+        resetTierResults();
+        hideStatus();
+        let successCount = 0;
+        let failCount = 0;
+
+        addBtn.disabled = true;
+        addManyBtn.disabled = true;
+
+        for (let i = 0; i < lines.length; i++) {
+            showStatus(
+                "Загружаю " + (i + 1) + " из " + lines.length + "…",
+                "info"
+            );
+            const res = await fetchAndAddGame(lines[i]);
+            if (res.success) {
+                successCount++;
+            } else if (!res.skipped) {
+                failCount++;
+            }
+        }
+
+        if (successCount > 0 && failCount === 0) {
+            showStatus("Успешно добавлено игр: " + successCount, "success");
+        } else if (successCount > 0) {
+            showStatus(
+                "Добавлено " + successCount + " игр, ошибок: " + failCount + ".",
+                "success"
+            );
+        } else {
+            showStatus("Не удалось добавить ссылки.", "error");
+        }
+
+        addBtn.disabled = false;
+        addManyBtn.disabled = false;
+    }
+
+    // ---------- Vollbild-Tierlist ----------
+    const mainContainer = document.getElementById("mainContainer");
+    const overlay = document.getElementById("compareOverlay");
+    const fsStatus = document.getElementById("fsStatus");
+    const fsProgress = document.getElementById("fsProgress");
+    const fsImgLeft = document.getElementById("fsImgLeft");
+    const fsImgRight = document.getElementById("fsImgRight");
+    const fsNameLeft = document.getElementById("fsNameLeft");
+    const fsNameRight = document.getElementById("fsNameRight");
+
+    function startTierlist() {
+        if (games.length < 2) {
+            showStatus("Нужно минимум 2 игры.", "error");
+            return;
+        }
+
+        hideStatus();
+        sortedIndices = [0];
+        currentNewIndex = 1;
+        comparisonsDone = 0;
+        compareActive = true;
+
+        document.getElementById("finishedPanel").classList.add("hidden");
+        document.getElementById("tierTableSection").classList.add("hidden");
+        document.getElementById("progressInfo").textContent =
+            "Идёт сравнение… (0 сравнений)";
+
+        // Alles normale verstecken, nur Overlay anzeigen
+        mainContainer.classList.add("hidden");
+        overlay.classList.remove("hidden");
+        fsStatus.textContent = "Начинаем сравнение…";
+        fsProgress.textContent = "0 сравнений";
+
+        prepareNextComparison();
+    }
+
+    function prepareNextComparison() {
+        if (currentNewIndex >= games.length) {
+            finishTierlist();
+            return;
+        }
+        low = 0;
+        high = sortedIndices.length;
+        showNextComparisonStep();
+    }
+
+    function showNextComparisonStep() {
+        if (!compareActive) return;
+
+        if (low >= high) {
+            sortedIndices.splice(low, 0, currentNewIndex);
+            currentNewIndex++;
+            prepareNextComparison();
+            return;
+        }
+
+        mid = Math.floor((low + high) / 2);
+        const existingIndex = sortedIndices[mid];
+
+        const newGame = games[currentNewIndex];
+        const existingGame = games[existingIndex];
+
+        fsImgLeft.crossOrigin = "anonymous";
+        fsImgRight.crossOrigin = "anonymous";
+
+        fsImgLeft.src = newGame.image || "";
+        fsImgLeft.alt = newGame.title || "";
+        fsNameLeft.textContent = newGame.title || "(без названия)";
+
+        fsImgRight.src = existingGame.image || "";
+        fsImgRight.alt = existingGame.title || "";
+        fsNameRight.textContent = existingGame.title || "(без названия)";
+
+        fsStatus.textContent =
+            "Какую игру ты любишь больше? (новая слева против уже отсортированной справа)";
+        fsProgress.textContent = comparisonsDone + " сравнений";
+    }
+
+    function chooseLeft() {
+        if (!compareActive) return;
+        comparisonsDone++;
+        high = mid;
+        showNextComparisonStep();
+    }
+
+    function chooseRight() {
+        if (!compareActive) return;
+        comparisonsDone++;
+        low = mid + 1;
+        showNextComparisonStep();
+    }
+
+    function finishTierlist() {
+        compareActive = false;
+        overlay.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+
+        document.getElementById("progressInfo").textContent =
+            "Готово! Всего " + comparisonsDone + " сравнений.";
+
+        document.getElementById("finishedPanel").classList.remove("hidden");
+        document.getElementById("tierTableSection").classList.remove("hidden");
+
+        renderRankList();
+        renderTierTable();
+    }
+
+    function cancelTierlist() {
+        compareActive = false;
+        overlay.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+        document.getElementById("progressInfo").textContent = "Сравнение отменено.";
+    }
+
+    function renderRankList() {
+        const list = document.getElementById("rankList");
+        list.innerHTML = "";
+
+        const total = sortedIndices.length;
+
+        sortedIndices.forEach((gameIndex, i) => {
+            const g = games[gameIndex];
+            const row = document.createElement("div");
+            row.className = "rank-row";
+
+            const n = document.createElement("div");
+            n.className = "rank-number";
+            n.textContent = (i + 1) + ".";
+
+            const t = document.createElement("div");
+            t.className = "rank-title";
+            t.textContent = g.title;
+
+            const badge = document.createElement("div");
+            badge.className = "rank-badge";
+            badge.textContent = getTierLabelByIndex(i, total) + "-tier";
+
+            row.appendChild(n);
+            row.appendChild(t);
+            row.appendChild(badge);
+            list.appendChild(row);
+        });
+    }
+
+    function renderTierTable() {
+        const section = document.getElementById("tierTableSection");
+        const wrapper = document.getElementById("tierTableWrapper");
+        wrapper.innerHTML = "";
+
+        const total = sortedIndices.length;
+        if (!total) {
+            section.classList.add("hidden");
+            return;
+        }
+
+        const tiers = { S: [], A: [], B: [], C: [], D: [] };
+
+        sortedIndices.forEach((gameIndex, i) => {
+            const g = games[gameIndex];
+            const tierLabel = getTierLabelByIndex(i, total);
+            tiers[tierLabel].push(g);
+        });
+
+        TIER_CONFIG.forEach(cfg => {
+            const row = document.createElement("div");
+            row.className = "tier-row";
+
+            const labelCell = document.createElement("div");
+            labelCell.className = "tier-label-cell";
+            labelCell.style.background = cfg.color;
+            labelCell.textContent = cfg.label;
+
+            const itemsCell = document.createElement("div");
+            itemsCell.className = "tier-items-cell";
+
+            const list = tiers[cfg.label] || [];
+            if (!list.length) {
+                const emptyText = document.createElement("span");
+                emptyText.className = "small-hint";
+                emptyText.textContent = "—";
+                itemsCell.appendChild(emptyText);
+            } else {
+                list.forEach(g => {
+                    const img = document.createElement("img");
+                    img.className = "tier-item-img";
+                    img.crossOrigin = "anonymous";
+                    img.src = g.image || "";
+                    img.alt = g.title;
+                    itemsCell.appendChild(img);
+                });
+            }
+
+            row.appendChild(labelCell);
+            row.appendChild(itemsCell);
+            wrapper.appendChild(row);
+        });
+    }
+
+    async function downloadTierImage() {
+        const wrapper = document.getElementById("tierTableWrapper");
+        if (!wrapper || !wrapper.children.length) {
+            alert("Сначала создай тир-лист.");
+            return;
+        }
+
+        try {
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: "#020617",
+                scale: 2,
+                useCORS: true
+            });
+
+            const link = document.createElement("a");
+            link.download = "tierlist.png";
+            link.href = canvas.toDataURL("image/png");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error(e);
+            alert("Не удалось сохранить картинку тир-листа.");
+        }
+    }
+
+    function clearGames() {
+        games.length = 0;
+        nextId = 1;
+        resetTierResults();
+        renderGameList();
+        hideStatus();
+    }
+
+    // ---------- Events ----------
+    document.getElementById("addButton").addEventListener("click", addGameFromUrl);
+    document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
+    document.getElementById("clearButton").addEventListener("click", clearGames);
+    document.getElementById("startTierButton").addEventListener("click", startTierlist);
+    document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
+    document.getElementById("urlInput").addEventListener("keydown", e => {
+        if (e.key === "Enter") addGameFromUrl();
+    });
+
+    document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
+    document.getElementById("fsCardRight").addEventListener("click", chooseRight);
+    document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
+</script>
+</body>
+</html>
