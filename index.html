@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тир-лист по ссылкам на игры</title>
+    <title>Tierlist by Game Links</title>
     <style>
         * { box-sizing: border-box; }
 
@@ -15,7 +15,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            font-size: 20px; /* ca. 150% Look */
+            font-size: 20px; /* ~150% */
         }
 
         .container {
@@ -636,16 +636,207 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-    /* --- i18n, helper, etc. (unverändert, wie davor) --- */
-    /* (Der gesamte i18n-Block ist identisch zu deiner letzten Version, nur am Ende
-       gibt es die neuen FIX-Stellen im Algorithmus und im loadState.) */
-
+    /* ---------- I18N ---------- */
     const I18N = {
-        /* ... (gleicher Inhalt wie in deiner letzten Version, unverändert) ... */
+        ru: {
+            page_title: "Тир-лист по ссылкам на игры",
+            main_title: "Тир-лист по ссылкам на игры",
+            lang_label: "Язык",
+            subtitle_html:
+                "1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>" +
+                "2. Загружай метаданные и добавляй игры в список.<br>" +
+                "3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.",
+            label_url: "URL игры",
+            placeholder_url: "Например: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Несколько URL (по одному в строке)",
+            placeholder_multi:
+                "Каждый URL на новой строке\nНапример:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Загрузить и добавить игру",
+            btn_clear_list: "Очистить список",
+            btn_add_many: "Загрузить все ссылки",
+            hint_multi: "Пустые строки будут пропущены.",
+            section_collected: "Собранные игры",
+            hint_min_games: "Нужно минимум 2 игры.",
+            result_title: "Результат тир-листа",
+            finished_hint: "Отсортированный список (1 = любимая игра):",
+            tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
+            btn_download_image: "Скачать таблицу как картинку",
+            overlay_title: "Сравнение игр",
+            overlay_subtitle:
+                "Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.",
+            overlay_left_label: "Левый выбор",
+            overlay_right_label: "Правый выбор",
+            overlay_cancel: "Отменить",
+            manual_section_title: "Своя игра (ручной ввод)",
+            manual_label_name: "Название игры",
+            manual_label_image: "Картинка (обложка)",
+            btn_add_manual: "Добавить свою игру",
+            mode_label: "Режим ранжирования",
+            mode_exact: "Точный (больше кликов)",
+            mode_fast: "Быстрый (приблизительный)",
+            click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
+            progress_finished: "Готово! Всего {count}.",
+            progress_running: "Идёт сравнение… ({count})",
+            progress_need_two: "Нужно минимум 2 игры.",
+            progress_not_started: "Ещё не запущено",
+            progress_stopped: "Сравнение остановлено.",
+            progress_cancelled: "Сравнение отменено.",
+            overlay_status_start: "Начинаем сравнение…",
+            overlay_status_incremental: "Сравнение новых игр с уже отсортированными…",
+            overlay_status_continue: "Продолжаем сравнение…",
+            status_update_game: "Обновляю игру: {title}",
+            status_update_game_ok: "Игра обновлена: {title}",
+            status_update_game_fail: "Не удалось обновить игру: {error}",
+            status_enter_url: "Пожалуйста, введите URL.",
+            status_loading_meta: "Загружаю метаданные…",
+            status_game_added: "Игра добавлена: {title}",
+            status_load_error: "Ошибка загрузки: {error}",
+            status_manual_need_title: "Введите название игры.",
+            status_manual_need_image: "Выберите картинку (обложку) для игры.",
+            status_manual_loading: "Читаю файл картинки…",
+            status_manual_added: "Своя игра добавлена: {title}",
+            status_manual_file_error: "Не удалось прочитать файл картинки.",
+            status_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
+            status_loading_multi_progress: "Загружаю {current} из {total}…",
+            status_multi_success: "Успешно добавлено игр: {count}",
+            status_multi_partial: "Добавлено {success} игр, ошибок: {fail}.",
+            status_multi_fail: "Не удалось добавить ссылки.",
+            tierlist_not_created: "Сначала создай тир-лист.",
+            tierlist_save_error: "Не удалось сохранить картинку тир-листа."
+        },
+        en: {
+            page_title: "Tierlist by Game Links",
+            main_title: "Tierlist by Game Links",
+            lang_label: "Language",
+            subtitle_html:
+                "1. Paste URLs of game pages (Steam, itch.io, Epic, GOG, etc.).<br>" +
+                "2. Load metadata and add the games to the list.<br>" +
+                "3. Click “Start tierlist” – a full screen with two games will appear.",
+            label_url: "Game URL",
+            placeholder_url: "Example: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Multiple URLs (one per line)",
+            placeholder_multi:
+                "One URL per line\nExample:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Load and add game",
+            btn_clear_list: "Clear list",
+            btn_add_many: "Load all links",
+            hint_multi: "Empty lines will be skipped.",
+            section_collected: "Collected games",
+            hint_min_games: "At least 2 games are required.",
+            result_title: "Tierlist result",
+            finished_hint: "Sorted list (1 = favorite game):",
+            tier_visual_hint: "Visual tierlist (S / A / B / C / D).",
+            btn_download_image: "Download table as image",
+            overlay_title: "Game comparison",
+            overlay_subtitle:
+                "Click on the game you like more. When it’s done, the result appears in the main window.",
+            overlay_left_label: "Left choice",
+            overlay_right_label: "Right choice",
+            overlay_cancel: "Cancel",
+            manual_section_title: "Custom game (manual input)",
+            manual_label_name: "Game title",
+            manual_label_image: "Cover image",
+            btn_add_manual: "Add custom game",
+            mode_label: "Ranking mode",
+            mode_exact: "Exact (more clicks)",
+            mode_fast: "Fast (approximate)",
+            click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
+            progress_finished: "Done! Total {count}.",
+            progress_running: "Comparison running… ({count})",
+            progress_need_two: "At least 2 games are required.",
+            progress_not_started: "Not started yet",
+            progress_stopped: "Comparison stopped.",
+            progress_cancelled: "Comparison cancelled.",
+            overlay_status_start: "Starting comparison…",
+            overlay_status_incremental: "Comparing new games with the existing order…",
+            overlay_status_continue: "Continuing comparison…",
+            status_update_game: "Updating game: {title}",
+            status_update_game_ok: "Game updated: {title}",
+            status_update_game_fail: "Could not update game: {error}",
+            status_enter_url: "Please enter a URL.",
+            status_loading_meta: "Loading metadata…",
+            status_game_added: "Game added: {title}",
+            status_load_error: "Load error: {error}",
+            status_manual_need_title: "Please enter a game title.",
+            status_manual_need_image: "Please choose a cover image.",
+            status_manual_loading: "Reading image file…",
+            status_manual_added: "Custom game added: {title}",
+            status_manual_file_error: "Could not read image file.",
+            status_no_links: "No links to add. Enter at least one line.",
+            status_loading_multi_progress: "Loading {current} of {total}…",
+            status_multi_success: "Successfully added games: {count}",
+            status_multi_partial: "Added {success} games, errors: {fail}.",
+            status_multi_fail: "Could not add links.",
+            tierlist_not_created: "Create the tierlist first.",
+            tierlist_save_error: "Could not save the tierlist image."
+        },
+        de: {
+            page_title: "Tierlist aus Spiele-Links",
+            main_title: "Tierlist aus Spiele-Links",
+            lang_label: "Sprache",
+            subtitle_html:
+                "1. Füge URLs von Spieleseiten ein (Steam, itch.io, Epic, GOG usw.).<br>" +
+                "2. Lade Metadaten und füge die Spiele zur Liste hinzu.<br>" +
+                "3. Klicke auf „Tierlist starten“ – es erscheint ein Vollbild mit zwei Spielen.",
+            label_url: "Spiel-URL",
+            placeholder_url: "Beispiel: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Mehrere URLs (eine pro Zeile)",
+            placeholder_multi:
+                "Eine URL pro Zeile\nBeispiel:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Spiel laden und hinzufügen",
+            btn_clear_list: "Liste löschen",
+            btn_add_many: "Alle Links laden",
+            hint_multi: "Leere Zeilen werden übersprungen.",
+            section_collected: "Gesammelte Spiele",
+            hint_min_games: "Mindestens 2 Spiele werden benötigt.",
+            result_title: "Tierlist-Ergebnis",
+            finished_hint: "Sortierte Liste (1 = Lieblingsspiel):",
+            tier_visual_hint: "Visuelle Tierlist (S / A / B / C / D).",
+            btn_download_image: "Tabelle als Bild herunterladen",
+            overlay_title: "Spielvergleich",
+            overlay_subtitle:
+                "Klicke auf das Spiel, das du lieber magst. Danach erscheint das Ergebnis im Hauptfenster.",
+            overlay_left_label: "Linke Auswahl",
+            overlay_right_label: "Rechte Auswahl",
+            overlay_cancel: "Abbrechen",
+            manual_section_title: "Eigenes Spiel (manuell)",
+            manual_label_name: "Spielname",
+            manual_label_image: "Cover-Bild",
+            btn_add_manual: "Eigenes Spiel hinzufügen",
+            mode_label: "Ranking-Modus",
+            mode_exact: "Genau (mehr Klicks)",
+            mode_fast: "Schnell (ungefähr)",
+            click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
+            progress_finished: "Fertig! Insgesamt {count}.",
+            progress_running: "Vergleich läuft… ({count})",
+            progress_need_two: "Mindestens 2 Spiele werden benötigt.",
+            progress_not_started: "Noch nicht gestartet",
+            progress_stopped: "Vergleich gestoppt.",
+            progress_cancelled: "Vergleich abgebrochen.",
+            overlay_status_start: "Starte Vergleich…",
+            overlay_status_incremental: "Vergleiche neue Spiele mit der vorhandenen Reihenfolge…",
+            overlay_status_continue: "Vergleich wird fortgesetzt…",
+            status_update_game: "Aktualisiere Spiel: {title}",
+            status_update_game_ok: "Spiel aktualisiert: {title}",
+            status_update_game_fail: "Spiel konnte nicht aktualisiert werden: {error}",
+            status_enter_url: "Bitte eine URL eingeben.",
+            status_loading_meta: "Lade Metadaten…",
+            status_game_added: "Spiel hinzugefügt: {title}",
+            status_load_error: "Fehler beim Laden: {error}",
+            status_manual_need_title: "Bitte einen Spielnamen eingeben.",
+            status_manual_need_image: "Bitte ein Cover-Bild auswählen.",
+            status_manual_loading: "Lese Bilddatei…",
+            status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
+            status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
+            status_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
+            status_loading_multi_progress: "Lade {current} von {total}…",
+            status_multi_success: "{count} Spiele erfolgreich hinzugefügt.",
+            status_multi_partial: "{success} Spiele hinzugefügt, Fehler: {fail}.",
+            status_multi_fail: "Links konnten nicht hinzugefügt werden.",
+            tierlist_not_created: "Erstelle zuerst eine Tierlist.",
+            tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden."
+        }
     };
-
-    /* Aus Platzgründen lasse ich den i18n-Block hier nicht erneut kommentieren,
-       in deinem Code bitte komplett übernehmen wie in der letzten Version. */
 
     const LANG_STORAGE_KEY = "tierlist_tool_lang";
     const MODE_STORAGE_KEY = "tierlist_tool_mode";
@@ -698,9 +889,7 @@
 
     function factorialLog2(n) {
         let sum = 0;
-        for (let k = 2; k <= n; k++) {
-            sum += Math.log2(k);
-        }
+        for (let k = 2; k <= n; k++) sum += Math.log2(k);
         return sum;
     }
 
@@ -764,13 +953,13 @@
         document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
         document.getElementById("modeLabel").textContent = s.mode_label;
+
         const modeSelect = document.getElementById("modeSelect");
-        if (modeSelect) {
-            const optExact = modeSelect.querySelector('option[value="exact"]');
-            const optFast = modeSelect.querySelector('option[value="fast"]');
-            if (optExact) optExact.textContent = s.mode_exact;
-            if (optFast) optFast.textContent = s.mode_fast;
-        }
+        const optExact = modeSelect.querySelector('option[value="exact"]');
+        const optFast = modeSelect.querySelector('option[value="fast"]');
+        if (optExact) optExact.textContent = s.mode_exact;
+        if (optFast) optFast.textContent = s.mode_fast;
+
         updateClickStatsDisplay();
     }
 
@@ -834,7 +1023,7 @@
         });
     }
 
-    // ---------- Zustand ----------
+    /* ---------- Ranking-Zustand ---------- */
     const games = [];
     let nextId = 1;
 
@@ -1349,7 +1538,7 @@
     function showNextComparisonStep() {
         if (!compareActive || currentNewIndex === null) return;
 
-        // FIX 1: falls currentNewIndex schon in sortedIndices steckt → dieses Spiel überspringen
+        // WICHTIG: falls currentNewIndex schon in sortedIndices steckt → dieses Spiel überspringen
         if (sortedIndices.includes(currentNewIndex)) {
             moveToNextNewGame();
             return;
@@ -1401,7 +1590,7 @@
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        high = mid; // FIX von vorher: high = mid, nicht low = mid
+        high = mid;       // hier muss high = mid sein
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1644,7 +1833,6 @@
                 });
             });
 
-            // FIX 2: Doppelte Einträge in sortedIndices entfernen
             let tmpSorted = Array.isArray(state.sortedIndices)
                 ? state.sortedIndices.filter(i =>
                     Number.isInteger(i) && i >= 0 && i < games.length
@@ -1659,7 +1847,6 @@
                 });
             }
 
-            // FIX 3: Doppelte Einträge in pendingNewIndices entfernen
             let tmpPending = Array.isArray(state.pendingNewIndices)
                 ? state.pendingNewIndices.filter(i =>
                     Number.isInteger(i) && i >= 0 && i < games.length
@@ -1769,7 +1956,7 @@
         initMode();
         loadState();
         refreshProgressInfoForCurrentState();
-        updateClickStatsDisplay();
+        updateGameCount();
     });
 </script>
 </body>
