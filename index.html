@@ -18,6 +18,7 @@
             font-size: 20px; /* ca. 150% Look */
         }
 
+        /* Haupt-Layout */
         .container {
             margin: 52px 30px;
             max-width: 1400px;
@@ -142,6 +143,7 @@
             box-shadow: 0 12px 28px rgba(15, 23, 42, 0.85);
         }
 
+        /* kleiner Icon-Button (Löschen / Reload) */
         .btn-icon {
             min-width: 32px;
             height: 32px;
@@ -307,6 +309,8 @@
             margin-left: auto;
         }
 
+        /* Tier-Tabelle */
+
         .tier-table { margin-top: 20px; }
 
         .tier-table-header {
@@ -358,6 +362,8 @@
             background: #020617;
             border: 1px solid #1f2937;
         }
+
+        /* Vollbild-Vergleichsmodus */
 
         .overlay {
             position: fixed;
@@ -455,6 +461,7 @@
             color: #6b7280;
         }
 
+        /* Ganz am Ende: hidden überschreibt alles */
         .hidden {
             display: none !important;
         }
@@ -462,6 +469,7 @@
 </head>
 <body>
 <div class="container" id="mainContainer">
+    <!-- Linke Seite -->
     <div>
         <h1>Тир-лист по ссылкам на игры</h1>
         <p class="subtitle">
@@ -470,6 +478,7 @@
             3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
         </p>
 
+        <!-- Einzeln -->
         <label for="urlInput">URL игры</label>
         <input id="urlInput"
                type="text"
@@ -479,6 +488,7 @@
             <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
         </div>
 
+        <!-- Mehrere Links -->
         <label for="multiInput" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
         <textarea id="multiInput"
                   placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
@@ -510,6 +520,7 @@
         </div>
     </div>
 
+    <!-- Rechte Seite (Ergebnis) -->
     <div>
         <div class="section-title">
             <span>Результат тир-листа</span>
@@ -537,6 +548,7 @@
     </div>
 </div>
 
+<!-- Vollbild-Vergleich -->
 <div id="compareOverlay" class="overlay hidden">
     <div class="overlay-inner">
         <h1 class="overlay-title">Сравнение игр</h1>
@@ -566,13 +578,13 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
+    // ---------- Zustand ----------
     const games = []; // { id, title, image, url }
     let nextId = 1;
 
-    let sortedIndices = [];       // bestehende Reihenfolge
-    let pendingNewIndices = [];   // neue Spiele, die noch einsortiert werden müssen
+    let sortedIndices = [];
+    let pendingNewIndices = [];   // NEU: Warteschlange neuer Spiele
     let currentNewIndex = null;
-
     let low = 0, high = 0, mid = 0;
     let compareActive = false;
     let comparisonsDone = 0;
@@ -585,6 +597,7 @@
         { label: "D", color: "#a855f7" }
     ];
 
+    // neue Version des Speichers, damit es keinen Konflikt mit altem Format gibt
     const STORAGE_KEY = "tierlist_tool_state_v2";
 
     function russianGameWord(count) {
@@ -605,9 +618,11 @@
         return "D";
     }
 
+    // Titel bereinigen (v.a. Steam)
     function cleanTitle(rawTitle, url) {
         let t = (rawTitle || "").trim();
         if (!t) return t;
+
         if (url && url.includes("store.steampowered.com")) {
             t = t.replace(/ on Steam$/i, "");
             t = t.replace(/^Save \d+% on /i, "");
@@ -634,11 +649,11 @@
         document.getElementById("startTierButton").disabled = count < 2;
     }
 
+    // Tierlist-Ergebnis komplett zurücksetzen (wird nur bei Löschen genutzt)
     function resetTierResults() {
         sortedIndices = [];
         pendingNewIndices = [];
         currentNewIndex = null;
-        low = high = mid = 0;
         comparisonsDone = 0;
         compareActive = false;
 
@@ -649,13 +664,16 @@
         document.getElementById("progressInfo").textContent = "Ещё не запущено";
     }
 
+    // EINZELNES SPIEL LÖSCHEN
     function deleteGame(index) {
         games.splice(index, 1);
+        // Entfernen macht die alte Reihenfolge ungültig -> komplett reset
         resetTierResults();
         renderGameList();
         saveState();
     }
 
+    // EINZELNES SPIЕЛ RELOADEN (Titel/Bild aktualisieren, Sortierung bleibt)
     async function reloadGame(index) {
         const g = games[index];
         if (!g) return;
@@ -670,12 +688,16 @@
         if (addManyBtn) addManyBtn.disabled = true;
 
         let finalUrl = g.url || "";
-        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = "https://" + finalUrl;
+        }
+
         const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
+
             const data = await response.json();
             if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
 
@@ -688,13 +710,15 @@
             games[index].image = image;
             games[index].url   = url;
 
-            resetTierResults();
             renderGameList();
             showStatus("Игра обновлена: " + title, "success");
             saveState();
         } catch (err) {
             console.error(err);
-            showStatus("Не удалось обновить игру: " + err.message, "error");
+            showStatus(
+                "Не удалось обновить игру: " + err.message,
+                "error"
+            );
         } finally {
             addBtn.disabled = false;
             if (addManyBtn) addManyBtn.disabled = false;
@@ -759,18 +783,23 @@
         updateGameCount();
     }
 
+    // Hilfsfunktion: eine URL laden und als Spiel hinzufügen
     async function fetchAndAddGame(rawUrl) {
         let finalUrl = (rawUrl || "").trim();
         if (!finalUrl) {
             return { success: false, skipped: true, error: "empty" };
         }
 
-        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = "https://" + finalUrl;
+        }
+
         const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
+
             const data = await response.json();
             if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
 
@@ -790,6 +819,7 @@
         }
     }
 
+    // EINZELNE URL – jetzt OHNE resetTierResults()
     async function addGameFromUrl() {
         const inputEl = document.getElementById("urlInput");
         const rawUrl = inputEl.value.trim();
@@ -819,6 +849,7 @@
         if (addManyBtn) addManyBtn.disabled = false;
     }
 
+    // MEHRERE URLS – auch ohne resetTierResults()
     async function addGamesFromMultiInput() {
         const multiEl = document.getElementById("multiInput");
         const text = multiEl.value;
@@ -843,10 +874,16 @@
         addManyBtn.disabled = true;
 
         for (let i = 0; i < lines.length; i++) {
-            showStatus("Загружаю " + (i + 1) + " из " + lines.length + "…", "info");
+            showStatus(
+                "Загружаю " + (i + 1) + " из " + lines.length + "…",
+                "info"
+            );
             const res = await fetchAndAddGame(lines[i]);
-            if (res.success) successCount++;
-            else if (!res.skipped) failCount++;
+            if (res.success) {
+                successCount++;
+            } else if (!res.skipped) {
+                failCount++;
+            }
         }
 
         if (successCount > 0 && failCount === 0) {
@@ -865,6 +902,7 @@
         saveState();
     }
 
+    // ---------- Vollbild-Tierlist ----------
     const mainContainer = document.getElementById("mainContainer");
     const overlay = document.getElementById("compareOverlay");
     const fsStatus = document.getElementById("fsStatus");
@@ -873,6 +911,8 @@
     const fsImgRight = document.getElementById("fsImgRight");
     const fsNameLeft = document.getElementById("fsNameLeft");
     const fsNameRight = document.getElementById("fsNameRight");
+
+    // Hilfsfunktionen für neue Spiele
 
     function buildPendingNewIndicesForFullSort() {
         pendingNewIndices = [];
@@ -913,7 +953,7 @@
         const isFirstSort = sortedIndices.length === 0;
 
         if (isFirstSort) {
-            // komplette erste Sortierung
+            // erste komplette Sortierung
             sortedIndices = [0];
             buildPendingNewIndicesForFullSort();
             comparisonsDone = 0;
@@ -927,11 +967,10 @@
         }
 
         compareActive = true;
+
         document.getElementById("finishedPanel").classList.add("hidden");
         document.getElementById("tierTableSection").classList.add("hidden");
-
-        const progressInfo = document.getElementById("progressInfo");
-        progressInfo.textContent =
+        document.getElementById("progressInfo").textContent =
             "Идёт сравнение… (" + (comparisonsDone || 0) + " сравнений)";
 
         mainContainer.classList.add("hidden");
@@ -949,7 +988,7 @@
         if (!compareActive || currentNewIndex === null) return;
 
         if (low >= high) {
-            // Einfügeposition gefunden
+            // Einfügeposition gefunden → Spiel einsortieren
             sortedIndices.splice(low, 0, currentNewIndex);
             saveState();
             moveToNextNewGame();
@@ -1136,6 +1175,7 @@
         resetTierResults();
         renderGameList();
         hideStatus();
+        // Speicher komplett löschen
         try {
             localStorage.removeItem(STORAGE_KEY);
         } catch (e) {
@@ -1143,18 +1183,20 @@
         }
     }
 
+    // ---------- Speichern / Laden ----------
     function saveState() {
         try {
-            const finishedPanelHidden =
-                document.getElementById("finishedPanel").classList.contains("hidden");
+            const finishedPanelHidden = document
+                .getElementById("finishedPanel")
+                .classList.contains("hidden");
 
             const state = {
                 games: games,
                 sortedIndices: sortedIndices,
                 pendingNewIndices: pendingNewIndices,
-                currentNewIndex: currentNewIndex,
                 comparisonsDone: comparisonsDone,
                 compareActive: compareActive,
+                currentNewIndex: currentNewIndex,
                 low: low,
                 high: high,
                 mid: mid,
@@ -1209,15 +1251,12 @@
                 : 0;
 
             compareActive = !!state.compareActive;
-
             currentNewIndex =
                 typeof state.currentNewIndex === "number"
                     ? state.currentNewIndex
                     : null;
-            if (
-                currentNewIndex !== null &&
-                (currentNewIndex < 0 || currentNewIndex >= games.length)
-            ) {
+            if (currentNewIndex !== null &&
+                (currentNewIndex < 0 || currentNewIndex >= games.length)) {
                 currentNewIndex = null;
             }
 
@@ -1281,6 +1320,7 @@
         }
     }
 
+    // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("clearButton").addEventListener("click", clearGames);
@@ -1294,6 +1334,7 @@
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
+    // Beim Laden: gespeicherten Zustand wiederherstellen
     window.addEventListener("load", () => {
         loadState();
     });
