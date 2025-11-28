@@ -18,7 +18,6 @@
             font-size: 20px; /* ca. 150% Look */
         }
 
-        /* Haupt-Layout */
         .container {
             margin: 52px 30px;
             max-width: 1400px;
@@ -143,7 +142,6 @@
             box-shadow: 0 12px 28px rgba(15, 23, 42, 0.85);
         }
 
-        /* kleiner Icon-Button (Löschen / Reload) */
         .btn-icon {
             min-width: 32px;
             height: 32px;
@@ -309,8 +307,6 @@
             margin-left: auto;
         }
 
-        /* Tier-Tabelle */
-
         .tier-table { margin-top: 20px; }
 
         .tier-table-header {
@@ -362,8 +358,6 @@
             background: #020617;
             border: 1px solid #1f2937;
         }
-
-        /* Vollbild-Vergleichsmodus */
 
         .overlay {
             position: fixed;
@@ -461,7 +455,6 @@
             color: #6b7280;
         }
 
-        /* Ganz am Ende: hidden überschreibt alles */
         .hidden {
             display: none !important;
         }
@@ -469,7 +462,6 @@
 </head>
 <body>
 <div class="container" id="mainContainer">
-    <!-- Linke Seite -->
     <div>
         <h1>Тир-лист по ссылкам на игры</h1>
         <p class="subtitle">
@@ -478,7 +470,6 @@
             3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
         </p>
 
-        <!-- Einzeln -->
         <label for="urlInput">URL игры</label>
         <input id="urlInput"
                type="text"
@@ -488,7 +479,6 @@
             <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
         </div>
 
-        <!-- Mehrere Links -->
         <label for="multiInput" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
         <textarea id="multiInput"
                   placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
@@ -520,7 +510,6 @@
         </div>
     </div>
 
-    <!-- Rechte Seite (Ergebnis) -->
     <div>
         <div class="section-title">
             <span>Результат тир-листа</span>
@@ -548,7 +537,6 @@
     </div>
 </div>
 
-<!-- Vollbild-Vergleich -->
 <div id="compareOverlay" class="overlay hidden">
     <div class="overlay-inner">
         <h1 class="overlay-title">Сравнение игр</h1>
@@ -578,12 +566,13 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-    // ---------- Zustand ----------
     const games = []; // { id, title, image, url }
     let nextId = 1;
 
-    let sortedIndices = [];
+    let sortedIndices = [];       // bestehende Reihenfolge
+    let pendingNewIndices = [];   // neue Spiele, die noch einsortiert werden müssen
     let currentNewIndex = null;
+
     let low = 0, high = 0, mid = 0;
     let compareActive = false;
     let comparisonsDone = 0;
@@ -596,7 +585,7 @@
         { label: "D", color: "#a855f7" }
     ];
 
-    const STORAGE_KEY = "tierlist_tool_state_v1";
+    const STORAGE_KEY = "tierlist_tool_state_v2";
 
     function russianGameWord(count) {
         const mod10 = count % 10;
@@ -616,11 +605,9 @@
         return "D";
     }
 
-    // Titel bereinigen (v.a. Steam)
     function cleanTitle(rawTitle, url) {
         let t = (rawTitle || "").trim();
         if (!t) return t;
-
         if (url && url.includes("store.steampowered.com")) {
             t = t.replace(/ on Steam$/i, "");
             t = t.replace(/^Save \d+% on /i, "");
@@ -647,10 +634,11 @@
         document.getElementById("startTierButton").disabled = count < 2;
     }
 
-    // Tierlist-Ergebnis zurücksetzen
     function resetTierResults() {
         sortedIndices = [];
+        pendingNewIndices = [];
         currentNewIndex = null;
+        low = high = mid = 0;
         comparisonsDone = 0;
         compareActive = false;
 
@@ -661,7 +649,6 @@
         document.getElementById("progressInfo").textContent = "Ещё не запущено";
     }
 
-    // EINZELNES SPIEL LÖSCHEN
     function deleteGame(index) {
         games.splice(index, 1);
         resetTierResults();
@@ -669,7 +656,6 @@
         saveState();
     }
 
-    // EINZELNES SPIEL RELOADEN
     async function reloadGame(index) {
         const g = games[index];
         if (!g) return;
@@ -684,16 +670,12 @@
         if (addManyBtn) addManyBtn.disabled = true;
 
         let finalUrl = g.url || "";
-        if (!/^https?:\/\//i.test(finalUrl)) {
-            finalUrl = "https://" + finalUrl;
-        }
-
+        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
         const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
-
             const data = await response.json();
             if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
 
@@ -712,10 +694,7 @@
             saveState();
         } catch (err) {
             console.error(err);
-            showStatus(
-                "Не удалось обновить игру: " + err.message,
-                "error"
-            );
+            showStatus("Не удалось обновить игру: " + err.message, "error");
         } finally {
             addBtn.disabled = false;
             if (addManyBtn) addManyBtn.disabled = false;
@@ -780,23 +759,18 @@
         updateGameCount();
     }
 
-    // Hilfsfunktion: eine URL laden und als Spiel hinzufügen
     async function fetchAndAddGame(rawUrl) {
         let finalUrl = (rawUrl || "").trim();
         if (!finalUrl) {
             return { success: false, skipped: true, error: "empty" };
         }
 
-        if (!/^https?:\/\//i.test(finalUrl)) {
-            finalUrl = "https://" + finalUrl;
-        }
-
+        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
         const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error("HTTP-ошибка " + response.status);
-
             const data = await response.json();
             if (!data.success) throw new Error(data.error || "Неизвестная ошибка");
 
@@ -816,7 +790,6 @@
         }
     }
 
-    // EINZELNE URL
     async function addGameFromUrl() {
         const inputEl = document.getElementById("urlInput");
         const rawUrl = inputEl.value.trim();
@@ -828,7 +801,6 @@
             return;
         }
 
-        resetTierResults();
         hideStatus();
         showStatus("Загружаю метаданные…", "info");
         addBtn.disabled = true;
@@ -847,7 +819,6 @@
         if (addManyBtn) addManyBtn.disabled = false;
     }
 
-    // MEHRERE URLS
     async function addGamesFromMultiInput() {
         const multiEl = document.getElementById("multiInput");
         const text = multiEl.value;
@@ -864,7 +835,6 @@
             return;
         }
 
-        resetTierResults();
         hideStatus();
         let successCount = 0;
         let failCount = 0;
@@ -873,16 +843,10 @@
         addManyBtn.disabled = true;
 
         for (let i = 0; i < lines.length; i++) {
-            showStatus(
-                "Загружаю " + (i + 1) + " из " + lines.length + "…",
-                "info"
-            );
+            showStatus("Загружаю " + (i + 1) + " из " + lines.length + "…", "info");
             const res = await fetchAndAddGame(lines[i]);
-            if (res.success) {
-                successCount++;
-            } else if (!res.skipped) {
-                failCount++;
-            }
+            if (res.success) successCount++;
+            else if (!res.skipped) failCount++;
         }
 
         if (successCount > 0 && failCount === 0) {
@@ -901,7 +865,6 @@
         saveState();
     }
 
-    // ---------- Vollbild-Tierlist ----------
     const mainContainer = document.getElementById("mainContainer");
     const overlay = document.getElementById("compareOverlay");
     const fsStatus = document.getElementById("fsStatus");
@@ -911,6 +874,34 @@
     const fsNameLeft = document.getElementById("fsNameLeft");
     const fsNameRight = document.getElementById("fsNameRight");
 
+    function buildPendingNewIndicesForFullSort() {
+        pendingNewIndices = [];
+        if (games.length <= 1) return;
+        for (let i = 1; i < games.length; i++) {
+            pendingNewIndices.push(i);
+        }
+    }
+
+    function buildPendingNewIndicesIncremental() {
+        pendingNewIndices = [];
+        const present = new Set(sortedIndices);
+        for (let i = 0; i < games.length; i++) {
+            if (!present.has(i)) pendingNewIndices.push(i);
+        }
+    }
+
+    function moveToNextNewGame() {
+        if (!pendingNewIndices.length) {
+            currentNewIndex = null;
+            finishTierlist();
+            return;
+        }
+        currentNewIndex = pendingNewIndices.shift();
+        low = 0;
+        high = sortedIndices.length;
+        showNextComparisonStep();
+    }
+
     function startTierlist() {
         if (games.length < 2) {
             showStatus("Нужно минимум 2 игры.", "error");
@@ -918,43 +909,50 @@
         }
 
         hideStatus();
-        sortedIndices = [0];
-        currentNewIndex = 1;
-        comparisonsDone = 0;
-        compareActive = true;
 
+        const isFirstSort = sortedIndices.length === 0;
+
+        if (isFirstSort) {
+            // komplette erste Sortierung
+            sortedIndices = [0];
+            buildPendingNewIndicesForFullSort();
+            comparisonsDone = 0;
+        } else {
+            // nur neue Spiele einsortieren
+            buildPendingNewIndicesIncremental();
+            if (!pendingNewIndices.length) {
+                showStatus("Новых игр для добавления в тир-лист нет.", "info");
+                return;
+            }
+        }
+
+        compareActive = true;
         document.getElementById("finishedPanel").classList.add("hidden");
         document.getElementById("tierTableSection").classList.add("hidden");
-        document.getElementById("progressInfo").textContent =
-            "Идёт сравнение… (0 сравнений)";
+
+        const progressInfo = document.getElementById("progressInfo");
+        progressInfo.textContent =
+            "Идёт сравнение… (" + (comparisonsDone || 0) + " сравнений)";
 
         mainContainer.classList.add("hidden");
         overlay.classList.remove("hidden");
-        fsStatus.textContent = "Начинаем сравнение…";
-        fsProgress.textContent = "0 сравнений";
+        fsStatus.textContent = isFirstSort
+            ? "Начинаем сравнение…"
+            : "Добавляем новые игры в уже готовый тир-лист…";
+        fsProgress.textContent = (comparisonsDone || 0) + " сравнений";
 
         saveState();
-        prepareNextComparison();
-    }
-
-    function prepareNextComparison() {
-        if (currentNewIndex >= games.length) {
-            finishTierlist();
-            return;
-        }
-        low = 0;
-        high = sortedIndices.length;
-        showNextComparisonStep();
+        moveToNextNewGame();
     }
 
     function showNextComparisonStep() {
-        if (!compareActive) return;
+        if (!compareActive || currentNewIndex === null) return;
 
         if (low >= high) {
+            // Einfügeposition gefunden
             sortedIndices.splice(low, 0, currentNewIndex);
-            currentNewIndex++;
             saveState();
-            prepareNextComparison();
+            moveToNextNewGame();
             return;
         }
 
@@ -977,11 +975,11 @@
 
         fsStatus.textContent =
             "Какую игру ты любишь больше? (новая слева против уже отсортированной справа)";
-        fsProgress.textContent = comparisonsDone + " сравнений";
+        fsProgress.textContent = (comparisonsDone || 0) + " сравнений";
     }
 
     function chooseLeft() {
-        if (!compareActive) return;
+        if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
         high = mid;
         fsProgress.textContent = comparisonsDone + " сравнений";
@@ -990,7 +988,7 @@
     }
 
     function chooseRight() {
-        if (!compareActive) return;
+        if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
         low = mid + 1;
         fsProgress.textContent = comparisonsDone + " сравнений";
@@ -1004,7 +1002,7 @@
         mainContainer.classList.remove("hidden");
 
         document.getElementById("progressInfo").textContent =
-            "Готово! Всего " + comparisonsDone + " сравнений.";
+            "Готово! Всего " + (comparisonsDone || 0) + " сравнений.";
 
         document.getElementById("finishedPanel").classList.remove("hidden");
         document.getElementById("tierTableSection").classList.remove("hidden");
@@ -1138,7 +1136,6 @@
         resetTierResults();
         renderGameList();
         hideStatus();
-        // Speicher komplett löschen
         try {
             localStorage.removeItem(STORAGE_KEY);
         } catch (e) {
@@ -1146,19 +1143,18 @@
         }
     }
 
-    // ---------- Speichern / Laden ----------
     function saveState() {
         try {
-            const finishedPanelHidden = document
-                .getElementById("finishedPanel")
-                .classList.contains("hidden");
+            const finishedPanelHidden =
+                document.getElementById("finishedPanel").classList.contains("hidden");
 
             const state = {
                 games: games,
                 sortedIndices: sortedIndices,
+                pendingNewIndices: pendingNewIndices,
+                currentNewIndex: currentNewIndex,
                 comparisonsDone: comparisonsDone,
                 compareActive: compareActive,
-                currentNewIndex: currentNewIndex,
                 low: low,
                 high: high,
                 mid: mid,
@@ -1202,15 +1198,28 @@
                 )
                 : [];
 
+            pendingNewIndices = Array.isArray(state.pendingNewIndices)
+                ? state.pendingNewIndices.filter(i =>
+                    Number.isInteger(i) && i >= 0 && i < games.length
+                )
+                : [];
+
             comparisonsDone = typeof state.comparisonsDone === "number"
                 ? state.comparisonsDone
                 : 0;
 
             compareActive = !!state.compareActive;
+
             currentNewIndex =
                 typeof state.currentNewIndex === "number"
                     ? state.currentNewIndex
                     : null;
+            if (
+                currentNewIndex !== null &&
+                (currentNewIndex < 0 || currentNewIndex >= games.length)
+            ) {
+                currentNewIndex = null;
+            }
 
             low = typeof state.low === "number" ? state.low : 0;
             high = typeof state.high === "number" ? state.high : 0;
@@ -1244,20 +1253,22 @@
                 overlay.classList.add("hidden");
             } else if (
                 compareActive &&
-                games.length >= 2 &&
                 sortedIndices.length > 0 &&
-                currentNewIndex !== null
+                (currentNewIndex !== null || pendingNewIndices.length > 0)
             ) {
-                // Vergleich war im Gange → weiterführen
                 mainContainer.classList.add("hidden");
                 overlay.classList.remove("hidden");
                 fsStatus.textContent = "Продолжаем сравнение…";
                 fsProgress.textContent = (comparisonsDone || 0) + " сравнений";
                 progressInfo.textContent =
                     "Идёт сравнение… (" + (comparisonsDone || 0) + " сравнений)";
-                showNextComparisonStep();
+
+                if (currentNewIndex === null && pendingNewIndices.length > 0) {
+                    moveToNextNewGame();
+                } else {
+                    showNextComparisonStep();
+                }
             } else {
-                // Kein aktiver Vergleich, kein fertiger Tierlist
                 compareActive = false;
                 finishedPanel.classList.add("hidden");
                 tierTableSection.classList.add("hidden");
@@ -1270,7 +1281,6 @@
         }
     }
 
-    // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("clearButton").addEventListener("click", clearGames);
@@ -1284,7 +1294,6 @@
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
-    // Beim Laden: gespeicherten Zustand wiederherstellen
     window.addEventListener("load", () => {
         loadState();
     });
