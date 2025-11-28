@@ -576,6 +576,25 @@
             </div>
             <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
         </div>
+
+        <!-- Share nur Spiele (ohne Ranking) -->
+        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+            <div class="section-title">
+                <span>Spiele teilen (ohne Ranking)</span>
+            </div>
+            <span class="small-hint">
+                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen,
+                das Ranking muss die andere Person selbst neu machen.
+            </span>
+            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
+                <button id="btnExportGames" type="button" class="btn-secondary">
+                    Spiele-Exportcode erzeugen
+                </button>
+                <button id="btnImportGames" type="button" class="btn-secondary">
+                    Spiele-Exportcode einfügen
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Rechte Seite -->
@@ -1165,7 +1184,7 @@
         if (addManyBtn) addManyBtn.disabled = true;
 
         let finalUrl = g.url || "";
-        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
+               if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
 
         const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
@@ -1538,7 +1557,7 @@
     function showNextComparisonStep() {
         if (!compareActive || currentNewIndex === null) return;
 
-        // WICHTIG: falls currentNewIndex schon in sortedIndices steckt → dieses Spiel überspringen
+        // falls currentNewIndex schon in sortedIndices steckt → überspringen
         if (sortedIndices.includes(currentNewIndex)) {
             moveToNextNewGame();
             return;
@@ -1590,7 +1609,7 @@
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        high = mid;       // hier muss high = mid sein
+        high = mid;       // WICHTIG: high = mid
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1937,6 +1956,77 @@
         }
     }
 
+    // --- Spiele-Export ohne Ranking ---
+    function exportGamesOnly() {
+        if (!games.length) {
+            showStatus("Es gibt keine Spiele zum Exportieren.", "error");
+            return;
+        }
+
+        const data = {
+            games: games.map(g => ({
+                id: g.id,
+                title: g.title,
+                image: g.image,
+                url: g.url
+            }))
+        };
+
+        const json = JSON.stringify(data);
+        const base64 = btoa(unescape(encodeURIComponent(json)));
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(base64).then(() => {
+                showStatus("Exportcode in die Zwischenablage kopiert.", "success");
+            }).catch(() => {
+                showStatus("Kopiere den Exportcode manuell aus dem Fenster.", "info");
+                alert(base64);
+            });
+        } else {
+            showStatus("Kopiere den Exportcode manuell aus dem Fenster.", "info");
+            alert(base64);
+        }
+    }
+
+    function importGamesOnly() {
+        const base64 = prompt("Füge hier den Spiele-Exportcode ein:");
+        if (!base64) return;
+
+        try {
+            const json = decodeURIComponent(escape(atob(base64)));
+            const data = JSON.parse(json);
+
+            if (!data || !Array.isArray(data.games)) {
+                throw new Error("Ungültiges Format (games fehlt).");
+            }
+
+            games.length = 0;
+            data.games.forEach((g, i) => {
+                games.push({
+                    id: typeof g.id === "number" ? g.id : i + 1,
+                    title: g.title || "",
+                    image: g.image || "",
+                    url: g.url || ""
+                });
+            });
+
+            let maxId = 0;
+            games.forEach(g => {
+                if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+            });
+            nextId = maxId + 1;
+
+            resetTierResults();
+            renderGameList();
+            saveState();
+
+            showStatus("Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.", "success");
+        } catch (e) {
+            console.error(e);
+            showStatus("Import fehlgeschlagen: " + e.message, "error");
+        }
+    }
+
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("addManualButton").addEventListener("click", addManualGame);
@@ -1950,6 +2040,11 @@
     document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
+
+    document.getElementById("btnExportGames")
+        .addEventListener("click", exportGamesOnly);
+    document.getElementById("btnImportGames")
+        .addEventListener("click", importGamesOnly);
 
     window.addEventListener("load", () => {
         initLanguage();
