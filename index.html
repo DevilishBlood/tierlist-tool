@@ -583,7 +583,7 @@
     let nextId = 1;
 
     let sortedIndices = [];
-    let pendingNewIndices = [];   // NEU: Warteschlange neuer Spiele
+    let pendingNewIndices = [];   // neue Games, die noch einsortiert werden müssen
     let currentNewIndex = null;
     let low = 0, high = 0, mid = 0;
     let compareActive = false;
@@ -597,7 +597,7 @@
         { label: "D", color: "#a855f7" }
     ];
 
-    // neue Version des Speichers, damit es keinen Konflikt mit altem Format gibt
+    // neue Version, damit alte Speicherstände nicht crashen
     const STORAGE_KEY = "tierlist_tool_state_v2";
 
     function russianGameWord(count) {
@@ -649,7 +649,7 @@
         document.getElementById("startTierButton").disabled = count < 2;
     }
 
-    // Tierlist-Ergebnis komplett zurücksetzen (wird nur bei Löschen genutzt)
+    // Tierlist-Ergebnis komplett zurücksetzen (nur bei "Clear" verwendet)
     function resetTierResults() {
         sortedIndices = [];
         pendingNewIndices = [];
@@ -664,16 +664,73 @@
         document.getElementById("progressInfo").textContent = "Ещё не запущено";
     }
 
-    // EINZELNES SPIEL LÖSCHEN
+    // EINZELNES SPIEL LÖSCHEN – Ranking bleibt, nur angepasst
     function deleteGame(index) {
-        games.splice(index, 1);
-        // Entfernen macht die alte Reihenfolge ungültig -> komplett reset
-        resetTierResults();
+        if (index < 0 || index >= games.length) return;
+
+        const deletedIndex = index;
+
+        // Spiel aus der Liste entfernen
+        games.splice(deletedIndex, 1);
+
+        // sortedIndices anpassen:
+        //   - gelöschtes Spiel raus
+        //   - alle höheren Indizes um 1 verringern
+        sortedIndices = sortedIndices
+            .filter(i => i !== deletedIndex)
+            .map(i => (i > deletedIndex ? i - 1 : i));
+
+        // pendingNewIndices anpassen
+        pendingNewIndices = pendingNewIndices
+            .filter(i => i !== deletedIndex)
+            .map(i => (i > deletedIndex ? i - 1 : i));
+
+        // falls gerade ein Vergleich läuft und dieses Spiel dran war
+        if (currentNewIndex !== null) {
+            if (currentNewIndex === deletedIndex) {
+                currentNewIndex = null;
+            } else if (currentNewIndex > deletedIndex) {
+                currentNewIndex--;
+            }
+        }
+
+        // wenn wir mitten im Vergleich sind → Vergleich abbrechen, Ergebnis behalten
+        if (compareActive) {
+            compareActive = false;
+            document.getElementById("compareOverlay").classList.add("hidden");
+            document.getElementById("mainContainer").classList.remove("hidden");
+            document.getElementById("progressInfo").textContent =
+                "Сравнение остановлено. Рейтинг обновлён.";
+        }
+
         renderGameList();
+
+        const finishedPanel = document.getElementById("finishedPanel");
+        const tierTableSection = document.getElementById("tierTableSection");
+        const progressInfo = document.getElementById("progressInfo");
+
+        if (sortedIndices.length > 0 && games.length >= 1) {
+            finishedPanel.classList.remove("hidden");
+            tierTableSection.classList.remove("hidden");
+            renderRankList();
+            renderTierTable();
+            progressInfo.textContent =
+                "Готово! Всего " + (comparisonsDone || 0) + " сравнений.";
+        } else {
+            finishedPanel.classList.add("hidden");
+            tierTableSection.classList.add("hidden");
+            sortedIndices = [];
+            pendingNewIndices = [];
+            currentNewIndex = null;
+            progressInfo.textContent =
+                games.length >= 2 ? "Ещё не запущено" : "Нужно минимум 2 игры.";
+        }
+
+        updateGameCount();
         saveState();
     }
 
-    // EINZELNES SPIЕЛ RELOADEN (Titel/Bild aktualisieren, Sortierung bleibt)
+    // EINZELNES SPIEL RELOADEN (Titel/Bild aktualisieren, Sortierung bleibt)
     async function reloadGame(index) {
         const g = games[index];
         if (!g) return;
@@ -819,7 +876,7 @@
         }
     }
 
-    // EINZELNE URL – jetzt OHNE resetTierResults()
+    // EINZELNE URL – OHNE resetTierResults()
     async function addGameFromUrl() {
         const inputEl = document.getElementById("urlInput");
         const rawUrl = inputEl.value.trim();
