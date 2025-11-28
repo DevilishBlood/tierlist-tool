@@ -596,6 +596,8 @@
         { label: "D", color: "#a855f7" }
     ];
 
+    const STORAGE_KEY = "tierlist_tool_state_v1";
+
     function russianGameWord(count) {
         const mod10 = count % 10;
         const mod100 = count % 100;
@@ -664,6 +666,7 @@
         games.splice(index, 1);
         resetTierResults();
         renderGameList();
+        saveState();
     }
 
     // EINZELNES SPIEL RELOADEN
@@ -706,6 +709,7 @@
             resetTierResults();
             renderGameList();
             showStatus("Игра обновлена: " + title, "success");
+            saveState();
         } catch (err) {
             console.error(err);
             showStatus(
@@ -803,6 +807,7 @@
 
             games.push({ id: nextId++, title, image, url });
             renderGameList();
+            saveState();
 
             return { success: true, title };
         } catch (err) {
@@ -893,6 +898,7 @@
 
         addBtn.disabled = false;
         addManyBtn.disabled = false;
+        saveState();
     }
 
     // ---------- Vollbild-Tierlist ----------
@@ -922,12 +928,12 @@
         document.getElementById("progressInfo").textContent =
             "Идёт сравнение… (0 сравнений)";
 
-        // Alles normale verstecken, nur Overlay anzeigen
         mainContainer.classList.add("hidden");
         overlay.classList.remove("hidden");
         fsStatus.textContent = "Начинаем сравнение…";
         fsProgress.textContent = "0 сравнений";
 
+        saveState();
         prepareNextComparison();
     }
 
@@ -947,6 +953,7 @@
         if (low >= high) {
             sortedIndices.splice(low, 0, currentNewIndex);
             currentNewIndex++;
+            saveState();
             prepareNextComparison();
             return;
         }
@@ -977,6 +984,8 @@
         if (!compareActive) return;
         comparisonsDone++;
         high = mid;
+        fsProgress.textContent = comparisonsDone + " сравнений";
+        saveState();
         showNextComparisonStep();
     }
 
@@ -984,6 +993,8 @@
         if (!compareActive) return;
         comparisonsDone++;
         low = mid + 1;
+        fsProgress.textContent = comparisonsDone + " сравнений";
+        saveState();
         showNextComparisonStep();
     }
 
@@ -1000,6 +1011,7 @@
 
         renderRankList();
         renderTierTable();
+        saveState();
     }
 
     function cancelTierlist() {
@@ -1007,6 +1019,7 @@
         overlay.classList.add("hidden");
         mainContainer.classList.remove("hidden");
         document.getElementById("progressInfo").textContent = "Сравнение отменено.";
+        saveState();
     }
 
     function renderRankList() {
@@ -1125,6 +1138,136 @@
         resetTierResults();
         renderGameList();
         hideStatus();
+        // Speicher komplett löschen
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            console.error("Fehler beim Löschen aus localStorage", e);
+        }
+    }
+
+    // ---------- Speichern / Laden ----------
+    function saveState() {
+        try {
+            const finishedPanelHidden = document
+                .getElementById("finishedPanel")
+                .classList.contains("hidden");
+
+            const state = {
+                games: games,
+                sortedIndices: sortedIndices,
+                comparisonsDone: comparisonsDone,
+                compareActive: compareActive,
+                currentNewIndex: currentNewIndex,
+                low: low,
+                high: high,
+                mid: mid,
+                nextId: nextId,
+                finished: !finishedPanelHidden
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error("Fehler beim Speichern", e);
+        }
+    }
+
+    function loadState() {
+        let raw;
+        try {
+            raw = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+            console.error("Fehler beim Lesen aus localStorage", e);
+            return;
+        }
+        if (!raw) return;
+
+        try {
+            const state = JSON.parse(raw);
+            if (!state || !Array.isArray(state.games)) return;
+
+            games.length = 0;
+            state.games.forEach((g, i) => {
+                if (typeof g.id !== "number") g.id = i + 1;
+                games.push({
+                    id: g.id,
+                    title: g.title || "",
+                    image: g.image || "",
+                    url: g.url || ""
+                });
+            });
+
+            sortedIndices = Array.isArray(state.sortedIndices)
+                ? state.sortedIndices.filter(i =>
+                    Number.isInteger(i) && i >= 0 && i < games.length
+                )
+                : [];
+
+            comparisonsDone = typeof state.comparisonsDone === "number"
+                ? state.comparisonsDone
+                : 0;
+
+            compareActive = !!state.compareActive;
+            currentNewIndex =
+                typeof state.currentNewIndex === "number"
+                    ? state.currentNewIndex
+                    : null;
+
+            low = typeof state.low === "number" ? state.low : 0;
+            high = typeof state.high === "number" ? state.high : 0;
+            mid = typeof state.mid === "number" ? state.mid : 0;
+
+            if (typeof state.nextId === "number") {
+                nextId = state.nextId;
+            } else {
+                let maxId = 0;
+                games.forEach(g => {
+                    if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+                });
+                nextId = maxId + 1;
+            }
+
+            renderGameList();
+
+            const finished = !!state.finished;
+            const finishedPanel = document.getElementById("finishedPanel");
+            const tierTableSection = document.getElementById("tierTableSection");
+            const progressInfo = document.getElementById("progressInfo");
+
+            if (finished && sortedIndices.length > 0) {
+                finishedPanel.classList.remove("hidden");
+                tierTableSection.classList.remove("hidden");
+                renderRankList();
+                renderTierTable();
+                progressInfo.textContent =
+                    "Готово! Всего " + (comparisonsDone || 0) + " сравнений.";
+                mainContainer.classList.remove("hidden");
+                overlay.classList.add("hidden");
+            } else if (
+                compareActive &&
+                games.length >= 2 &&
+                sortedIndices.length > 0 &&
+                currentNewIndex !== null
+            ) {
+                // Vergleich war im Gange → weiterführen
+                mainContainer.classList.add("hidden");
+                overlay.classList.remove("hidden");
+                fsStatus.textContent = "Продолжаем сравнение…";
+                fsProgress.textContent = (comparisonsDone || 0) + " сравнений";
+                progressInfo.textContent =
+                    "Идёт сравнение… (" + (comparisonsDone || 0) + " сравнений)";
+                showNextComparisonStep();
+            } else {
+                // Kein aktiver Vergleich, kein fertiger Tierlist
+                compareActive = false;
+                finishedPanel.classList.add("hidden");
+                tierTableSection.classList.add("hidden");
+                progressInfo.textContent = "Ещё не запущено";
+                mainContainer.classList.remove("hidden");
+                overlay.classList.add("hidden");
+            }
+        } catch (e) {
+            console.error("Fehler beim Parsen des gespeicherten Zustands", e);
+        }
     }
 
     // ---------- Events ----------
@@ -1140,6 +1283,11 @@
     document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
+
+    // Beim Laden: gespeicherten Zustand wiederherstellen
+    window.addEventListener("load", () => {
+        loadState();
+    });
 </script>
 </body>
 </html>
