@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>Tierlist by Game Links</title>
@@ -157,14 +157,12 @@
             box-shadow: none;
         }
 
-        .btn-icon + .btn-icon {
-            margin-left: 6px;
-        }
+        .btn-icon + .btn-icon { margin-left: 6px; }
 
         .btn-icon:hover {
             background: #1f2937;
             border-color: #9ca3af;
-            box-shadow: 0 0 0 0;
+            box-shadow: 0;
             transform: translateY(0);
         }
 
@@ -498,9 +496,9 @@
     <!-- Linke Seite -->
     <div>
         <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:6px;">
-            <h1 id="txt_title">Тир-лист по ссылкам на игры</h1>
+            <h1 id="txt_title">Tierlist by Game Links</h1>
             <div class="lang-select-wrapper">
-                <span id="lbl_lang">Язык</span>
+                <span id="lbl_lang">Language</span>
                 <select id="langSelect">
                     <option value="ru">Русский</option>
                     <option value="en">English</option>
@@ -509,44 +507,44 @@
             </div>
         </div>
         <p class="subtitle" id="txt_subtitle">
-            1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>
-            2. Загружай метаданные и добавляй игры в список.<br>
-            3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
+            1. Paste URLs of game pages (Steam, itch.io, Epic, GOG, etc.).<br>
+            2. Load metadata and add the games to the list.<br>
+            3. Click “Start tierlist” – a full screen with two games will appear.
         </p>
 
-        <label for="urlInput" id="lbl_url">URL игры</label>
+        <label for="urlInput" id="lbl_url">Game URL</label>
         <input id="urlInput"
                type="text"
-               placeholder="Например: https://store.steampowered.com/app/570/Dota_2/">
+               placeholder="Example: https://store.steampowered.com/app/570/Dota_2/">
         <div style="margin-top: 12px; display:flex; gap:14px; flex-wrap:wrap;">
-            <button id="addButton" type="button">Загрузить и добавить игру</button>
-            <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
+            <button id="addButton" type="button">Load and add game</button>
+            <button id="clearButton" type="button" class="btn-secondary">Clear list</button>
         </div>
 
-        <label for="multiInput" id="lbl_multi" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
+        <label for="multiInput" id="lbl_multi" style="margin-top: 22px;">Multiple URLs (one per line)</label>
         <textarea id="multiInput"
-                  placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
+                  placeholder="One URL per line&#10;Example:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
         <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <button id="addManyButton" type="button" class="btn-secondary">
-                Загрузить все ссылки
+                Load all links
             </button>
             <span class="small-hint" id="hint_multi">
-                Пустые строки будут пропущены.
+                Empty lines will be skipped.
             </span>
         </div>
 
         <!-- Manueller Eintrag -->
         <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
             <div class="section-title" style="margin-bottom: 4px;">
-                <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
+                <span id="lbl_manual_section">Custom game (manual input)</span>
             </div>
-            <label for="manualTitle" id="lbl_manual_name">Название игры</label>
+            <label for="manualTitle" id="lbl_manual_name">Game title</label>
             <input id="manualTitle" type="text">
-            <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
+            <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Cover image</label>
             <input id="manualImage" type="file" accept="image/*">
             <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
                 <button id="addManualButton" type="button" class="btn-secondary">
-                    Добавить свою игру
+                    Add custom game
                 </button>
             </div>
         </div>
@@ -555,22 +553,22 @@
 
         <div style="margin-top: 28px;">
             <div class="section-title">
-                <span id="title_collected">Собранные игры</span>
-                <span class="small-hint" id="gameCountHint">0 игр</span>
+                <span id="title_collected">Collected games</span>
+                <span class="small-hint" id="gameCountHint">0 games</span>
             </div>
             <div class="list" id="gameList"></div>
             <div class="tier-controls">
                 <button id="startTierButton" type="button" disabled>
-                    Начать тир-лист
+                    Start tierlist
                 </button>
                 <span class="small-hint" id="hint_min_games">
-                    Нужно минимум 2 игры.
+                    At least 2 games are required.
                 </span>
                 <div class="mode-select-wrapper">
-                    <span id="modeLabel">Режим ранжирования</span>
+                    <span id="modeLabel">Ranking mode</span>
                     <select id="modeSelect">
-                        <option value="exact">Точный (больше кликов)</option>
-                        <option value="fast">Быстрый (приблизительный)</option>
+                        <option value="exact">Exact (more clicks)</option>
+                        <option value="fast">Fast (approximate)</option>
                     </select>
                 </div>
             </div>
@@ -580,18 +578,18 @@
         <!-- Share nur Spiele (ohne Ranking) -->
         <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
             <div class="section-title">
-                <span id="share_title">Spiele teilen (ohne Ranking)</span>
+                <span id="share_title">Share games (without ranking)</span>
             </div>
             <span class="small-hint" id="share_hint">
-                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen,
-                das Ranking muss die andere Person selbst neu machen.
+                Generate a code and send it to someone. On import only the games are loaded,
+                the other person creates their own ranking.
             </span>
             <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
                 <button id="btnExportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode erzeugen
+                    Create games export code
                 </button>
                 <button id="btnImportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode einfügen
+                    Paste games export code
                 </button>
             </div>
         </div>
@@ -600,13 +598,13 @@
     <!-- Rechte Seite -->
     <div>
         <div class="section-title">
-            <span id="title_result">Результат тир-листа</span>
-            <span class="small-hint" id="progressInfo">Ещё не запущено</span>
+            <span id="title_result">Tierlist result</span>
+            <span class="small-hint" id="progressInfo">Not started yet</span>
         </div>
 
         <div id="finishedPanel" class="finished-list hidden">
             <div class="small-hint" style="margin-bottom:8px;" id="hint_sorted_list">
-                Отсортированный список (1 = любимая игра):
+                Sorted list (1 = favorite game):
             </div>
             <div id="rankList"></div>
         </div>
@@ -614,10 +612,10 @@
         <div id="tierTableSection" class="tier-table hidden">
             <div class="tier-table-header">
                 <span class="small-hint" id="hint_visual">
-                    Визуальный тир-лист (S / A / B / C / D).
+                    Visual tierlist (S / A / B / C / D).
                 </span>
                 <button id="downloadTierImageButton" type="button" class="btn-secondary">
-                    Скачать таблицу как картинку
+                    Download table as image
                 </button>
             </div>
             <div id="tierTableWrapper" class="tier-table-wrapper"></div>
@@ -628,26 +626,26 @@
 <!-- Vollbild-Vergleich -->
 <div id="compareOverlay" class="overlay hidden">
     <div class="overlay-inner">
-        <h1 class="overlay-title" id="txt_overlay_title">Сравнение игр</h1>
+        <h1 class="overlay-title" id="txt_overlay_title">Game comparison</h1>
         <p class="overlay-subtitle" id="txt_overlay_subtitle">
-            Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.
+            Click on the game you like more. When it’s done, the result appears in the main window.
         </p>
         <div id="fsStatus" class="overlay-status"></div>
         <div class="compare-grid">
             <div class="compare-card" id="fsCardLeft">
-                <div class="compare-label" id="lbl_left_choice">Левый выбор</div>
+                <div class="compare-label" id="lbl_left_choice">Left choice</div>
                 <img id="fsImgLeft" src="" alt="">
                 <div class="compare-name" id="fsNameLeft">—</div>
             </div>
             <div class="compare-card" id="fsCardRight">
-                <div class="compare-label" id="lbl_right_choice">Правый выбор</div>
+                <div class="compare-label" id="lbl_right_choice">Right choice</div>
                 <img id="fsImgRight" src="" alt="">
                 <div class="compare-name" id="fsNameRight">—</div>
             </div>
         </div>
         <div class="overlay-footer">
-            <span id="fsProgress">0 сравнений</span>
-            <button id="fsCancel" type="button" class="btn-secondary">Отменить</button>
+            <span id="fsProgress">0 comparisons</span>
+            <button id="fsCancel" type="button" class="btn-secondary">Cancel</button>
         </div>
     </div>
 </div>
@@ -693,7 +691,7 @@
             mode_label: "Режим ранжирования",
             mode_exact: "Точный (больше кликов)",
             mode_fast: "Быстрый (приблизительный)",
-            click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
+            click_stats: "Теоретический минимум: {min} кликов. Полный режим ≈ {exact}, быстрый режим ≈ {fast}.",
             progress_finished: "Готово! Всего {count}.",
             progress_running: "Идёт сравнение… ({count})",
             progress_need_two: "Нужно минимум 2 игры.",
@@ -722,14 +720,11 @@
             status_multi_fail: "Не удалось добавить ссылки.",
             tierlist_not_created: "Сначала создай тир-лист.",
             tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
-            // Share / Import (nur Spiele)
+            // Share / Import (Texte)
             share_title: "Шеринг списка игр (без ранкинга)",
             share_hint: "Создай код и отправь его другу. При импорте загружаются только игры, а тир-лист он сделает сам.",
-            btn_export_games: "Создать код списка игр",
-            btn_import_games: "Вставить код списка игр",
             share_no_games: "Нет игр для экспорта.",
-            share_export_copied: "Код успешно скопирован в буфер обмена.",
-            share_export_copy_manual: "Скопируйте код вручную из окна.",
+            share_export_prompt: "Скопируй этот код и отправь другу:",
             share_import_prompt: "Вставьте сюда код списка игр:",
             share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
             share_import_fail: "Импорт не удался: {error}"
@@ -799,14 +794,11 @@
             status_multi_fail: "Could not add links.",
             tierlist_not_created: "Create the tierlist first.",
             tierlist_save_error: "Could not save the tierlist image.",
-            // Share / Import
+            // Share
             share_title: "Share games (without ranking)",
             share_hint: "Generate a code and send it to someone. On import only the games are loaded, the other person creates their own ranking.",
-            btn_export_games: "Create games export code",
-            btn_import_games: "Paste games export code",
             share_no_games: "There are no games to export.",
-            share_export_copied: "Export code copied to clipboard.",
-            share_export_copy_manual: "Copy the export code manually from the window.",
+            share_export_prompt: "Copy this code and send it to your friend:",
             share_import_prompt: "Paste the games export code here:",
             share_import_success: "Games imported successfully. Ranking has been reset.",
             share_import_fail: "Import failed: {error}"
@@ -876,14 +868,11 @@
             status_multi_fail: "Links konnten nicht hinzugefügt werden.",
             tierlist_not_created: "Erstelle zuerst eine Tierlist.",
             tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
-            // Share / Import
+            // Share
             share_title: "Spiele teilen (ohne Ranking)",
             share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen, das Ranking muss die andere Person selbst neu machen.",
-            btn_export_games: "Spiele-Exportcode erzeugen",
-            btn_import_games: "Spiele-Exportcode einfügen",
             share_no_games: "Es gibt keine Spiele zum Exportieren.",
-            share_export_copied: "Exportcode in die Zwischenablage kopiert.",
-            share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
+            share_export_prompt: "Kopiere diesen Code und schicke ihn deinem Freund:",
             share_import_prompt: "Füge hier den Spiele-Exportcode ein:",
             share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
             share_import_fail: "Import fehlgeschlagen: {error}"
@@ -893,11 +882,11 @@
     const LANG_STORAGE_KEY = "tierlist_tool_lang";
     const MODE_STORAGE_KEY = "tierlist_tool_mode";
 
-    let currentLang = "ru";
+    let currentLang = "en";
     let rankingMode = "exact";
 
     function tr(key, params) {
-        const dict = I18N[currentLang] || I18N.ru;
+        const dict = I18N[currentLang] || I18N.en;
         let s = dict[key] || (I18N.en && I18N.en[key]) || key;
         if (params) {
             for (const p in params) {
@@ -975,7 +964,7 @@
     }
 
     function applyLanguageStaticTexts() {
-        const s = I18N[currentLang] || I18N.ru;
+        const s = I18N[currentLang] || I18N.en;
 
         document.title = s.page_title;
         document.getElementById("txt_title").textContent = s.main_title;
@@ -1015,8 +1004,6 @@
         // Share-Bereich
         document.getElementById("share_title").textContent = s.share_title;
         document.getElementById("share_hint").textContent = s.share_hint;
-        document.getElementById("btnExportGames").textContent = s.btn_export_games;
-        document.getElementById("btnImportGames").textContent = s.btn_import_games;
 
         updateClickStatsDisplay();
     }
@@ -1040,7 +1027,7 @@
 
     function initLanguage() {
         const select = document.getElementById("langSelect");
-        let stored = "ru";
+        let stored = "en";
         try {
             const tmp = localStorage.getItem(LANG_STORAGE_KEY);
             if (tmp && ["ru", "en", "de"].includes(tmp)) stored = tmp;
@@ -1647,7 +1634,7 @@
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        high = mid;
+        low = mid;
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1994,7 +1981,7 @@
         }
     }
 
-    // --- Spiele-Export ohne Ranking ---
+    // --- Simple games export/import (no ranking) ---
     function exportGamesOnly() {
         if (!games.length) {
             showStatus(tr("share_no_games"), "error");
@@ -2003,27 +1990,18 @@
 
         const data = {
             games: games.map(g => ({
-                id: g.id,
-                title: g.title,
-                image: g.image,
-                url: g.url
+                title: g.title || "",
+                image: g.image || "",
+                url:   g.url   || ""
             }))
         };
 
-        const json = JSON.stringify(data);
+        const json   = JSON.stringify(data);
         const base64 = btoa(unescape(encodeURIComponent(json)));
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(base64).then(() => {
-                showStatus(tr("share_export_copied"), "success");
-            }).catch(() => {
-                showStatus(tr("share_export_copy_manual"), "info");
-                alert(base64);
-            });
-        } else {
-            showStatus(tr("share_export_copy_manual"), "info");
-            alert(base64);
-        }
+        // Einfach: Code im Prompt anzeigen, User kopiert
+        const msg = tr("share_export_prompt");
+        prompt(msg, base64);
     }
 
     function importGamesOnly() {
@@ -2034,25 +2012,19 @@
             const json = decodeURIComponent(escape(atob(base64)));
             const data = JSON.parse(json);
 
-            if (!data || !Array.isArray(data.games)) {
-                throw new Error("Invalid format (games missing).");
+            if (!data.games || !Array.isArray(data.games)) {
+                throw new Error("Invalid code format.");
             }
 
             games.length = 0;
-            data.games.forEach((g, i) => {
+            data.games.forEach((g) => {
                 games.push({
-                    id: typeof g.id === "number" ? g.id : i + 1,
+                    id: nextId++,
                     title: g.title || "",
                     image: g.image || "",
-                    url: g.url || ""
+                    url:   g.url   || ""
                 });
             });
-
-            let maxId = 0;
-            games.forEach(g => {
-                if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
-            });
-            nextId = maxId + 1;
 
             resetTierResults();
             renderGameList();
@@ -2060,7 +2032,6 @@
 
             showStatus(tr("share_import_success"), "success");
         } catch (e) {
-            console.error(e);
             showStatus(tr("share_import_fail", { error: e.message }), "error");
         }
     }
