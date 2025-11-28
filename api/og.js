@@ -1,72 +1,156 @@
-// api/og.js
+// api/og.js – Vercel Serverless Function for reading OpenGraph / Epic data
+
 export default async function handler(req, res) {
-  // einfache CORS-Header (schaden nicht)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
-
-  const targetUrl = req.query.url;
-  if (!targetUrl) {
-    res.status(400).json({ success: false, error: "Missing 'url' parameter" });
-    return;
-  }
-
   try {
-    // Seite laden (Node 18 auf Vercel hat global fetch)
-    const response = await fetch(targetUrl, {
+    const urlObj = new URL(req.url, "http://localhost");
+    const targetUrl = urlObj.searchParams.get("url");
+
+    if (!targetUrl) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing ?url parameter",
+      });
+    }
+
+    const pageUrl = new URL(targetUrl);
+
+    // Seite mit "echtem" Browser-User-Agent abrufen
+    const response = await fetch(pageUrl.toString(), {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; TierlistBot/1.0; +https://example.com)"
-      }
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
     });
 
-    const html = await response.text();
-    const finalUrl = response.url || targetUrl;
+    if (!response.ok) {
+      return res.status(500).json({
+        success: false,
+        error: "Remote HTTP error " + response.status,
+      });
+    }
 
-    function getMetaByAttr(attrName, attrValue) {
-      const regex = new RegExp(
-        `<meta[^>]+${attrName}=["']${attrValue}["'][^>]*>`,
+    const html = await response.text();
+
+    // ---------- generisches OpenGraph / Twitter ----------
+
+    const findMetaContent = (attr, value) => {
+      // Variante: ... attr="value" ... content="..." ...
+      let re = new RegExp(
+        `<meta[^>]*${attr}\\s*=\\s*["']${value}["'][^>]*content\\s*=\\s*["']([^"']+)["'][^>]*>`,
         "i"
       );
-      const match = html.match(regex);
-      if (!match) return null;
-      const contentMatch = match[0].match(/content=["']([^"']*)["']/i);
-      return contentMatch ? contentMatch[1] : null;
+      let m = html.match(re);
+      if (m) return m[1];
+
+      // Variante: ... content="..." ... attr="value" ...
+      re = new RegExp(
+        `<meta[^>]*content\\s*=\\s*["']([^"']+)["'][^>]*${attr}\\s*=\\s*["']${value}["'][^>]*>`,
+        "i"
+      );
+      m = html.match(re);
+      return m ? m[1] : null;
+    };
+
+    const getMeta = (key) => {
+      return (
+        findMetaContent("property", key) ||
+        findMetaContent("name", key)
+      );
+    };
+
+    let title =
+      getMeta("og:title") ||
+      getMeta("twitter:title");
+
+    let image =
+      getMeta("og:image") ||
+      getMeta("og:image:url") ||
+      getMeta("og:image:secure_url") ||
+      getMeta("twitter:image");
+
+    let ogUrl =
+      getMeta("og:url") ||
+      getMeta("twitter:url") ||
+      pageUrl.toString();
+
+    // Fallback: normaler <title>-Tag
+    if (!title) {
+      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+      if (titleMatch) {
+        title = titleMatch[1].trim();
+      }
     }
 
-    function getTitleTag() {
-      const match = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-      return match ? match[1].trim() : null;
+    // ---------- SPEZIALFÄLLE: Epic Games Store ----------
+
+    if (pageUrl.hostname.includes("store.epicgames.com")) {
+      // 1) Titel aus URL-Slug bauen, wenn wir noch keinen sinnvollen Titel haben
+      // Beispiel: /en-US/p/where-winds-meet-58a176
+      if (!title || /epic games store/i.test(title)) {
+        const segments = pageUrl.pathname.split("/").filter(Boolean);
+        // meistens: [ 'en-US', 'p', 'where-winds-meet-58a176' ]
+        let slug = segments[segments.length - 1] || "";
+
+        // falls letzter Teil nur eine Hex-ID ist, vorherigen Teil nehmen
+        // (zur Sicherheit splitten wir den ganzen Slug)
+        const slugParts = slug.split("-");
+        if (
+          slugParts.length > 1 &&
+          /^[0-9a-f]{5,}$/i.test(slugParts[slugParts.length - 1])
+        ) {
+          slugParts.pop();
+        }
+
+        const words = slugParts
+          .filter(Boolean)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1));
+
+        if (words.length) {
+          title = words.join(" ");
+        }
+      }
+
+      // 2) Bild aus eingebettetem JSON "keyImages"
+      if (!image) {
+        const imgMatch = html.match(
+          /"keyImages"\s*:\s*\[[^\]]*?"url"\s*:\s*"([^"]+)"/i
+        );
+        if (imgMatch) {
+          image = imgMatch[1]
+            .replace(/\\u002F/g, "/")
+            .replace(/\\\//g, "/");
+        }
+      }
     }
 
-    const ogTitle =
-      getMetaByAttr("property", "og:title") ||
-      getMetaByAttr("name", "twitter:title");
-    const ogImage =
-      getMetaByAttr("property", "og:image") ||
-      getMetaByAttr("name", "twitter:image");
-    const ogUrl =
-      getMetaByAttr("property", "og:url") ||
-      getMetaByAttr("name", "twitter:url");
+    // Access-Denied / Fehlseiten erkennen
+    if (title && /access denied|forbidden|error/i.test(title)) {
+      return res.status(200).json({
+        success: false,
+        error: "Page returned an error instead of game information",
+      });
+    }
 
-    const pageTitle = getTitleTag();
+    // Wenn wirklich gar nichts da ist → Fehler
+    if (!title && !image) {
+      return res.status(200).json({
+        success: false,
+        error: "No usable metadata found on page",
+      });
+    }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      title: ogTitle || pageTitle || "",
-      image: ogImage || "",
-      url: ogUrl || finalUrl
+      title: title || "Untitled",
+      image: image || "",
+      url: ogUrl,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      error: "Fetch failed: " + err.message
+      error: "Failed to fetch metadata: " + err.message,
     });
   }
 }
