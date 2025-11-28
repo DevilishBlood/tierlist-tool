@@ -720,7 +720,6 @@
             status_multi_fail: "Не удалось добавить ссылки.",
             tierlist_not_created: "Сначала создай тир-лист.",
             tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
-            // Share / Import (Texte)
             share_title: "Шеринг списка игр (без ранкинга)",
             share_hint: "Создай код и отправь его другу. При импорте загружаются только игры, а тир-лист он сделает сам.",
             share_no_games: "Нет игр для экспорта.",
@@ -794,7 +793,6 @@
             status_multi_fail: "Could not add links.",
             tierlist_not_created: "Create the tierlist first.",
             tierlist_save_error: "Could not save the tierlist image.",
-            // Share
             share_title: "Share games (without ranking)",
             share_hint: "Generate a code and send it to someone. On import only the games are loaded, the other person creates their own ranking.",
             share_no_games: "There are no games to export.",
@@ -868,7 +866,6 @@
             status_multi_fail: "Links konnten nicht hinzugefügt werden.",
             tierlist_not_created: "Erstelle zuerst eine Tierlist.",
             tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
-            // Share
             share_title: "Spiele teilen (ohne Ranking)",
             share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen, das Ranking muss die andere Person selbst neu machen.",
             share_no_games: "Es gibt keine Spiele zum Exportieren.",
@@ -1001,7 +998,6 @@
         if (optExact) optExact.textContent = s.mode_exact;
         if (optFast) optFast.textContent = s.mode_fast;
 
-        // Share-Bereich
         document.getElementById("share_title").textContent = s.share_title;
         document.getElementById("share_hint").textContent = s.share_hint;
 
@@ -1634,7 +1630,10 @@
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        low = mid;
+
+        // neue (linke) ist besser -> im linken Bereich weiter suchen
+        high = mid;
+
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1653,7 +1652,10 @@
     function chooseRight() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
+
+        // rechte (existierende) ist besser -> im rechten Bereich weiter suchen
         low = mid + 1;
+
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1999,18 +2001,25 @@
         const json   = JSON.stringify(data);
         const base64 = btoa(unescape(encodeURIComponent(json)));
 
-        // Einfach: Code im Prompt anzeigen, User kopiert
         const msg = tr("share_export_prompt");
         prompt(msg, base64);
     }
 
     function importGamesOnly() {
-        const base64 = prompt(tr("share_import_prompt"));
+        let base64 = prompt(tr("share_import_prompt"));
         if (!base64) return;
 
+        // Trim + alle Nicht-Base64-Zeichen entfernen
+        base64 = base64.trim().replace(/[^A-Za-z0-9+/=]/g, "");
+        if (!base64) {
+            showStatus(tr("share_import_fail", { error: "Empty or invalid code" }), "error");
+            return;
+        }
+
         try {
-            const json = decodeURIComponent(escape(atob(base64)));
-            const data = JSON.parse(json);
+            const binary = atob(base64);
+            const json   = decodeURIComponent(escape(binary));
+            const data   = JSON.parse(json);
 
             if (!data.games || !Array.isArray(data.games)) {
                 throw new Error("Invalid code format.");
@@ -2032,6 +2041,7 @@
 
             showStatus(tr("share_import_success"), "success");
         } catch (e) {
+            console.error(e);
             showStatus(tr("share_import_fail", { error: e.message }), "error");
         }
     }
