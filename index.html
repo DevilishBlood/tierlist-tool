@@ -478,6 +478,24 @@
             font-size: 0.9rem;
         }
 
+        /* Ranking-Mode Select */
+        .mode-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        #modeSelect {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 999px;
+            border: 1px solid #4b5563;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
         /* Ganz am Ende: hidden überschreibt alles */
         .hidden {
             display: none !important;
@@ -559,7 +577,15 @@
                 <span class="small-hint" id="hint_min_games">
                     Нужно минимум 2 игры.
                 </span>
+                <div class="mode-select-wrapper">
+                    <span id="modeLabel">Режим ранжирования</span>
+                    <select id="modeSelect">
+                        <option value="exact">Точный (больше кликов)</option>
+                        <option value="fast">Быстрый (приблизительный)</option>
+                    </select>
+                </div>
             </div>
+            <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
         </div>
     </div>
 
@@ -659,6 +685,12 @@
             manual_label_image: "Картинка (обложка)",
             btn_add_manual: "Добавить свою игру",
 
+            mode_label: "Режим ранжирования",
+            mode_exact: "Точный (больше кликов)",
+            mode_fast: "Быстрый (приблизительный)",
+            click_stats:
+                "Теоретический минимум: {min}. Точный режим ≈ {exact}, быстрый режим ≈ {fast} сравнений.",
+
             status_enter_url: "Пожалуйста, введите URL.",
             status_loading_meta: "Загружаю метаданные…",
             status_game_added: "Игра добавлена: {title}",
@@ -726,6 +758,12 @@
             manual_label_name: "Game title",
             manual_label_image: "Cover image",
             btn_add_manual: "Add custom game",
+
+            mode_label: "Ranking mode",
+            mode_exact: "Exact (more clicks)",
+            mode_fast: "Fast (approximate)",
+            click_stats:
+                "Theoretical minimum: {min}. Exact mode ≈ {exact}, fast mode ≈ {fast} comparisons.",
 
             status_enter_url: "Please enter a URL.",
             status_loading_meta: "Loading metadata…",
@@ -795,6 +833,12 @@
             manual_label_image: "Bild (Cover)",
             btn_add_manual: "Eigenes Spiel hinzufügen",
 
+            mode_label: "Ranking-Modus",
+            mode_exact: "Exakt (mehr Klicks)",
+            mode_fast: "Schnell (ungefähr)",
+            click_stats:
+                "Theoretisches Minimum: {min}. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast} Vergleiche.",
+
             status_enter_url: "Bitte gib eine URL ein.",
             status_loading_meta: "Metadaten werden geladen…",
             status_game_added: "Spiel hinzugefügt: {title}",
@@ -831,7 +875,10 @@
     };
 
     const LANG_STORAGE_KEY = "tierlist_tool_lang";
+    const MODE_STORAGE_KEY = "tierlist_tool_mode";
+
     let currentLang = "ru";
+    let rankingMode = "exact";
 
     function tr(key, params) {
         const dict = I18N[currentLang] || I18N.ru;
@@ -876,6 +923,44 @@
         }
     }
 
+    function factorialLog2(n) {
+        let sum = 0;
+        for (let k = 2; k <= n; k++) {
+            sum += Math.log2(k);
+        }
+        return sum;
+    }
+
+    function exactComparisonsEstimate(n) {
+        // unsere Binär-Einfüge-Logik: sum_k ceil(log2(k+1))
+        let res = 0;
+        for (let len = 1; len <= n - 1; len++) {
+            res += Math.ceil(Math.log2(len + 1));
+        }
+        return res;
+    }
+
+    function updateClickStatsDisplay() {
+        const n = games.length;
+        const el = document.getElementById("clickStats");
+        if (!el) return;
+
+        if (n <= 1) {
+            el.textContent = "";
+            return;
+        }
+
+        const min = Math.ceil(factorialLog2(n));
+        const exactEst = exactComparisonsEstimate(n);
+        const fastEst = Math.max(1, Math.round(exactEst * 0.5));
+
+        el.textContent = tr("click_stats", {
+            min,
+            exact: exactEst,
+            fast: fastEst
+        });
+    }
+
     function applyLanguageStaticTexts() {
         const s = I18N[currentLang] || I18N.ru;
 
@@ -914,6 +999,17 @@
         document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
         document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
+
+        document.getElementById("modeLabel").textContent = s.mode_label;
+        const modeSelect = document.getElementById("modeSelect");
+        if (modeSelect) {
+            const optExact = modeSelect.querySelector('option[value="exact"]');
+            const optFast = modeSelect.querySelector('option[value="fast"]');
+            if (optExact) optExact.textContent = s.mode_exact;
+            if (optFast) optFast.textContent = s.mode_fast;
+        }
+
+        updateClickStatsDisplay();
     }
 
     function refreshProgressInfoForCurrentState() {
@@ -957,6 +1053,25 @@
         });
     }
 
+    function initMode() {
+        const sel = document.getElementById("modeSelect");
+        let stored = "exact";
+        try {
+            const tmp = localStorage.getItem(MODE_STORAGE_KEY);
+            if (tmp === "exact" || tmp === "fast") stored = tmp;
+        } catch (e) {}
+        rankingMode = stored;
+        sel.value = stored;
+
+        sel.addEventListener("change", () => {
+            rankingMode = sel.value;
+            try {
+                localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
+            } catch (e) {}
+            updateClickStatsDisplay();
+        });
+    }
+
     // ---------- Zustand ----------
     const games = []; // { id, title, image, url }
     let nextId = 1;
@@ -967,6 +1082,10 @@
     let low = 0, high = 0, mid = 0;
     let compareActive = false;
     let comparisonsDone = 0;
+
+    let comparisonsRunLimit = Infinity;
+    let plannedRunComparisonsExact = 0;
+    let plannedRunComparisonsFast = 0;
 
     const TIER_CONFIG = [
         { label: "S", color: "#f97316" },
@@ -1005,6 +1124,7 @@
         const count = games.length;
         document.getElementById("gameCountHint").textContent = formatGameCount(count);
         document.getElementById("startTierButton").disabled = count < 2;
+        updateClickStatsDisplay();
     }
 
     // Tierlist-Ergebnis komplett zurücksetzen (nur bei "Clear" verwendet)
@@ -1014,6 +1134,9 @@
         currentNewIndex = null;
         comparisonsDone = 0;
         compareActive = false;
+        comparisonsRunLimit = Infinity;
+        plannedRunComparisonsExact = 0;
+        plannedRunComparisonsFast = 0;
 
         document.getElementById("finishedPanel").classList.add("hidden");
         document.getElementById("tierTableSection").classList.add("hidden");
@@ -1084,7 +1207,7 @@
     // EINZELNES SPIEL RELOADEN
     async function reloadGame(index) {
         const g = games[index];
-        if (!g) return;
+        if (!g || !g.url) return;
 
         const addBtn = document.getElementById("addButton");
         const addManyBtn = document.getElementById("addManyButton");
@@ -1432,9 +1555,28 @@
         } else {
             buildPendingNewIndicesIncremental();
             if (!pendingNewIndices.length) {
+                // nichts Neues zu sortieren
                 showStatus(tr("status_multi_fail"), "info");
                 return;
             }
+        }
+
+        // Geplante Vergleiche für diesen Run berechnen
+        const existingLen = sortedIndices.length;
+        const newCount = pendingNewIndices.length;
+        let simLen = existingLen;
+        let runExact = 0;
+        for (let i = 0; i < newCount; i++) {
+            runExact += Math.ceil(Math.log2(Math.max(2, simLen + 1)));
+            simLen++;
+        }
+        plannedRunComparisonsExact = runExact;
+        plannedRunComparisonsFast = Math.max(1, Math.ceil(runExact * 0.5));
+
+        if (rankingMode === "exact") {
+            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsExact;
+        } else {
+            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsFast;
         }
 
         compareActive = true;
@@ -1487,12 +1629,37 @@
         fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
     }
 
+    function fastFinishTierlistPartial() {
+        const extra = [];
+        if (currentNewIndex !== null && !sortedIndices.includes(currentNewIndex)) {
+            extra.push(currentNewIndex);
+        }
+        pendingNewIndices.forEach(i => {
+            if (!sortedIndices.includes(i) && i !== currentNewIndex) extra.push(i);
+        });
+        const uniqueExtra = [...new Set(extra)];
+        sortedIndices = sortedIndices.concat(uniqueExtra);
+        pendingNewIndices = [];
+        currentNewIndex = null;
+        finishTierlist();
+    }
+
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        high = mid;
+        low = mid;
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
+
+        if (
+            rankingMode === "fast" &&
+            comparisonsDone >= comparisonsRunLimit &&
+            (pendingNewIndices.length > 0 || currentNewIndex !== null)
+        ) {
+            fastFinishTierlistPartial();
+            return;
+        }
+
         showNextComparisonStep();
     }
 
@@ -1502,6 +1669,16 @@
         low = mid + 1;
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
+
+        if (
+            rankingMode === "fast" &&
+            comparisonsDone >= comparisonsRunLimit &&
+            (pendingNewIndices.length > 0 || currentNewIndex !== null)
+        ) {
+            fastFinishTierlistPartial();
+            return;
+        }
+
         showNextComparisonStep();
     }
 
@@ -1818,11 +1995,13 @@
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
-    // Beim Laden: Sprache + Zustand wiederherstellen
+    // Beim Laden: Sprache + Modus + Zustand wiederherstellen
     window.addEventListener("load", () => {
         initLanguage();
+        initMode();
         loadState();
         refreshProgressInfoForCurrentState();
+        updateClickStatsDisplay();
     });
 </script>
 </body>
