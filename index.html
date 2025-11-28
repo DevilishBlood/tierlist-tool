@@ -528,6 +528,22 @@
             </span>
         </div>
 
+        <!-- Manueller Eintrag -->
+        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+            <div class="section-title" style="margin-bottom: 4px;">
+                <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
+            </div>
+            <label for="manualTitle" id="lbl_manual_name">Название игры</label>
+            <input id="manualTitle" type="text">
+            <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
+            <input id="manualImage" type="file" accept="image/*">
+            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                <button id="addManualButton" type="button" class="btn-secondary">
+                    Добавить свою игру
+                </button>
+            </div>
+        </div>
+
         <div id="status" class="status hidden"></div>
 
         <div style="margin-top: 28px;">
@@ -638,6 +654,11 @@
             overlay_right_label: "Правый выбор",
             overlay_cancel: "Отменить",
 
+            manual_section_title: "Своя игра (ручной ввод)",
+            manual_label_name: "Название игры",
+            manual_label_image: "Картинка (обложка)",
+            btn_add_manual: "Добавить свою игру",
+
             status_enter_url: "Пожалуйста, введите URL.",
             status_loading_meta: "Загружаю метаданные…",
             status_game_added: "Игра добавлена: {title}",
@@ -650,6 +671,12 @@
             status_update_game: "Обновляю игру: {title}",
             status_update_game_ok: "Игра обновлена: {title}",
             status_update_game_fail: "Не удалось обновить игру: {error}",
+
+            status_manual_need_title: "Пожалуйста, введите название игры.",
+            status_manual_need_image: "Пожалуйста, выберите картинку.",
+            status_manual_loading: "Добавляю свою игру…",
+            status_manual_added: "Игра добавлена: {title}",
+            status_manual_file_error: "Не удалось прочитать файл картинки.",
 
             progress_not_started: "Ещё не запущено",
             progress_running: "Идёт сравнение… ({count})",
@@ -695,6 +722,11 @@
             overlay_right_label: "Right choice",
             overlay_cancel: "Cancel",
 
+            manual_section_title: "Custom game (manual)",
+            manual_label_name: "Game title",
+            manual_label_image: "Cover image",
+            btn_add_manual: "Add custom game",
+
             status_enter_url: "Please enter a URL.",
             status_loading_meta: "Loading metadata…",
             status_game_added: "Game added: {title}",
@@ -707,6 +739,12 @@
             status_update_game: "Updating game: {title}",
             status_update_game_ok: "Game updated: {title}",
             status_update_game_fail: "Failed to update game: {error}",
+
+            status_manual_need_title: "Please enter a game title.",
+            status_manual_need_image: "Please choose an image.",
+            status_manual_loading: "Adding custom game…",
+            status_manual_added: "Custom game added: {title}",
+            status_manual_file_error: "Failed to read image file.",
 
             progress_not_started: "Not started yet",
             progress_running: "Comparing… ({count})",
@@ -752,6 +790,11 @@
             overlay_right_label: "Rechte Auswahl",
             overlay_cancel: "Abbrechen",
 
+            manual_section_title: "Eigenes Spiel (manuell)",
+            manual_label_name: "Spieltitel",
+            manual_label_image: "Bild (Cover)",
+            btn_add_manual: "Eigenes Spiel hinzufügen",
+
             status_enter_url: "Bitte gib eine URL ein.",
             status_loading_meta: "Metadaten werden geladen…",
             status_game_added: "Spiel hinzugefügt: {title}",
@@ -764,6 +807,12 @@
             status_update_game: "Spiel wird aktualisiert: {title}",
             status_update_game_ok: "Spiel aktualisiert: {title}",
             status_update_game_fail: "Spiel konnte nicht aktualisiert werden: {error}",
+
+            status_manual_need_title: "Bitte gib einen Spieltitel ein.",
+            status_manual_need_image: "Bitte wähle ein Bild aus.",
+            status_manual_loading: "Eigenes Spiel wird hinzugefügt…",
+            status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
+            status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
 
             progress_not_started: "Noch nicht gestartet",
             progress_running: "Vergleich läuft… ({count})",
@@ -860,11 +909,15 @@
         document.getElementById("lbl_left_choice").textContent = s.overlay_left_label;
         document.getElementById("lbl_right_choice").textContent = s.overlay_right_label;
         document.getElementById("fsCancel").textContent = s.overlay_cancel;
+
+        document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
+        document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
+        document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
+        document.getElementById("addManualButton").textContent = s.btn_add_manual;
     }
 
     function refreshProgressInfoForCurrentState() {
         const progressInfo = document.getElementById("progressInfo");
-        // wir entscheiden nur anhand globaler Variablen weiter unten
         if (sortedIndices.length > 0 && !compareActive) {
             progressInfo.textContent = tr("progress_finished", {
                 count: formatComparisonCount(comparisonsDone || 0)
@@ -899,7 +952,6 @@
             applyLanguageStaticTexts();
             updateGameCount();
             refreshProgressInfoForCurrentState();
-            // Statusmeldung nicht zwangsläufig anfassen, damit der Text erhalten bleibt
             document.getElementById("fsProgress").textContent =
                 formatComparisonCount(comparisonsDone || 0);
         });
@@ -1029,7 +1081,7 @@
         saveState();
     }
 
-    // EINZELNES SPIЕЛ RELOADEN
+    // EINZELNES SPIEL RELOADEN
     async function reloadGame(index) {
         const g = games[index];
         if (!g) return;
@@ -1205,6 +1257,64 @@
         if (addManyBtn) addManyBtn.disabled = false;
     }
 
+    // MANUELLES SPIEL HINZUFÜGEN
+    function addManualGame() {
+        const titleInput = document.getElementById("manualTitle");
+        const fileInput = document.getElementById("manualImage");
+        const rawTitle = (titleInput.value || "").trim();
+        const file = fileInput.files[0];
+
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+        const addManualBtn = document.getElementById("addManualButton");
+
+        if (!rawTitle) {
+            showStatus(tr("status_manual_need_title"), "error");
+            return;
+        }
+        if (!file) {
+            showStatus(tr("status_manual_need_image"), "error");
+            return;
+        }
+
+        hideStatus();
+        showStatus(tr("status_manual_loading"), "info");
+
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
+        addManualBtn.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+
+            games.push({
+                id: nextId++,
+                title: rawTitle,
+                image: dataUrl,
+                url: ""
+            });
+
+            renderGameList();
+            showStatus(tr("status_manual_added", { title: rawTitle }), "success");
+            titleInput.value = "";
+            fileInput.value = "";
+            saveState();
+
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+            addManualBtn.disabled = false;
+        };
+        reader.onerror = (e) => {
+            console.error("FileReader error", e);
+            showStatus(tr("status_manual_file_error"), "error");
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+            addManualBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+
     // MEHRERE URLS
     async function addGamesFromMultiInput() {
         const multiEl = document.getElementById("multiInput");
@@ -1373,8 +1483,7 @@
         fsImgRight.alt = existingGame.title || "";
         fsNameRight.textContent = existingGame.title || "(no title)";
 
-        fsStatus.textContent =
-            tr("overlay_status_start"); // kurzer Hinweistext ist ok
+        fsStatus.textContent = tr("overlay_status_start");
         fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
     }
 
@@ -1442,7 +1551,7 @@
 
             const badge = document.createElement("div");
             badge.className = "rank-badge";
-            badge.textContent = TIER_CONFIG ? (getTierLabelByIndex(i, total) + "-tier") : "";
+            badge.textContent = getTierLabelByIndex(i, total) + "-tier";
 
             row.appendChild(n);
             row.appendChild(t);
@@ -1697,6 +1806,7 @@
 
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
+    document.getElementById("addManualButton").addEventListener("click", addManualGame);
     document.getElementById("clearButton").addEventListener("click", clearGames);
     document.getElementById("startTierButton").addEventListener("click", startTierlist);
     document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
