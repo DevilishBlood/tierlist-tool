@@ -932,7 +932,6 @@
     }
 
     function exactComparisonsEstimate(n) {
-        // unsere Binär-Einfüge-Logik: sum_k ceil(log2(k+1))
         let res = 0;
         for (let len = 1; len <= n - 1; len++) {
             res += Math.ceil(Math.log2(len + 1));
@@ -1127,7 +1126,6 @@
         updateClickStatsDisplay();
     }
 
-    // Tierlist-Ergebnis komplett zurücksetzen (nur bei "Clear" verwendet)
     function resetTierResults() {
         sortedIndices = [];
         pendingNewIndices = [];
@@ -1145,7 +1143,6 @@
         document.getElementById("progressInfo").textContent = tr("progress_not_started");
     }
 
-    // EINZELNES SPIEL LÖSCHEN – Ranking bleibt, nur angepasst
     function deleteGame(index) {
         if (index < 0 || index >= games.length) return;
 
@@ -1204,7 +1201,6 @@
         saveState();
     }
 
-    // EINZELNES SPIEL RELOADEN
     async function reloadGame(index) {
         const g = games[index];
         if (!g || !g.url) return;
@@ -1314,7 +1310,6 @@
         updateGameCount();
     }
 
-    // Hilfsfunktion: eine URL laden und als Spiel hinzufügen
     async function fetchAndAddGame(rawUrl) {
         let finalUrl = (rawUrl || "").trim();
         if (!finalUrl) {
@@ -1350,7 +1345,6 @@
         }
     }
 
-    // EINZELNE URL
     async function addGameFromUrl() {
         const inputEl = document.getElementById("urlInput");
         const rawUrl = inputEl.value.trim();
@@ -1380,7 +1374,6 @@
         if (addManyBtn) addManyBtn.disabled = false;
     }
 
-    // MANUELLES SPIEL HINZUFÜGEN
     function addManualGame() {
         const titleInput = document.getElementById("manualTitle");
         const fileInput = document.getElementById("manualImage");
@@ -1438,7 +1431,6 @@
         reader.readAsDataURL(file);
     }
 
-    // MEHRERE URLS
     async function addGamesFromMultiInput() {
         const multiEl = document.getElementById("multiInput");
         const text = multiEl.value;
@@ -1500,7 +1492,6 @@
         saveState();
     }
 
-    // ---------- Vollbild-Tierlist ----------
     const mainContainer = document.getElementById("mainContainer");
     const overlay = document.getElementById("compareOverlay");
     const fsStatus = document.getElementById("fsStatus");
@@ -1555,13 +1546,11 @@
         } else {
             buildPendingNewIndicesIncremental();
             if (!pendingNewIndices.length) {
-                // nichts Neues zu sortieren
                 showStatus(tr("status_multi_fail"), "info");
                 return;
             }
         }
 
-        // Geplante Vergleiche für diesen Run berechnen
         const existingLen = sortedIndices.length;
         const newCount = pendingNewIndices.length;
         let simLen = existingLen;
@@ -1647,7 +1636,9 @@
     function chooseLeft() {
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
-        low = mid;
+        // FIX: beim linken Klick obere Grenze verschieben (high = mid),
+        // damit die binäre Suche korrekt verläuft
+        high = mid;
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
         saveState();
 
@@ -1840,7 +1831,6 @@
         }
     }
 
-    // ---------- Speichern / Laden ----------
     function saveState() {
         try {
             const finishedPanelHidden = document
@@ -1979,8 +1969,6 @@
         }
     }
 
-    // ---------- Events ----------
-
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("addManualButton").addEventListener("click", addManualGame);
@@ -1995,7 +1983,6 @@
     document.getElementById("fsCardRight").addEventListener("click", chooseRight);
     document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
-    // Beim Laden: Sprache + Modus + Zustand wiederherstellen
     window.addEventListener("load", () => {
         initLanguage();
         initMode();
