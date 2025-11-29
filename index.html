@@ -581,8 +581,7 @@
                 <span id="share_title">Share games (without ranking)</span>
             </div>
             <span class="small-hint" id="share_hint">
-                Generate a code and send it to someone. On import only the games are loaded,
-                the other person creates their own ranking.
+                Generate a code and send it to someone. On import only the games are loaded.
             </span>
             <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
                 <button id="btnExportGames" type="button" class="btn-secondary">
@@ -721,7 +720,7 @@
             tierlist_not_created: "Сначала создай тир-лист.",
             tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
             share_title: "Шеринг списка игр (без ранкинга)",
-            share_hint: "Создай код и отправь его другу. При импорте загружаются только игры, а тир-лист он сделает сам.",
+            share_hint: "Создай код и отправь его другу. При импорте загружаются только игры.",
             share_no_games: "Нет игр для экспорта.",
             share_export_prompt: "Скопируй этот код и отправь другу:",
             share_import_prompt: "Вставьте сюда код списка игр:",
@@ -797,7 +796,7 @@
             tierlist_not_created: "Create the tierlist first.",
             tierlist_save_error: "Could not save the tierlist image.",
             share_title: "Share games (without ranking)",
-            share_hint: "Generate a code and send it to someone. On import only the games are loaded, the other person creates their own ranking.",
+            share_hint: "Generate a code and send it to someone. On import only the games are loaded.",
             share_no_games: "There are no games to export.",
             share_export_prompt: "Copy this code and send it to your friend:",
             share_import_prompt: "Paste the games export code here:",
@@ -873,7 +872,7 @@
             tierlist_not_created: "Erstelle zuerst eine Tierlist.",
             tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
             share_title: "Spiele teilen (ohne Ranking)",
-            share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen, das Ranking muss die andere Person selbst neu machen.",
+            share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.",
             share_no_games: "Es gibt keine Spiele zum Exportieren.",
             share_export_prompt: "Kopiere diesen Code und schicke ihn deinem Freund:",
             share_import_prompt: "Füge hier den Spiele-Exportcode ein:",
@@ -2016,34 +2015,46 @@
     }
 
     function importGamesOnly() {
-        let base64 = prompt(tr("share_import_prompt"));
-        if (!base64) return;
+        let code = prompt(tr("share_import_prompt"));
+        if (!code) return;
 
-        // 1) Trim & Whitespaces entfernen
-        base64 = base64.trim().replace(/[\r\n\t ]+/g, "");
+        code = code.trim();
 
-        // 2) URL-safe Varianten -> normales Base64
-        base64 = base64.replace(/-/g, "+").replace(/_/g, "/");
+        let jsonStr = null;
 
-        // 3) Wenn Padding fehlt, auffüllen
-        const mod = base64.length % 4;
-        if (mod === 2) base64 += "==";
-        else if (mod === 3) base64 += "=";
-        else if (mod === 1) {
-            showStatus(tr("share_import_fail", { error: "Code length is invalid." }), "error");
-            return;
-        }
+        try {
+            let base64 = code;
 
-        // 4) Nur erlaubte Base64-Zeichen prüfen
-        if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
-            showStatus(tr("share_import_fail", { error: "Code contains invalid characters." }), "error");
-            return;
+            // Whitespace entfernen
+            base64 = base64.replace(/[\r\n\t ]+/g, "");
+
+            // URL-safe -> normales Base64
+            base64 = base64.replace(/-/g, "+").replace(/_/g, "/");
+
+            // Nicht-ASCII (z.B. Zero-Width-Space) entfernen
+            base64 = base64.replace(/[^\x00-\x7F]/g, "");
+
+            // Nur Base64-Zeichen behalten
+            base64 = base64.replace(/[^A-Za-z0-9+/=]/g, "");
+
+            if (base64.length === 0) {
+                throw new Error("empty code");
+            }
+
+            const mod = base64.length % 4;
+            if (mod === 1) throw new Error("invalid length");
+            if (mod === 2) base64 += "==";
+            else if (mod === 3) base64 += "=";
+
+            const binary = atob(base64);
+            jsonStr = decodeURIComponent(escape(binary));
+        } catch (e) {
+            // Fallback: direkt als JSON versuchen
+            jsonStr = code;
         }
 
         try {
-            const binary = atob(base64);
-            const json   = decodeURIComponent(escape(binary));
-            const data   = JSON.parse(json);
+            const data = JSON.parse(jsonStr);
 
             if (!data.games || !Array.isArray(data.games)) {
                 throw new Error("Invalid code format.");
