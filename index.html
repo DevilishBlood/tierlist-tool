@@ -449,6 +449,9 @@
         .compare-name {
             font-size: 1.02rem;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .overlay-footer {
@@ -736,8 +739,13 @@
 
         <!-- Manueller Tierlist-Modus (eigene Ansicht) -->
         <div id="manualModePanel" class="hidden">
-            <div class="small-hint" id="manual_hint" style="margin-bottom:12px;">
-                Перетаскивай обложки игр между тирами, как на tiermaker.
+            <div class="tier-table-header" style="margin-bottom:12px;">
+                <span class="small-hint" id="manual_hint">
+                    Перетаскивай обложки игр между тирами, как на tiermaker.
+                </span>
+                <button id="downloadManualTierImageButton" type="button" class="btn-secondary">
+                    Скачать ручной тир-лист
+                </button>
             </div>
             <div class="manual-page-grid">
                 <!-- Links: Unassigned / komplette Liste -->
@@ -872,6 +880,7 @@
             manual_hint: "Перетаскивай обложки игр между тирами, как на tiermaker.",
             manual_unassigned: "Без тира",
             manual_reset_button: "Сбросить ручной тир-лист",
+            btn_download_manual_image: "Скачать ручной тир-лист как картинку",
             // View toggle
             view_title: "Тир-лист",
             view_auto: "Авто",
@@ -958,6 +967,7 @@
             manual_hint: "Drag game covers between tiers, like on tiermaker.",
             manual_unassigned: "Unassigned",
             manual_reset_button: "Reset manual tierlist",
+            btn_download_manual_image: "Download manual tierlist as image",
             // View toggle
             view_title: "Tierlist",
             view_auto: "Auto",
@@ -1044,6 +1054,7 @@
             manual_hint: "Ziehe die Spielcover zwischen den Tiers hin und her – wie bei tiermaker.",
             manual_unassigned: "Ohne Tier",
             manual_reset_button: "Manuelle Tierlist zurücksetzen",
+            btn_download_manual_image: "Manuelle Tierlist als Bild herunterladen",
             // View toggle
             view_title: "Tierlist",
             view_auto: "Auto",
@@ -1066,6 +1077,12 @@
             }
         }
         return s;
+    }
+
+    function shortenTitle(str, maxLen) {
+        if (!str) return "";
+        if (str.length <= maxLen) return str;
+        return str.slice(0, maxLen - 1) + "…";
     }
 
     function formatGameCount(count) {
@@ -1183,6 +1200,7 @@
         document.getElementById("manual_hint").textContent = s.manual_hint;
         document.getElementById("manual_left_title").textContent = s.manual_title;
         document.getElementById("manualResetButton").textContent = s.manual_reset_button;
+        document.getElementById("downloadManualTierImageButton").textContent = s.btn_download_manual_image;
         document.getElementById("view_title").textContent = s.view_title;
         document.getElementById("btnAutoView").textContent = s.view_auto;
         document.getElementById("btnManualView").textContent = s.view_manual;
@@ -1530,7 +1548,7 @@
 
             const title = document.createElement("div");
             title.className = "game-title";
-            title.textContent = g.title || "(no title)";
+            title.textContent = shortenTitle(g.title || "(no title)", 60);
 
             const url = document.createElement("div");
             url.className = "game-url";
@@ -1876,11 +1894,11 @@
 
         fsImgLeft.src = newGame.image || "";
         fsImgLeft.alt = newGame.title || "";
-        fsNameLeft.textContent = newGame.title || "(no title)";
+        fsNameLeft.textContent = shortenTitle(newGame.title || "(no title)", 40);
 
         fsImgRight.src = existingGame.image || "";
         fsImgRight.alt = existingGame.title || "";
-        fsNameRight.textContent = existingGame.title || "(no title)";
+        fsNameRight.textContent = shortenTitle(existingGame.title || "(no title)", 40);
 
         fsStatus.textContent = tr("overlay_status_start");
         fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
@@ -1981,7 +1999,7 @@
 
             const t = document.createElement("div");
             t.className = "rank-title";
-            t.textContent = g.title;
+            t.textContent = shortenTitle(g.title, 80);
 
             const badge = document.createElement("div");
             badge.className = "rank-badge";
@@ -2074,6 +2092,32 @@
 
             const link = document.createElement("a");
             link.download = "tierlist.png";
+            link.href = canvas.toDataURL("image/png");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error(e);
+            alert(tr("tierlist_save_error"));
+        }
+    }
+
+    async function downloadManualTierImage() {
+        const wrapper = document.getElementById("manualRightWrapper");
+        if (!wrapper || !wrapper.children.length) {
+            alert(tr("tierlist_not_created"));
+            return;
+        }
+
+        try {
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: "#020617",
+                scale: 2,
+                useCORS: true
+            });
+
+            const link = document.createElement("a");
+            link.download = "manual_tierlist.png";
             link.href = canvas.toDataURL("image/png");
             document.body.appendChild(link);
             link.click();
@@ -2430,7 +2474,7 @@
 
                 const title = document.createElement("div");
                 title.className = "manual-item-title";
-                title.textContent = g.title || "(no title)";
+                title.textContent = shortenTitle(g.title || "(no title)", 22);
 
                 item.appendChild(img);
                 item.appendChild(title);
@@ -2524,7 +2568,7 @@
 
                     const title = document.createElement("div");
                     title.className = "manual-item-title";
-                    title.textContent = g.title || "(no title)";
+                    title.textContent = shortenTitle(g.title || "(no title)", 22);
 
                     item.appendChild(img);
                     item.appendChild(title);
@@ -2570,6 +2614,7 @@
     document.getElementById("clearButton").addEventListener("click", clearGames);
     document.getElementById("startTierButton").addEventListener("click", startTierlist);
     document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
+    document.getElementById("downloadManualTierImageButton").addEventListener("click", downloadManualTierImage);
     document.getElementById("urlInput").addEventListener("keydown", e => {
         if (e.key === "Enter") addGameFromUrl();
     });
