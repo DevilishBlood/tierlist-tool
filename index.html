@@ -726,7 +726,10 @@
             share_export_prompt: "Скопируй этот код и отправь другу:",
             share_import_prompt: "Вставьте сюда код списка игр:",
             share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
-            share_import_fail: "Импорт не удался: {error}"
+            share_import_fail: "Импорт не удался: {error}",
+            btn_start_tier: "Начать тир-лист",
+            btn_export_games: "Создать код списка игр",
+            btn_import_games: "Вставить код списка игр"
         },
         en: {
             page_title: "Tierlist by Game Links",
@@ -799,7 +802,10 @@
             share_export_prompt: "Copy this code and send it to your friend:",
             share_import_prompt: "Paste the games export code here:",
             share_import_success: "Games imported successfully. Ranking has been reset.",
-            share_import_fail: "Import failed: {error}"
+            share_import_fail: "Import failed: {error}",
+            btn_start_tier: "Start tierlist",
+            btn_export_games: "Create games export code",
+            btn_import_games: "Paste games export code"
         },
         de: {
             page_title: "Tierlist aus Spiele-Links",
@@ -872,7 +878,10 @@
             share_export_prompt: "Kopiere diesen Code und schicke ihn deinem Freund:",
             share_import_prompt: "Füge hier den Spiele-Exportcode ein:",
             share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
-            share_import_fail: "Import fehlgeschlagen: {error}"
+            share_import_fail: "Import fehlgeschlagen: {error}",
+            btn_start_tier: "Tierlist starten",
+            btn_export_games: "Spiele-Exportcode erstellen",
+            btn_import_games: "Spiele-Exportcode einfügen"
         }
     };
 
@@ -991,6 +1000,7 @@
         document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
         document.getElementById("modeLabel").textContent = s.mode_label;
+        document.getElementById("startTierButton").textContent = s.btn_start_tier;
 
         const modeSelect = document.getElementById("modeSelect");
         const optExact = modeSelect.querySelector('option[value="exact"]');
@@ -1000,6 +1010,8 @@
 
         document.getElementById("share_title").textContent = s.share_title;
         document.getElementById("share_hint").textContent = s.share_hint;
+        document.getElementById("btnExportGames").textContent = s.btn_export_games;
+        document.getElementById("btnImportGames").textContent = s.btn_import_games;
 
         updateClickStatsDisplay();
     }
@@ -1631,7 +1643,6 @@
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
 
-        // neue (linke) ist besser -> im linken Bereich weiter suchen
         high = mid;
 
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
@@ -1653,7 +1664,6 @@
         if (!compareActive || currentNewIndex === null) return;
         comparisonsDone++;
 
-        // rechte (existierende) ist besser -> im rechten Bereich weiter suchen
         low = mid + 1;
 
         fsProgress.textContent = formatComparisonCount(comparisonsDone);
@@ -2009,10 +2019,24 @@
         let base64 = prompt(tr("share_import_prompt"));
         if (!base64) return;
 
-        // Trim + alle Nicht-Base64-Zeichen entfernen
-        base64 = base64.trim().replace(/[^A-Za-z0-9+/=]/g, "");
-        if (!base64) {
-            showStatus(tr("share_import_fail", { error: "Empty or invalid code" }), "error");
+        // 1) Trim & Whitespaces entfernen
+        base64 = base64.trim().replace(/[\r\n\t ]+/g, "");
+
+        // 2) URL-safe Varianten -> normales Base64
+        base64 = base64.replace(/-/g, "+").replace(/_/g, "/");
+
+        // 3) Wenn Padding fehlt, auffüllen
+        const mod = base64.length % 4;
+        if (mod === 2) base64 += "==";
+        else if (mod === 3) base64 += "=";
+        else if (mod === 1) {
+            showStatus(tr("share_import_fail", { error: "Code length is invalid." }), "error");
+            return;
+        }
+
+        // 4) Nur erlaubte Base64-Zeichen prüfen
+        if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
+            showStatus(tr("share_import_fail", { error: "Code contains invalid characters." }), "error");
             return;
         }
 
