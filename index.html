@@ -32,6 +32,11 @@
             gap: 40px;
         }
 
+        /* Wenn nur die rechte Seite angezeigt wird (Manuell) */
+        .container.single-wide {
+            grid-template-columns: 1fr;
+        }
+
         @media (max-width: 900px) {
             .container {
                 grid-template-columns: 1fr;
@@ -587,7 +592,7 @@
 <body>
 <div class="container" id="mainContainer">
     <!-- Linke Seite -->
-    <div>
+    <div id="leftColumn">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:6px;">
             <h1 id="txt_title">Тир-лист по ссылкам на игры</h1>
             <div class="lang-select-wrapper">
@@ -692,7 +697,7 @@
     </div>
 
     <!-- Rechte Seite -->
-    <div>
+    <div id="rightColumn">
         <!-- View-Toggle für Auto / Manuell -->
         <div class="section-title">
             <span id="view_title">Тир-лист</span>
@@ -2539,6 +2544,10 @@
         document.getElementById("manualModePanel").classList.add("hidden");
         document.getElementById("btnAutoView").classList.add("active");
         document.getElementById("btnManualView").classList.remove("active");
+
+        // Linke Spalte wieder anzeigen, Container normal (2 Spalten)
+        document.getElementById("leftColumn").classList.remove("hidden");
+        mainContainer.classList.remove("single-wide");
     }
 
     function showManualView() {
@@ -2546,6 +2555,11 @@
         document.getElementById("manualModePanel").classList.remove("hidden");
         document.getElementById("btnAutoView").classList.remove("active");
         document.getElementById("btnManualView").classList.add("active");
+
+        // Linke Spalte ausblenden, rechte über volle Breite
+        document.getElementById("leftColumn").classList.add("hidden");
+        mainContainer.classList.add("single-wide");
+
         renderManualTierlist();
     }
 
