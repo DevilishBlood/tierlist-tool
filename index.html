@@ -714,10 +714,10 @@ const I18N = {
         multi_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
         share_export_btn: "Экспорт списка игр",
         share_import_btn: "Импорт списка игр",
-        share_export_prompt: "Скопируй этот код и отправь другу:",
-        share_export_done: "Сгенерирован код для обмена. Он показан во всплывающем окне.",
+        share_export_prompt: "Скопируй этот длинный JSON-код (можно сохранить как файл или GitHub Gist):",
+        share_export_done: "Код для обмена сгенерирован.",
         share_export_empty: "Нет игр для экспорта.",
-        share_import_prompt: "Вставь сюда код, который тебе прислали:",
+        share_import_prompt: "Вставь JSON-код ИЛИ URL GitHub Gist (raw):",
         share_import_ok: "Список игр импортирован: {count}",
         share_import_fail: "Импорт не удался: {error}",
         import_invalid: "Невалидный код для импорта."
@@ -775,12 +775,12 @@ const I18N = {
         status_reload_ok: "Game updated: {title}",
         status_reload_fail: "Could not update game: {error}",
         multi_no_links: "No links to add. Enter at least one line.",
-        share_export_btn: "Export games list",
-        share_import_btn: "Import games list",
-        share_export_prompt: "Copy this code and send it to a friend:",
-        share_export_done: "Share code generated. It is shown in the popup.",
+        share_export_btn: "Export game list",
+        share_import_btn: "Import game list",
+        share_export_prompt: "Copy this long JSON code (you can save it as file or GitHub Gist):",
+        share_export_done: "Share code generated.",
         share_export_empty: "No games to export.",
-        share_import_prompt: "Paste the code you received:",
+        share_import_prompt: "Paste JSON code OR GitHub Gist URL (raw):",
         share_import_ok: "Games imported: {count}",
         share_import_fail: "Import failed: {error}",
         import_invalid: "Invalid import code."
@@ -840,10 +840,10 @@ const I18N = {
         multi_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
         share_export_btn: "Spiele-Liste exportieren",
         share_import_btn: "Spiele-Liste importieren",
-        share_export_prompt: "Diesen Code kopieren und an eine andere Person schicken:",
-        share_export_done: "Teilen-Code wurde erzeugt und im Popup angezeigt.",
+        share_export_prompt: "Diesen langen JSON-Code kopieren (z.B. als Datei oder GitHub Gist speichern):",
+        share_export_done: "Code zum Teilen wurde erzeugt.",
         share_export_empty: "Keine Spiele zum Exportieren.",
-        share_import_prompt: "Füge den erhaltenen Code hier ein:",
+        share_import_prompt: "JSON-Code ODER GitHub-Gist-URL (raw) einfügen:",
         share_import_ok: "Spiele importiert: {count}",
         share_import_fail: "Import fehlgeschlagen: {error}",
         import_invalid: "Ungültiger Import-Code."
@@ -1142,7 +1142,7 @@ async function addManualGame() {
     let image = "";
     try {
         if (file) {
-            image = await readFileAsDataURL(file); // DataURL
+            image = await readFileAsDataURL(file);
         } else if (imgUrl) {
             image = imgUrl;
         }
@@ -1486,7 +1486,7 @@ async function downloadTierImage() {
     }
 }
 
-/* ---------- Export / Import (nur Spieleliste) ---------- */
+/* ---------- Export / Import (langen JSON + optional Gist) ---------- */
 
 function exportGamesOnly() {
     if (!games.length) {
@@ -1496,29 +1496,39 @@ function exportGamesOnly() {
     const data = {
         games: games.map(g => ({ title: g.title, image: g.image, url: g.url }))
     };
-    const json = JSON.stringify(data);
-    const b64 = btoa(unescape(encodeURIComponent(json)));
-
-    const code = b64;
-    window.prompt(tr("share_export_prompt"), code);
+    const json = JSON.stringify(data, null, 2); // schön formatiert
+    window.prompt(tr("share_export_prompt"), json);
     showStatus(tr("share_export_done"), "success");
 }
 
-function importGamesOnly() {
+async function importGamesOnly() {
     const input = window.prompt(tr("share_import_prompt"), "");
     if (!input) return;
 
-    let code = input.trim();
+    const trimmed = input.trim();
     try {
         let jsonStr;
 
-        if (code[0] === "{" || code[0] === "[") {
-            jsonStr = code;
+        if (/^https?:\/\//i.test(trimmed)) {
+            // URL – ggf. Gist in RAW umwandeln
+            let url = trimmed;
+            const gistMatch = url.match(/^https?:\/\/gist\.github\.com\/([^\/]+)\/([0-9a-fA-F]+)(?:\/.*)?$/);
+            if (gistMatch) {
+                const user = gistMatch[1];
+                const id = gistMatch[2];
+                url = `https://gist.githubusercontent.com/${user}/${id}/raw`;
+            }
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            jsonStr = await resp.text();
+        } else if (trimmed[0] === "{" || trimmed[0] === "[") {
+            // direktes JSON
+            jsonStr = trimmed;
         } else {
-            let base64 = code.replace(/[\s\r\n]+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+            // Fallback: alter Base64-Code
+            let base64 = trimmed.replace(/[\s\r\n]+/g, "").replace(/-/g, "+").replace(/_/g, "/");
             const mod = base64.length % 4;
             if (mod) base64 += "====".slice(mod);
-
             try {
                 jsonStr = decodeURIComponent(escape(atob(base64)));
             } catch (e) {
@@ -1742,7 +1752,9 @@ document.getElementById("manualAddButton").addEventListener("click", () => {
 });
 
 document.getElementById("exportGamesButton").addEventListener("click", exportGamesOnly);
-document.getElementById("importGamesButton").addEventListener("click", importGamesOnly);
+document.getElementById("importGamesButton").addEventListener("click", () => {
+    importGamesOnly().catch(console.error);
+});
 
 /* ---------- Init ---------- */
 
