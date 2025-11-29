@@ -535,19 +535,30 @@
             </span>
         </div>
 
-        <!-- Manueller Eintrag -->
+        <!-- Manueller Eintrag (aufklappbar) -->
         <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
-            <div class="section-title" style="margin-bottom: 4px;">
+            <div class="section-title" style="margin-bottom: 4px; cursor:pointer;" id="manualToggle">
                 <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
+                <span id="manualToggleIcon">▼</span>
             </div>
-            <label for="manualTitle" id="lbl_manual_name">Название игры</label>
-            <input id="manualTitle" type="text">
-            <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
-            <input id="manualImage" type="file" accept="image/*">
-            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                <button id="addManualButton" type="button" class="btn-secondary">
-                    Добавить свою игру
-                </button>
+
+            <div id="manualBody" class="hidden">
+                <label for="manualTitle" id="lbl_manual_name">Название игры</label>
+                <input id="manualTitle" type="text">
+
+                <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
+                <input id="manualImage" type="file" accept="image/*">
+
+                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">
+                    URL картинки (опционально)
+                </label>
+                <input id="manualImageUrl" type="text" placeholder="https://...">
+
+                <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                    <button id="addManualButton" type="button" class="btn-secondary">
+                        Добавить свою игру
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -688,6 +699,8 @@
             manual_section_title: "Своя игра (ручной ввод)",
             manual_label_name: "Название игры",
             manual_label_image: "Картинка (обложка)",
+            manual_label_image_url: "URL картинки (опционально)",
+            manual_placeholder_image_url: "https://адрес_картинки...",
             btn_add_manual: "Добавить свою игру",
             mode_label: "Режим ранжирования",
             mode_exact: "Точный (больше кликов)",
@@ -765,6 +778,8 @@
             manual_section_title: "Custom game (manual input)",
             manual_label_name: "Game title",
             manual_label_image: "Cover image",
+            manual_label_image_url: "Image URL (optional)",
+            manual_placeholder_image_url: "https://image_address...",
             btn_add_manual: "Add custom game",
             mode_label: "Ranking mode",
             mode_exact: "Exact (more clicks)",
@@ -842,6 +857,8 @@
             manual_section_title: "Eigenes Spiel (manuell)",
             manual_label_name: "Spielname",
             manual_label_image: "Cover-Bild",
+            manual_label_image_url: "Bild-URL (optional)",
+            manual_placeholder_image_url: "https://bild_adresse...",
             btn_add_manual: "Eigenes Spiel hinzufügen",
             mode_label: "Ranking-Modus",
             mode_exact: "Genau (mehr Klicks)",
@@ -1002,6 +1019,8 @@
         document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
         document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
         document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
+        document.getElementById("lbl_manual_image_url").textContent = s.manual_label_image_url;
+        document.getElementById("manualImageUrl").placeholder = s.manual_placeholder_image_url;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
         document.getElementById("modeLabel").textContent = s.mode_label;
 
@@ -1077,6 +1096,23 @@
                 localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
             } catch (e) {}
             updateClickStatsDisplay();
+        });
+    }
+
+    function initManualToggle() {
+        const toggle = document.getElementById("manualToggle");
+        const body = document.getElementById("manualBody");
+        const icon = document.getElementById("manualToggleIcon");
+        let open = false;
+        toggle.addEventListener("click", () => {
+            open = !open;
+            if (open) {
+                body.classList.remove("hidden");
+                icon.textContent = "▲";
+            } else {
+                body.classList.add("hidden");
+                icon.textContent = "▼";
+            }
         });
     }
 
@@ -1382,8 +1418,11 @@
     function addManualGame() {
         const titleInput = document.getElementById("manualTitle");
         const fileInput = document.getElementById("manualImage");
+        const urlInput = document.getElementById("manualImageUrl");
+
         const rawTitle = (titleInput.value || "").trim();
         const file = fileInput.files[0];
+        const urlVal = (urlInput.value || "").trim();
 
         const addBtn = document.getElementById("addButton");
         const addManyBtn = document.getElementById("addManyButton");
@@ -1393,47 +1432,70 @@
             showStatus(tr("status_manual_need_title"), "error");
             return;
         }
-        if (!file) {
+        if (!file && !urlVal) {
             showStatus(tr("status_manual_need_image"), "error");
             return;
         }
 
         hideStatus();
-        showStatus(tr("status_manual_loading"), "info");
 
         addBtn.disabled = true;
         if (addManyBtn) addManyBtn.disabled = true;
         addManualBtn.disabled = true;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const dataUrl = e.target.result;
+        // Falls Datei vorhanden: Datei lesen und als dataURL speichern.
+        if (file) {
+            showStatus(tr("status_manual_loading"), "info");
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
 
+                games.push({
+                    id: nextId++,
+                    title: rawTitle,
+                    image: dataUrl,
+                    url: ""
+                });
+
+                renderGameList();
+                showStatus(tr("status_manual_added", { title: rawTitle }), "success");
+                titleInput.value = "";
+                fileInput.value = "";
+                urlInput.value = "";
+                saveState();
+
+                addBtn.disabled = false;
+                if (addManyBtn) addManyBtn.disabled = false;
+                addManualBtn.disabled = false;
+            };
+            reader.onerror = (e) => {
+                console.error("FileReader error", e);
+                showStatus(tr("status_manual_file_error"), "error");
+                addBtn.disabled = false;
+                if (addManyBtn) addManyBtn.disabled = false;
+                addManualBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Nur Bild-URL
             games.push({
                 id: nextId++,
                 title: rawTitle,
-                image: dataUrl,
+                image: urlVal,
                 url: ""
             });
 
             renderGameList();
             showStatus(tr("status_manual_added", { title: rawTitle }), "success");
             titleInput.value = "";
+            urlInput.value = "";
             fileInput.value = "";
             saveState();
 
             addBtn.disabled = false;
             if (addManyBtn) addManyBtn.disabled = false;
             addManualBtn.disabled = false;
-        };
-        reader.onerror = (e) => {
-            console.error("FileReader error", e);
-            showStatus(tr("status_manual_file_error"), "error");
-            addBtn.disabled = false;
-            if (addManyBtn) addManyBtn.disabled = false;
-            addManualBtn.disabled = false;
-        };
-        reader.readAsDataURL(file);
+        }
     }
 
     async function addGamesFromMultiInput() {
@@ -2059,8 +2121,22 @@
             let rawText;
 
             if (/^https?:\/\//i.test(trimmed)) {
-                // GitHub / Gist URL -> Text holen
-                const resp = await fetch(trimmed);
+                // GitHub/Gist URL -> ggf. in RAW-URL umwandeln
+                let url = trimmed;
+
+                if (url.includes("gist.github.com")) {
+                    url = url
+                        .replace("https://gist.github.com", "https://gist.githubusercontent.com")
+                        .replace("http://gist.github.com", "https://gist.githubusercontent.com");
+
+                    // /raw anhängen, falls nicht vorhanden
+                    if (!url.includes("/raw")) {
+                        if (url.endsWith("/")) url += "raw";
+                        else url += "/raw";
+                    }
+                }
+
+                const resp = await fetch(url);
                 if (!resp.ok) {
                     throw new Error("HTTP " + resp.status);
                 }
@@ -2125,6 +2201,7 @@
     window.addEventListener("load", () => {
         initLanguage();
         initMode();
+        initManualToggle();
         loadState();
         refreshProgressInfoForCurrentState();
         updateGameCount();
