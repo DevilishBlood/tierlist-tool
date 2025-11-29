@@ -77,6 +77,12 @@
             box-shadow: 0 0 0 1px #38bdf8;
         }
 
+        input[type="file"] {
+            width: 100%;
+            font-size: 0.95rem;
+            color: #e5e7eb;
+        }
+
         textarea {
             width: 100%;
             padding: 15px 18px;
@@ -488,6 +494,37 @@
             font-size: 0.9rem;
         }
 
+        details.manual-details {
+            border-top: 1px solid #1f2937;
+            margin-top: 26px;
+            padding-top: 8px;
+        }
+
+        details.manual-details > summary {
+            list-style: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        details.manual-details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .manual-summary-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .manual-summary-arrow {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -536,31 +573,33 @@
         </div>
 
         <!-- Manueller Eintrag (aufklappbar) -->
-        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
-            <div class="section-title" style="margin-bottom: 4px; cursor:pointer;" id="manualToggle">
-                <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
-                <span id="manualToggleIcon">▼</span>
-            </div>
-
-            <div id="manualBody" class="hidden">
+        <details class="manual-details" id="manualDetails">
+            <summary>
+                <span class="manual-summary-label">
+                    <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
+                </span>
+                <span class="manual-summary-arrow">▼</span>
+            </summary>
+            <div style="margin-top: 10px;">
                 <label for="manualTitle" id="lbl_manual_name">Название игры</label>
                 <input id="manualTitle" type="text">
 
-                <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
-                <input id="manualImage" type="file" accept="image/*">
+                <label for="manualImageFile" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка, Datei)</label>
+                <input id="manualImageFile" type="file" accept="image/*">
 
-                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">
-                    URL картинки (опционально)
-                </label>
-                <input id="manualImageUrl" type="text" placeholder="https://...">
+                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">Картинка-URL (optional)</label>
+                <input id="manualImageUrl" type="text" placeholder="https://example.com/cover.png">
 
                 <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
                     <button id="addManualButton" type="button" class="btn-secondary">
                         Добавить свою игру
                     </button>
+                    <span class="small-hint" id="manual_hint">
+                        Либо Datei wählen, либо Bild-URL eingeben.
+                    </span>
                 </div>
             </div>
-        </div>
+        </details>
 
         <div id="status" class="status hidden"></div>
 
@@ -575,7 +614,7 @@
                     Начать тир-лист
                 </button>
                 <span class="small-hint" id="hint_min_games">
-                    Нужно минимум 2 игры.
+                    Нужно минимум 5 игр.
                 </span>
                 <div class="mode-select-wrapper">
                     <span id="modeLabel">Режим ранжирования</span>
@@ -594,14 +633,15 @@
                 <span id="share_title">Spiele teilen (ohne Ranking)</span>
             </div>
             <span class="small-hint" id="share_hint">
-                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.
+                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen,
+                das Ranking muss die andere Person selbst neu machen.
             </span>
             <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
                 <button id="btnExportGames" type="button" class="btn-secondary">
                     Spiele-Exportcode erzeugen
                 </button>
                 <button id="btnImportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode einfügen
+                    Spiele-Exportcode / GitHub Gist einfügen
                 </button>
             </div>
         </div>
@@ -685,7 +725,7 @@
             btn_add_many: "Загрузить все ссылки",
             hint_multi: "Пустые строки будут пропущены.",
             section_collected: "Собранные игры",
-            hint_min_games: "Нужно минимум 2 игры.",
+            hint_min_games: "Нужно минимум 5 игр.",
             result_title: "Результат тир-листа",
             finished_hint: "Отсортированный список (1 = любимая игра):",
             tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
@@ -698,17 +738,17 @@
             overlay_cancel: "Отменить",
             manual_section_title: "Своя игра (ручной ввод)",
             manual_label_name: "Название игры",
-            manual_label_image: "Картинка (обложка)",
+            manual_label_image: "Картинка (обложка, файл)",
             manual_label_image_url: "URL картинки (опционально)",
-            manual_placeholder_image_url: "https://адрес_картинки...",
+            manual_hint: "Либо выбери файл, либо введи URL картинки.",
             btn_add_manual: "Добавить свою игру",
             mode_label: "Режим ранжирования",
             mode_exact: "Точный (больше кликов)",
             mode_fast: "Быстрый (приблизительный)",
-            click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
+            click_stats: "Теоретический минимум: {min} кликов. Точный режим ≈ {exact}, быстрый режим ≈ {fast}.",
             progress_finished: "Готово! Всего {count}.",
             progress_running: "Идёт сравнение… ({count})",
-            progress_need_two: "Нужно минимум 2 игры.",
+            progress_need_two: "Нужно минимум 5 игр.",
             progress_not_started: "Ещё не запущено",
             progress_stopped: "Сравнение остановлено.",
             progress_cancelled: "Сравнение отменено.",
@@ -723,7 +763,7 @@
             status_game_added: "Игра добавлена: {title}",
             status_load_error: "Ошибка загрузки: {error}",
             status_manual_need_title: "Введите название игры.",
-            status_manual_need_image: "Выберите картинку (обложку) для игры.",
+            status_manual_need_image: "Выберите файл или введите URL картинки.",
             status_manual_loading: "Читаю файл картинки…",
             status_manual_added: "Своя игра добавлена: {title}",
             status_manual_file_error: "Не удалось прочитать файл картинки.",
@@ -734,15 +774,15 @@
             status_multi_fail: "Не удалось добавить ссылки.",
             tierlist_not_created: "Сначала создай тир-лист.",
             tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
-            // Share / Import (nur Spiele)
+            // Share / Import
             share_title: "Шеринг списка игр (без ранкинга)",
             share_hint: "Создай код и отправь его другу. При импорте загружаются только игры.",
             btn_export_games: "Создать код списка игр",
-            btn_import_games: "Вставить код или ссылку GitHub",
+            btn_import_games: "Вставить код или GitHub Gist",
             share_no_games: "Нет игр для экспорта.",
-            share_export_copied: "Код успешно скопирован в буфер обмена.",
+            share_export_copied: "Код успешно скопирован в буфер обмена (он также в окне).",
             share_export_copy_manual: "Скопируйте код вручную из окна.",
-            share_import_prompt: "Вставьте сюда код списка игр или ссылку на GitHub Gist/raw:",
+            share_import_prompt: "Вставьте сюда код списка игр или ссылку на GitHub Gist:",
             share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
             share_import_fail: "Импорт не удался: {error}"
         },
@@ -764,7 +804,7 @@
             btn_add_many: "Load all links",
             hint_multi: "Empty lines will be skipped.",
             section_collected: "Collected games",
-            hint_min_games: "At least 2 games are required.",
+            hint_min_games: "At least 5 games are required.",
             result_title: "Tierlist result",
             finished_hint: "Sorted list (1 = favorite game):",
             tier_visual_hint: "Visual tierlist (S / A / B / C / D).",
@@ -777,9 +817,9 @@
             overlay_cancel: "Cancel",
             manual_section_title: "Custom game (manual input)",
             manual_label_name: "Game title",
-            manual_label_image: "Cover image",
+            manual_label_image: "Cover image (file)",
             manual_label_image_url: "Image URL (optional)",
-            manual_placeholder_image_url: "https://image_address...",
+            manual_hint: "Either choose a file or enter an image URL.",
             btn_add_manual: "Add custom game",
             mode_label: "Ranking mode",
             mode_exact: "Exact (more clicks)",
@@ -787,7 +827,7 @@
             click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
             progress_finished: "Done! Total {count}.",
             progress_running: "Comparison running… ({count})",
-            progress_need_two: "At least 2 games are required.",
+            progress_need_two: "At least 5 games are required.",
             progress_not_started: "Not started yet",
             progress_stopped: "Comparison stopped.",
             progress_cancelled: "Comparison cancelled.",
@@ -802,7 +842,7 @@
             status_game_added: "Game added: {title}",
             status_load_error: "Load error: {error}",
             status_manual_need_title: "Please enter a game title.",
-            status_manual_need_image: "Please choose a cover image.",
+            status_manual_need_image: "Please choose a file or enter an image URL.",
             status_manual_loading: "Reading image file…",
             status_manual_added: "Custom game added: {title}",
             status_manual_file_error: "Could not read image file.",
@@ -817,11 +857,11 @@
             share_title: "Share games (without ranking)",
             share_hint: "Generate a code and send it to someone. On import only the games are loaded.",
             btn_export_games: "Create games export code",
-            btn_import_games: "Paste export code or GitHub URL",
+            btn_import_games: "Paste games export code / GitHub Gist",
             share_no_games: "There are no games to export.",
-            share_export_copied: "Export code copied to clipboard.",
+            share_export_copied: "Export code copied to clipboard (also shown in a window).",
             share_export_copy_manual: "Copy the export code manually from the window.",
-            share_import_prompt: "Paste the games export code or a GitHub Gist/raw URL here:",
+            share_import_prompt: "Paste the games export code or a GitHub Gist URL here:",
             share_import_success: "Games imported successfully. Ranking has been reset.",
             share_import_fail: "Import failed: {error}"
         },
@@ -843,7 +883,7 @@
             btn_add_many: "Alle Links laden",
             hint_multi: "Leere Zeilen werden übersprungen.",
             section_collected: "Gesammelte Spiele",
-            hint_min_games: "Mindestens 2 Spiele werden benötigt.",
+            hint_min_games: "Mindestens 5 Spiele werden benötigt.",
             result_title: "Tierlist-Ergebnis",
             finished_hint: "Sortierte Liste (1 = Lieblingsspiel):",
             tier_visual_hint: "Visuelle Tierlist (S / A / B / C / D).",
@@ -856,9 +896,9 @@
             overlay_cancel: "Abbrechen",
             manual_section_title: "Eigenes Spiel (manuell)",
             manual_label_name: "Spielname",
-            manual_label_image: "Cover-Bild",
+            manual_label_image: "Cover-Bild (Datei)",
             manual_label_image_url: "Bild-URL (optional)",
-            manual_placeholder_image_url: "https://bild_adresse...",
+            manual_hint: "Entweder eine Datei auswählen oder eine Bild-URL eingeben.",
             btn_add_manual: "Eigenes Spiel hinzufügen",
             mode_label: "Ranking-Modus",
             mode_exact: "Genau (mehr Klicks)",
@@ -866,7 +906,7 @@
             click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
             progress_finished: "Fertig! Insgesamt {count}.",
             progress_running: "Vergleich läuft… ({count})",
-            progress_need_two: "Mindestens 2 Spiele werden benötigt.",
+            progress_need_two: "Mindestens 5 Spiele werden benötigt.",
             progress_not_started: "Noch nicht gestartet",
             progress_stopped: "Vergleich gestoppt.",
             progress_cancelled: "Vergleich abgebrochen.",
@@ -881,7 +921,7 @@
             status_game_added: "Spiel hinzugefügt: {title}",
             status_load_error: "Fehler beim Laden: {error}",
             status_manual_need_title: "Bitte einen Spielnamen eingeben.",
-            status_manual_need_image: "Bitte ein Cover-Bild auswählen.",
+            status_manual_need_image: "Bitte eine Datei wählen oder eine Bild-URL eingeben.",
             status_manual_loading: "Lese Bilddatei…",
             status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
             status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
@@ -896,11 +936,11 @@
             share_title: "Spiele teilen (ohne Ranking)",
             share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.",
             btn_export_games: "Spiele-Exportcode erzeugen",
-            btn_import_games: "Exportcode oder GitHub-URL einfügen",
+            btn_import_games: "Spiele-Exportcode / GitHub Gist einfügen",
             share_no_games: "Es gibt keine Spiele zum Exportieren.",
-            share_export_copied: "Exportcode in die Zwischenablage kopiert.",
+            share_export_copied: "Exportcode in die Zwischenablage kopiert (und im Fenster angezeigt).",
             share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
-            share_import_prompt: "Füge hier den Spiele-Exportcode oder eine GitHub-Gist/raw-URL ein:",
+            share_import_prompt: "Füge hier den Spiele-Exportcode oder eine GitHub-Gist-URL ein:",
             share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
             share_import_fail: "Import fehlgeschlagen: {error}"
         }
@@ -1020,7 +1060,7 @@
         document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
         document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
         document.getElementById("lbl_manual_image_url").textContent = s.manual_label_image_url;
-        document.getElementById("manualImageUrl").placeholder = s.manual_placeholder_image_url;
+        document.getElementById("manual_hint").textContent = s.manual_hint;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
         document.getElementById("modeLabel").textContent = s.mode_label;
 
@@ -1049,7 +1089,7 @@
             progressInfo.textContent = tr("progress_running", {
                 count: formatComparisonCount(comparisonsDone || 0)
             });
-        } else if (games.length < 2) {
+        } else if (games.length < 5) {
             progressInfo.textContent = tr("progress_need_two");
         } else {
             progressInfo.textContent = tr("progress_not_started");
@@ -1096,23 +1136,6 @@
                 localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
             } catch (e) {}
             updateClickStatsDisplay();
-        });
-    }
-
-    function initManualToggle() {
-        const toggle = document.getElementById("manualToggle");
-        const body = document.getElementById("manualBody");
-        const icon = document.getElementById("manualToggleIcon");
-        let open = false;
-        toggle.addEventListener("click", () => {
-            open = !open;
-            if (open) {
-                body.classList.remove("hidden");
-                icon.textContent = "▲";
-            } else {
-                body.classList.add("hidden");
-                icon.textContent = "▼";
-            }
         });
     }
 
@@ -1166,7 +1189,7 @@
     function updateGameCount() {
         const count = games.length;
         document.getElementById("gameCountHint").textContent = formatGameCount(count);
-        document.getElementById("startTierButton").disabled = count < 2;
+        document.getElementById("startTierButton").disabled = count < 5;
         updateClickStatsDisplay();
     }
 
@@ -1237,7 +1260,7 @@
             pendingNewIndices = [];
             currentNewIndex = null;
             progressInfo.textContent =
-                games.length >= 2 ? tr("progress_not_started") : tr("progress_need_two");
+                games.length >= 5 ? tr("progress_not_started") : tr("progress_need_two");
         }
 
         updateGameCount();
@@ -1417,12 +1440,11 @@
 
     function addManualGame() {
         const titleInput = document.getElementById("manualTitle");
-        const fileInput = document.getElementById("manualImage");
+        const fileInput = document.getElementById("manualImageFile");
         const urlInput = document.getElementById("manualImageUrl");
-
         const rawTitle = (titleInput.value || "").trim();
         const file = fileInput.files[0];
-        const urlVal = (urlInput.value || "").trim();
+        const imgUrl = (urlInput.value || "").trim();
 
         const addBtn = document.getElementById("addButton");
         const addManyBtn = document.getElementById("addManyButton");
@@ -1432,20 +1454,21 @@
             showStatus(tr("status_manual_need_title"), "error");
             return;
         }
-        if (!file && !urlVal) {
+        if (!file && !imgUrl) {
             showStatus(tr("status_manual_need_image"), "error");
             return;
         }
 
         hideStatus();
 
-        addBtn.disabled = true;
-        if (addManyBtn) addManyBtn.disabled = true;
-        addManualBtn.disabled = true;
-
-        // Falls Datei vorhanden: Datei lesen und als dataURL speichern.
+        // Wenn Datei vorhanden -> FileReader, sonst direkt URL verwenden
         if (file) {
             showStatus(tr("status_manual_loading"), "info");
+
+            addBtn.disabled = true;
+            if (addManyBtn) addManyBtn.disabled = true;
+            addManualBtn.disabled = true;
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 const dataUrl = e.target.result;
@@ -1477,11 +1500,11 @@
             };
             reader.readAsDataURL(file);
         } else {
-            // Nur Bild-URL
+            // nur URL
             games.push({
                 id: nextId++,
                 title: rawTitle,
-                image: urlVal,
+                image: imgUrl,
                 url: ""
             });
 
@@ -1489,12 +1512,7 @@
             showStatus(tr("status_manual_added", { title: rawTitle }), "success");
             titleInput.value = "";
             urlInput.value = "";
-            fileInput.value = "";
             saveState();
-
-            addBtn.disabled = false;
-            if (addManyBtn) addManyBtn.disabled = false;
-            addManualBtn.disabled = false;
         }
     }
 
@@ -1597,7 +1615,7 @@
     }
 
     function startTierlist() {
-        if (games.length < 2) {
+        if (games.length < 5) {
             showStatus(tr("progress_need_two"), "error");
             return;
         }
@@ -1613,6 +1631,7 @@
         } else {
             buildPendingNewIndicesIncremental();
             if (!pendingNewIndices.length) {
+                // Nichts Neues
                 showStatus(tr("status_multi_fail"), "info");
                 return;
             }
@@ -1743,6 +1762,16 @@
         showNextComparisonStep();
     }
 
+    function getTierLabelByIndex(index, total) {
+        if (total <= 1) return "S";
+        const ratio = index / (total - 1);
+        if (ratio <= 0.2) return "S";
+        if (ratio <= 0.4) return "A";
+        if (ratio <= 0.6) return "B";
+        if (ratio <= 0.8) return "C";
+        return "D";
+    }
+
     function finishTierlist() {
         compareActive = false;
         overlay.classList.add("hidden");
@@ -1796,16 +1825,6 @@
             row.appendChild(badge);
             list.appendChild(row);
         });
-    }
-
-    function getTierLabelByIndex(index, total) {
-        if (total <= 1) return "S";
-        const ratio = index / (total - 1);
-        if (ratio <= 0.2) return "S";
-        if (ratio <= 0.4) return "A";
-        if (ratio <= 0.6) return "B";
-        if (ratio <= 0.8) return "C";
-        return "D";
     }
 
     function renderTierTable() {
@@ -2055,7 +2074,7 @@
         }
     }
 
-    // --- Spiele-Export ohne Ranking (Base64 wie früher) ---
+    // --- Spiele-Export ohne Ranking (Base64, langer Code, plus GitHub Gist Import) ---
     function exportGamesOnly() {
         if (!games.length) {
             showStatus(tr("share_no_games"), "error");
@@ -2074,79 +2093,53 @@
         const json = JSON.stringify(data);
         const base64 = btoa(unescape(encodeURIComponent(json)));
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(base64).then(() => {
-                showStatus(tr("share_export_copied"), "success");
-            }).catch(() => {
+        // Immer ein Fenster mit dem langen Code anzeigen
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(base64).then(() => {
+                    showStatus(tr("share_export_copied"), "success");
+                    alert(base64);
+                }).catch(() => {
+                    showStatus(tr("share_export_copy_manual"), "info");
+                    alert(base64);
+                });
+            } else {
                 showStatus(tr("share_export_copy_manual"), "info");
                 alert(base64);
-            });
-        } else {
+            }
+        } catch (e) {
+            console.error(e);
             showStatus(tr("share_export_copy_manual"), "info");
             alert(base64);
         }
     }
 
-    // Hilfsfunktion: aus Base64 oder direktem JSON Spiele-Daten parsen
-    function parseGamesDataFromString(str) {
-        let text = str.trim();
-        if (!text) throw new Error("empty data");
-
-        // 1) Versuche Base64 -> JSON
-        try {
-            const jsonText = decodeURIComponent(escape(atob(text)));
-            const data = JSON.parse(jsonText);
-            return data;
-        } catch (e) {
-            // ignorieren, wir versuchen Plain JSON
-        }
-
-        // 2) Plain JSON
-        try {
-            const data = JSON.parse(text);
-            return data;
-        } catch (e2) {
-            throw new Error("Data is neither valid Base64 nor JSON.");
-        }
-    }
-
-    // Import: kann Base64-Code ODER GitHub/Gist-URL sein
     async function importGamesOnly() {
-        const input = prompt(tr("share_import_prompt"));
+        let input = prompt(tr("share_import_prompt"));
         if (!input) return;
 
-        const trimmed = input.trim();
+        input = input.trim();
+        let base64;
+
+        if (/^https?:\/\//i.test(input)) {
+            // GitHub Gist oder raw URL
+            try {
+                const resp = await fetch(input);
+                if (!resp.ok) throw new Error("HTTP " + resp.status);
+                const text = (await resp.text()).trim();
+                base64 = text;
+            } catch (e) {
+                console.error(e);
+                showStatus(tr("share_import_fail", { error: e.message }), "error");
+                return;
+            }
+        } else {
+            base64 = input;
+        }
 
         try {
-            let rawText;
-
-            if (/^https?:\/\//i.test(trimmed)) {
-                // GitHub/Gist URL -> ggf. in RAW-URL umwandeln
-                let url = trimmed;
-
-                if (url.includes("gist.github.com")) {
-                    url = url
-                        .replace("https://gist.github.com", "https://gist.githubusercontent.com")
-                        .replace("http://gist.github.com", "https://gist.githubusercontent.com");
-
-                    // /raw anhängen, falls nicht vorhanden
-                    if (!url.includes("/raw")) {
-                        if (url.endsWith("/")) url += "raw";
-                        else url += "/raw";
-                    }
-                }
-
-                const resp = await fetch(url);
-                if (!resp.ok) {
-                    throw new Error("HTTP " + resp.status);
-                }
-                rawText = (await resp.text()).trim();
-            } else {
-                // Direkt eingegebener Code
-                rawText = trimmed;
-            }
-
-            const data = parseGamesDataFromString(rawText);
+            const json = decodeURIComponent(escape(atob(base64)));
+            const data = JSON.parse(json);
 
             if (!data || !Array.isArray(data.games)) {
                 throw new Error("Invalid format (games missing).");
@@ -2179,6 +2172,7 @@
         }
     }
 
+    // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("addManualButton").addEventListener("click", addManualGame);
@@ -2201,7 +2195,6 @@
     window.addEventListener("load", () => {
         initLanguage();
         initMode();
-        initManualToggle();
         loadState();
         refreshProgressInfoForCurrentState();
         updateGameCount();
