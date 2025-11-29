@@ -1,2749 +1,2651 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Tierlist by Game Links</title>
-    <style>
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #020617;
-            color: #e5e7eb;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            font-size: 20px; /* ~150% */
-        }
-
-        .container {
-            margin: 52px 30px;
-            max-width: 1400px;
-            width: 100%;
-            background: #020617;
-            border-radius: 24px;
-            padding: 34px;
-            box-shadow: 0 32px 70px rgba(0, 0, 0, 0.95);
-            border: 1px solid #1f2937;
-            display: grid;
-            grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-            gap: 40px;
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                margin: 24px 14px;
-                padding: 22px;
-            }
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 2.1rem;
-        }
-
-        .subtitle {
-            margin-top: 8px;
-            margin-bottom: 22px;
-            font-size: 1.02rem;
-            color: #9ca3af;
-            line-height: 1.7;
-        }
-
-        label {
-            display: block;
-            font-size: 1.02rem;
-            margin-bottom: 10px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px 18px;
-            border-radius: 14px;
-            border: 1px solid #4b5563;
-            background: #020617;
-            color: #e5e7eb;
-            font-size: 1.02rem;
-        }
-
-        input[type="text"]::placeholder { color: #6b7280; }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 1px #38bdf8;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 15px 18px;
-            border-radius: 14px;
-            border: 1px solid #4b5563;
-            background: #020617;
-            color: #e5e7eb;
-            font-size: 1.02rem;
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        textarea::placeholder { color: #6b7280; }
-
-        textarea:focus {
-            outline: none;
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 1px #38bdf8;
-        }
-
-        button {
-            padding: 13px 24px;
-            border-radius: 999px;
-            border: none;
-            background: linear-gradient(135deg, #a855f7, #22d3ee);
-            color: #020617;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
-            box-shadow: 0 16px 36px rgba(168, 85, 247, 0.45);
-        }
-
-        button:hover {
-            filter: brightness(1.07);
-            transform: translateY(-2px);
-            box-shadow: 0 22px 50px rgba(168, 85, 247, 0.6);
-        }
-
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 10px 26px rgba(168, 85, 247, 0.35);
-        }
-
-        button[disabled] {
-            opacity: 0.55;
-            cursor: default;
-            transform: none;
-            box-shadow: none;
-            filter: none;
-        }
-
-        .btn-secondary {
-            background: #111827;
-            color: #e5e7eb;
-            box-shadow: none;
-            border: 1px solid #4b5563;
-        }
-
-        .btn-secondary:hover {
-            filter: brightness(1.08);
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.85);
-        }
-
-        .btn-icon {
-            min-width: 32px;
-            height: 32px;
-            padding: 0;
-            border-radius: 999px;
-            border: 1px solid #4b5563;
-            background: #111827;
-            color: #e5e7eb;
-            font-size: 18px;
-            line-height: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: none;
-        }
-
-        .btn-icon + .btn-icon {
-            margin-left: 6px;
-        }
-
-        .btn-icon:hover {
-            background: #1f2937;
-            border-color: #9ca3af;
-            box-shadow: 0 0 0 0;
-            transform: translateY(0);
-        }
-
-        .btn-icon.danger:hover {
-            background: #b91c1c;
-            border-color: #ef4444;
-        }
-
-        .status {
-            margin-top: 14px;
-            font-size: 0.98rem;
-            padding: 12px 14px;
-            border-radius: 12px;
-        }
-
-        .status.info {
-            background: rgba(59, 130, 246, 0.12);
-            border: 1px solid rgba(59, 130, 246, 0.6);
-            color: #bfdbfe;
-        }
-
-        .status.error {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.7);
-            color: #fecaca;
-        }
-
-        .status.success {
-            background: rgba(34, 197, 94, 0.12);
-            border: 1px solid rgba(34, 197, 94, 0.7);
-            color: #bbf7d0;
-        }
-
-        .section-title {
-            font-size: 1.12rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .small-hint {
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-
-        .list {
-            margin-top: 12px;
-            max-height: 520px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-
-        .game-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            border: 1px solid #111827;
-            background: #020617;
-            margin-bottom: 10px;
-        }
-
-        .game-thumb {
-            width: 110px;
-            height: 62px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: #020617;
-            border: 1px solid #1f2937;
-        }
-
-        .game-info { flex: 1; min-width: 0; }
-
-        .game-title {
-            font-size: 1.02rem;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .game-url {
-            font-size: 0.86rem;
-            color: #6b7280;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .tier-controls {
-            margin-top: 14px;
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .finished-list {
-            margin-top: 16px;
-            border-radius: 16px;
-            border: 1px solid #111827;
-            padding: 12px;
-            background: #020617;
-            max-height: 260px;
-            overflow-y: auto;
-        }
-
-        .rank-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 11px;
-            border-radius: 12px;
-        }
-
-        .rank-number {
-            width: 34px;
-            text-align: right;
-            font-size: 0.96rem;
-            color: #9ca3af;
-        }
-
-        .rank-title {
-            font-size: 1.03rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .rank-badge {
-            font-size: 0.86rem;
-            padding: 4px 10px;
-            border-radius: 999px;
-            border: 1px solid #4b5563;
-            color: #9ca3af;
-            margin-left: auto;
-        }
-
-        .tier-table { margin-top: 20px; }
-
-        .tier-table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .tier-table-wrapper {
-            border-radius: 20px;
-            border: 1px solid #111827;
-            overflow: hidden;
-            background: #020617;
-        }
-
-        .tier-row {
-            display: flex;
-            min-height: 96px;
-            border-bottom: 1px solid #111827;
-        }
-
-        .tier-row:last-child { border-bottom: none; }
-
-        .tier-label-cell {
-            width: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #020617;
-        }
-
-        .tier-items-cell {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 10px 12px;
-        }
-
-        .tier-item-img {
-            width: 140px;
-            height: 80px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: #020617;
-            border: 1px solid #1f2937;
-        }
-
-        /* Vollbild-Vergleich */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: #020617;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 24px;
-            z-index: 50;
-        }
-
-        .overlay-inner {
-            max-width: 1100px;
-            width: 100%;
-            background: #020617;
-            border-radius: 22px;
-            padding: 26px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
-        }
-
-        .overlay-title {
-            margin: 0 0 8px;
-            font-size: 2rem;
-        }
-
-        .overlay-subtitle {
-            margin: 0 0 18px;
-            font-size: 0.98rem;
-            color: #9ca3af;
-        }
-
-        .overlay-status {
-            font-size: 0.96rem;
-            color: #9ca3af;
-            margin-bottom: 12px;
-        }
-
-        .compare-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .compare-grid { grid-template-columns: 1fr; }
-        }
-
-        .compare-card {
-            border-radius: 16px;
-            border: 1px solid #1f2937;
-            background: #020617;
-            padding: 14px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            gap: 11px;
-            transition: transform 0.08s ease, box-shadow 0.08s ease,
-                        border-color 0.08s ease, background 0.08s ease;
-        }
-
-        .compare-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
-            border-color: #38bdf8;
-            background: #020a23;
-        }
-
-        .compare-card img {
-            width: 100%;
-            height: 260px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #020617;
-            border: 1px solid #111827;
-        }
-
-        .compare-label {
-            font-size: 0.86rem;
-            color: #9ca3af;
-        }
-
-        .compare-name {
-            font-size: 1.02rem;
-            font-weight: 500;
-        }
-
-        .overlay-footer {
-            margin-top: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-
-        .lang-select-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #9ca3af;
-        }
-
-        #langSelect {
-            background: #020617;
-            color: #e5e7eb;
-            border-radius: 999px;
-            border: 1px solid #4b5563;
-            padding: 6px 10px;
-            font-size: 0.9rem;
-        }
-
-        .mode-select-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #9ca3af;
-        }
-
-        #modeSelect {
-            background: #020617;
-            color: #e5e7eb;
-            border-radius: 999px;
-            border: 1px solid #4b5563;
-            padding: 6px 10px;
-            font-size: 0.9rem;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* --------- Collapsible manual input ---------- */
-
-        .collapsible-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .collapsible-arrow {
-            font-size: 1.1rem;
-            transition: transform 0.15s ease;
-        }
-
-        .collapsible-arrow.open {
-            transform: rotate(90deg);
-        }
-
-        .collapsible-body {
-            margin-top: 10px;
-        }
-
-        /* ---------- MANUAL TIERLIST VIEW ---------- */
-
-        #manualContainer {
-            position: fixed;
-            inset: 0;
-            background: #020617;
-            display: none;
-            flex-direction: column;
-            padding: 24px;
-            z-index: 60;
-        }
-
-        #manualContainer.visible {
-            display: flex;
-        }
-
-        .manual-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .manual-title {
-            font-size: 1.6rem;
-            font-weight: 600;
-        }
-
-        .manual-layout {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 0.9fr 1.4fr;
-            gap: 18px;
-            min-height: 0;
-        }
-
-        @media (max-width: 1000px) {
-            .manual-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .manual-column {
-            border-radius: 18px;
-            border: 1px solid #111827;
-            background: #020617;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .manual-column-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .manual-column-sub {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        .manual-pool-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .manual-pool-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 pro Zeile */
-            gap: 12px;
-        }
-
-        .manual-tier-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .manual-tier-table-wrapper {
-            border-radius: 18px;
-            border: 1px solid #111827;
-            background: #020617;
-            overflow: hidden;
-        }
-
-        .manual-tier-row {
-            display: flex;
-            border-bottom: 1px solid #111827;
-            min-height: 120px;
-        }
-
-        .manual-tier-row:last-child {
-            border-bottom: none;
-        }
-
-        .manual-tier-label-cell {
-            width: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #020617;
-        }
-
-        .manual-tier-items-cell {
-            flex: 1;
-            padding: 10px 10px 12px 10px;
-        }
-
-        .manual-tier-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 pro Zeile */
-            gap: 12px;
-        }
-
-        .manual-card {
-            border-radius: 12px;
-            border: 1px solid #1f2937;
-            background: #020617;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: grab;
-        }
-
-        .manual-card-thumb,
-        .manual-tier-card-thumb {
-            width: 100%;
-            height: 150px; /* höher UND breiter im Grid */
-            border-radius: 10px;
-            object-fit: cover;
-            border: 1px solid #1f2937;
-            background: #020617;
-        }
-
-        .manual-card-title {
-            font-size: 0.85rem;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-
-        .manual-drop-highlight {
-            outline: 2px dashed #38bdf8;
-            outline-offset: 3px;
-        }
-
-        .manual-footer-text {
-            font-size: 0.88rem;
-            color: #6b7280;
-            margin-top: 6px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Tierlist by Game Links</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #020617;
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-size: 20px; /* ~150% */
+}
+
+.container {
+  margin: 52px 30px;
+  max-width: 1400px;
+  width: 100%;
+  background: #020617;
+  border-radius: 24px;
+  padding: 34px;
+  box-shadow: 0 32px 70px rgba(0, 0, 0, 0.95);
+  border: 1px solid #1f2937;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 40px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+    margin: 24px 14px;
+    padding: 22px;
+  }
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.1rem;
+}
+
+.subtitle {
+  margin-top: 8px;
+  margin-bottom: 22px;
+  font-size: 1.02rem;
+  color: #9ca3af;
+  line-height: 1.7;
+}
+
+label {
+  display: block;
+  font-size: 1.02rem;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 15px 18px;
+  border-radius: 14px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 1.02rem;
+}
+
+input[type="text"]::placeholder { color: #6b7280; }
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px #38bdf8;
+}
+
+textarea {
+  width: 100%;
+  padding: 15px 18px;
+  border-radius: 14px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 1.02rem;
+  resize: vertical;
+  min-height: 120px;
+}
+
+textarea::placeholder { color: #6b7280; }
+
+textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px #38bdf8;
+}
+
+button {
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #a855f7, #22d3ee);
+  color: #020617;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+  box-shadow: 0 16px 36px rgba(168, 85, 247, 0.45);
+}
+
+button:hover {
+  filter: brightness(1.07);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px rgba(168, 85, 247, 0.6);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 26px rgba(168, 85, 247, 0.35);
+}
+
+button[disabled] {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+.btn-secondary {
+  background: #111827;
+  color: #e5e7eb;
+  box-shadow: none;
+  border: 1px solid #4b5563;
+}
+
+.btn-secondary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.85);
+}
+
+.btn-icon {
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: #e5e7eb;
+  font-size: 18px;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.btn-icon + .btn-icon {
+  margin-left: 6px;
+}
+
+.btn-icon:hover {
+  background: #1f2937;
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 0;
+  transform: translateY(0);
+}
+
+.btn-icon.danger:hover {
+  background: #b91c1c;
+  border-color: #ef4444;
+}
+
+.status {
+  margin-top: 14px;
+  font-size: 0.98rem;
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+
+.status.info {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.6);
+  color: #bfdbfe;
+}
+
+.status.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.7);
+  color: #fecaca;
+}
+
+.status.success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.7);
+  color: #bbf7d0;
+}
+
+.section-title {
+  font-size: 1.12rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.small-hint {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.list {
+  margin-top: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.game-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #111827;
+  background: #020617;
+  margin-bottom: 10px;
+}
+
+.game-thumb {
+  width: 110px;
+  height: 62px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #020617;
+  border: 1px solid #1f2937;
+}
+
+.game-info { flex: 1; min-width: 0; }
+
+.game-title {
+  font-size: 1.02rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-url {
+  font-size: 0.86rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tier-controls {
+  margin-top: 14px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.finished-list {
+  margin-top: 16px;
+  border-radius: 16px;
+  border: 1px solid #111827;
+  padding: 12px;
+  background: #020617;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 11px;
+  border-radius: 12px;
+}
+
+.rank-number {
+  width: 34px;
+  text-align: right;
+  font-size: 0.96rem;
+  color: #9ca3af;
+}
+
+.rank-title {
+  font-size: 1.03rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rank-badge {
+  font-size: 0.86rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.tier-table { margin-top: 20px; }
+
+.tier-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tier-table-wrapper {
+  border-radius: 20px;
+  border: 1px solid #111827;
+  overflow: hidden;
+  background: #020617;
+}
+
+.tier-row {
+  display: flex;
+  min-height: 96px;
+  border-bottom: 1px solid #111827;
+}
+
+.tier-row:last-child { border-bottom: none; }
+
+.tier-label-cell {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #020617;
+  border-right: 1px solid #111827;
+}
+
+.tier-items-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.tier-item-img {
+  width: 140px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #020617;
+  border: 1px solid #1f2937;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 24px;
+  z-index: 50;
+}
+
+.overlay-inner {
+  max-width: 1100px;
+  width: 100%;
+  background: #020617;
+  border-radius: 22px;
+  padding: 26px;
+  border: 1px solid #1f2937;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
+}
+
+/* WICHTIG: manuelle Overlay soll scrollbar sein */
+#manualOverlay .overlay-inner {
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.overlay-title {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.overlay-subtitle {
+  margin: 0 0 18px;
+  font-size: 0.98rem;
+  color: #9ca3af;
+}
+
+.overlay-status {
+  font-size: 0.96rem;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .compare-grid { grid-template-columns: 1fr; }
+}
+
+.compare-card {
+  border-radius: 16px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease,
+              border-color 0.08s ease, background 0.08s ease;
+}
+
+.compare-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+  border-color: #38bdf8;
+  background: #020a23;
+}
+
+.compare-card img {
+  width: 100%;
+  height: 260px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #020617;
+  border: 1px solid #111827;
+}
+
+.compare-label {
+  font-size: 0.86rem;
+  color: #9ca3af;
+}
+
+.compare-name {
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+
+.overlay-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.lang-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+#langSelect {
+  background: #020617;
+  color: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+.mode-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+#modeSelect {
+  background: #020617;
+  color: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+/* --- Manueller Tierlist (Drag & Drop) --- */
+
+.manual-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 24px;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .manual-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manual-pool-title {
+  margin-bottom: 8px;
+}
+
+/* 4 Karten pro Reihe */
+.manual-dropzone {
+  min-height: 110px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px dashed #1f2937;
+  background: #020617;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: flex-start;
+}
+
+@media (max-width: 1100px) {
+  .manual-dropzone {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .manual-dropzone {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.manual-dropzone.drag-over {
+  border-color: #38bdf8;
+  background: #020617;
+}
+
+.manual-card,
+.manual-tier-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 1px solid #111827;
+  background: #020617;
+  cursor: grab;
+  user-select: none;
+  width: 100%;
+}
+
+/* Bilder größer */
+.manual-card-thumb,
+.manual-tier-card-thumb {
+  width: 100%;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #1f2937;
+  background: #020617;
+}
+
+/* Titel kurz + ... */
+.manual-card-name,
+.manual-tier-card-name {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  max-width: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Pfeil im Details-Aufklapper links neben dem Text */
+details > summary {
+  display: flex;
+  align-items: center;
+}
+
+details > summary .section-title {
+  margin-bottom: 0;
+}
+</style>
 </head>
 <body>
 <div class="container" id="mainContainer">
-    <!-- Linke Seite -->
-    <div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:6px;">
-            <h1 id="txt_title">Тир-лист по ссылкам на игры</h1>
-            <div class="lang-select-wrapper">
-                <span id="lbl_lang">Язык</span>
-                <select id="langSelect">
-                    <option value="ru">Русский</option>
-                    <option value="en">English</option>
-                    <option value="de">Deutsch</option>
-                </select>
-            </div>
-        </div>
-        <p class="subtitle" id="txt_subtitle">
-            1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>
-            2. Загружай метаданные и добавляй игры в список.<br>
-            3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
-        </p>
+  <!-- Linke Seite -->
+  <div>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:6px;">
+      <h1 id="txt_title">Тир-лист по ссылкам на игры</h1>
+      <div class="lang-select-wrapper">
+        <span id="lbl_lang">Язык</span>
+        <select id="langSelect">
+          <option value="ru">Русский</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
+    </div>
+    <p class="subtitle" id="txt_subtitle">
+      1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>
+      2. Загружай метаданные и добавляй игры в список.<br>
+      3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
+    </p>
 
-        <label for="urlInput" id="lbl_url">URL игры</label>
-        <input id="urlInput"
-               type="text"
-               placeholder="Например: https://store.steampowered.com/app/570/Dota_2/">
-        <div style="margin-top: 12px; display:flex; gap:14px; flex-wrap:wrap;">
-            <button id="addButton" type="button">Загрузить и добавить игру</button>
-            <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
-        </div>
+    <label for="urlInput" id="lbl_url">URL игры</label>
+    <input id="urlInput"
+           type="text"
+           placeholder="Например: https://store.steampowered.com/app/570/Dota_2/">
+    <div style="margin-top: 12px; display:flex; gap:14px; flex-wrap:wrap;">
+      <button id="addButton" type="button">Загрузить и добавить игру</button>
+      <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
+    </div>
 
-        <label for="multiInput" id="lbl_multi" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
-        <textarea id="multiInput"
-                  placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
+    <label for="multiInput" id="lbl_multi" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
+    <textarea id="multiInput"
+              placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
+    <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <button id="addManyButton" type="button" class="btn-secondary">
+        Загрузить все ссылки
+      </button>
+      <span class="small-hint" id="hint_multi">
+        Пустые строки будут пропущены.
+      </span>
+    </div>
+
+    <!-- Manueller Eintrag (aufklappbar) -->
+    <details style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+      <summary style="cursor:pointer;">
+        <span class="section-title" style="margin-bottom: 4px;" id="lbl_manual_section">
+          Своя игра (ручной ввод)
+        </span>
+      </summary>
+      <div style="margin-top: 10px;">
+        <label for="manualTitle" id="lbl_manual_name">Название игры</label>
+        <input id="manualTitle" type="text">
+        <label for="manualImageFile" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка, файл)</label>
+        <input id="manualImageFile" type="file" accept="image/*">
+        <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">Картинка по URL (необязательно)</label>
+        <input id="manualImageUrl" type="text" placeholder="https://... (если заполнено, файл игнорируется)">
         <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-            <button id="addManyButton" type="button" class="btn-secondary">
-                Загрузить все ссылки
-            </button>
-            <span class="small-hint" id="hint_multi">
-                Пустые строки будут пропущены.
-            </span>
+          <button id="addManualButton" type="button" class="btn-secondary">
+            Добавить свою игру
+          </button>
         </div>
+      </div>
+    </details>
 
-        <!-- Manueller Eintrag – collapsible -->
-        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
-            <div class="section-title" style="margin-bottom: 4px;">
-                <div class="collapsible-header" id="manualCollapseHeader">
-                    <span id="manualCollapseArrow" class="collapsible-arrow">▶</span>
-                    <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
-                </div>
-            </div>
-            <div id="manualCollapseBody" class="collapsible-body hidden">
-                <label for="manualTitle" id="lbl_manual_name">Название игры</label>
-                <input id="manualTitle" type="text">
+    <div id="status" class="status hidden"></div>
 
-                <label for="manualImageFile" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
-                <input id="manualImageFile" type="file" accept="image/*">
-
-                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">URL картинки (необязательно)</label>
-                <input id="manualImageUrl" type="text" placeholder="https://...">
-
-                <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                    <button id="addManualButton" type="button" class="btn-secondary">
-                        Добавить свою игру
-                    </button>
-                </div>
-            </div>
+    <div style="margin-top: 28px;">
+      <div class="section-title">
+        <span id="title_collected">Собранные игры</span>
+        <span class="small-hint" id="gameCountHint">0 игр</span>
+      </div>
+      <div class="list" id="gameList"></div>
+      <div class="tier-controls">
+        <button id="startTierButton" type="button" disabled>
+          Начать тир-лист
+        </button>
+        <span class="small-hint" id="hint_min_games">
+          Нужно минимум 5 игр.
+        </span>
+        <div class="mode-select-wrapper">
+          <span id="modeLabel">Режим ранжирования</span>
+          <select id="modeSelect">
+            <option value="exact">Точный (больше кликов)</option>
+            <option value="fast">Быстрый (приблизительный)</option>
+          </select>
         </div>
-
-        <div id="status" class="status hidden"></div>
-
-        <div style="margin-top: 28px;">
-            <div class="section-title">
-                <span id="title_collected">Собранные игры</span>
-                <span class="small-hint" id="gameCountHint">0 игр</span>
-            </div>
-            <div class="list" id="gameList"></div>
-            <div class="tier-controls">
-                <button id="startTierButton" type="button" disabled>
-                    Начать тир-лист
-                </button>
-                <button id="btnManualTier" type="button" class="btn-secondary">
-                    Ручной тир-лист
-                </button>
-                <span class="small-hint" id="hint_min_games">
-                    Нужно минимум 5 игр.
-                </span>
-                <div class="mode-select-wrapper">
-                    <span id="modeLabel">Режим ранжирования</span>
-                    <select id="modeSelect">
-                        <option value="exact">Точный (больше кликов)</option>
-                        <option value="fast">Быстрый (приблизительный)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
-        </div>
-
-        <!-- Share nur Spiele (ohne Ranking) -->
-        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
-            <div class="section-title">
-                <span id="share_title">Spiele teilen (ohne Ranking)</span>
-            </div>
-            <span class="small-hint" id="share_hint">
-                Erzeuge einen Code oder nutze GitHub Gist und teile ihn. Beim Import werden nur die Spiele übernommen, das Ranking macht die andere Person selbst.
-            </span>
-            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
-                <button id="btnExportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode erzeugen
-                </button>
-                <button id="btnImportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode / Gist laden
-                </button>
-            </div>
-        </div>
+      </div>
+      <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
+      <div style="margin-top: 10px;">
+        <button id="btnManualStart" type="button" class="btn-secondary">
+          Открыть ручной тир-лист
+        </button>
+      </div>
     </div>
 
-    <!-- Rechte Seite -->
-    <div>
-        <div class="section-title">
-            <span id="title_result">Результат тир-листа</span>
-            <span class="small-hint" id="progressInfo">Ещё не запущено</span>
-        </div>
-
-        <div id="finishedPanel" class="finished-list hidden">
-            <div class="small-hint" style="margin-bottom:8px;" id="hint_sorted_list">
-                Отсортированный список (1 = любимая игра):
-            </div>
-            <div id="rankList"></div>
-        </div>
-
-        <div id="tierTableSection" class="tier-table hidden">
-            <div class="tier-table-header">
-                <span class="small-hint" id="hint_visual">
-                    Визуальный тир-лист (S / A / B / C / D).
-                </span>
-                <button id="downloadTierImageButton" type="button" class="btn-secondary">
-                    Скачать таблицу как картинку
-                </button>
-            </div>
-            <div id="tierTableWrapper" class="tier-table-wrapper"></div>
-        </div>
+    <!-- Share nur Spiele (ohne Ranking) -->
+    <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+      <div class="section-title">
+        <span id="share_title">Spiele teilen (ohne Ranking)</span>
+      </div>
+      <span class="small-hint" id="share_hint">
+        Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen,
+        das Ranking muss die andere Person selbst neu machen.
+      </span>
+      <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
+        <button id="btnExportGames" type="button" class="btn-secondary">
+          Spiele-Exportcode erzeugen
+        </button>
+        <button id="btnImportGames" type="button" class="btn-secondary">
+          Spiele-Exportcode einfügen
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- Rechte Seite -->
+  <div>
+    <div class="section-title">
+      <span id="title_result">Результат тир-листа</span>
+      <span class="small-hint" id="progressInfo">Ещё не запущено</span>
+    </div>
+
+    <div id="finishedPanel" class="finished-list hidden">
+      <div class="small-hint" style="margin-bottom:8px;" id="hint_sorted_list">
+        Отсортированный список (1 = любимая игра):
+      </div>
+      <div id="rankList"></div>
+    </div>
+
+    <div id="tierTableSection" class="tier-table hidden">
+      <div class="tier-table-header">
+        <span class="small-hint" id="hint_visual">
+          Визуальный тир-лист (S / A / B / C / D).
+        </span>
+        <button id="downloadTierImageButton" type="button" class="btn-secondary">
+          Скачать таблицу как картинку
+        </button>
+      </div>
+      <div id="tierTableWrapper" class="tier-table-wrapper"></div>
+    </div>
+  </div>
 </div>
 
-<!-- Vollbild-Vergleich -->
+<!-- Vollbild-Vergleich (Auto-Tierlist) -->
 <div id="compareOverlay" class="overlay hidden">
-    <div class="overlay-inner">
-        <h1 class="overlay-title" id="txt_overlay_title">Сравнение игр</h1>
-        <p class="overlay-subtitle" id="txt_overlay_subtitle">
-            Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.
-        </p>
-        <div id="fsStatus" class="overlay-status"></div>
-        <div class="compare-grid">
-            <div class="compare-card" id="fsCardLeft">
-                <div class="compare-label" id="lbl_left_choice">Левый выбор</div>
-                <img id="fsImgLeft" src="" alt="">
-                <div class="compare-name" id="fsNameLeft">—</div>
-            </div>
-            <div class="compare-card" id="fsCardRight">
-                <div class="compare-label" id="lbl_right_choice">Правый выбор</div>
-                <img id="fsImgRight" src="" alt="">
-                <div class="compare-name" id="fsNameRight">—</div>
-            </div>
-        </div>
-        <div class="overlay-footer">
-            <span id="fsProgress">0 сравнений</span>
-            <button id="fsCancel" type="button" class="btn-secondary">Отменить</button>
-        </div>
+  <div class="overlay-inner">
+    <h1 class="overlay-title" id="txt_overlay_title">Сравнение игр</h1>
+    <p class="overlay-subtitle" id="txt_overlay_subtitle">
+      Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.
+    </p>
+    <div id="fsStatus" class="overlay-status"></div>
+    <div class="compare-grid">
+      <div class="compare-card" id="fsCardLeft">
+        <div class="compare-label" id="lbl_left_choice">Левый выбор</div>
+        <img id="fsImgLeft" src="" alt="">
+        <div class="compare-name" id="fsNameLeft">—</div>
+      </div>
+      <div class="compare-card" id="fsCardRight">
+        <div class="compare-label" id="lbl_right_choice">Правый выбор</div>
+        <img id="fsImgRight" src="" alt="">
+        <div class="compare-name" id="fsNameRight">—</div>
+      </div>
     </div>
+    <div class="overlay-footer">
+      <span id="fsProgress">0 сравнений</span>
+      <button id="fsCancel" type="button" class="btn-secondary">Отменить</button>
+    </div>
+  </div>
 </div>
 
-<!-- MANUELLE TIERLIST-ANSICHT -->
-<div id="manualContainer">
-    <div class="manual-header">
-        <div>
-            <div class="manual-title" id="manualMainTitle">Ручной тир-лист</div>
-            <div class="manual-footer-text" id="manualSubText">
-                Перетаскивай игры из списка слева в нужный тир справа.
-            </div>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button id="btnDownloadManualImage" type="button" class="btn-secondary">
-                Скачать ручной тир-лист
-            </button>
-            <button id="btnBackFromManual" type="button" class="btn-secondary">
-                Назад
-            </button>
-        </div>
+<!-- Vollbild Manuelle Tierlist -->
+<div id="manualOverlay" class="overlay hidden">
+  <div class="overlay-inner">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:12px;">
+      <div>
+        <h1 class="overlay-title" id="txt_manual_title">Ручной тир-лист</h1>
+        <p class="overlay-subtitle" id="txt_manual_subtitle">
+          Слева — список всех игр. Справа — ряды S–D. Перетаскивай игры мышкой, чтобы собрать свой тир-лист.
+        </p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button id="btnManualDownload" type="button" class="btn-secondary">
+          Скачать как картинку
+        </button>
+        <button id="btnManualBack" type="button" class="btn-secondary">
+          Назад
+        </button>
+      </div>
     </div>
     <div class="manual-layout">
-        <div class="manual-column">
-            <div class="manual-column-title" id="manualPoolTitle">Все игры</div>
-            <div class="manual-column-sub" id="manualPoolSub">
-                Игры, которые ещё не помещены в тиры.
-            </div>
-            <div class="manual-pool-scroll">
-                <div id="manualPool" class="manual-pool-grid"></div>
-            </div>
-            <div class="manual-footer-text" id="manualPoolHint">
-                Перетащи игру на тир справа, чтобы добавить её туда.
-            </div>
+      <div>
+        <div class="section-title manual-pool-title">
+          <span id="manual_all_games_title">Все игры</span>
         </div>
-        <div class="manual-column">
-            <div class="manual-column-title" id="manualTierTitle">Тир-таблица</div>
-            <div class="manual-column-sub" id="manualTierSub">
-                S сверху, D внизу. Можно перетаскивать игры между тирами.
-            </div>
-            <div class="manual-tier-scroll">
-                <div id="manualTierWrapper" class="manual-tier-table-wrapper">
-                    <!-- Rows werden per JS generiert -->
-                </div>
-            </div>
-            <div class="manual-footer-text" id="manualTierHint">
-                Ручной результат не связан с авторанжированием — это отдельная версия.
-            </div>
+        <div id="manualZone_unassigned" class="manual-dropzone"></div>
+      </div>
+      <div>
+        <div id="manualTierWrapper" class="tier-table-wrapper">
+          <div class="tier-row">
+            <div class="tier-label-cell" style="background:#f97316;">S</div>
+            <div class="tier-items-cell manual-dropzone" id="manualZone_S"></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-label-cell" style="background:#facc15;">A</div>
+            <div class="tier-items-cell manual-dropzone" id="manualZone_A"></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-label-cell" style="background:#22c55e;">B</div>
+            <div class="tier-items-cell manual-dropzone" id="manualZone_B"></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-label-cell" style="background:#38bdf8;">C</div>
+            <div class="tier-items-cell manual-dropzone" id="manualZone_C"></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-label-cell" style="background:#a855f7;">D</div>
+            <div class="tier-items-cell manual-dropzone" id="manualZone_D"></div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-    /* ---------- I18N ---------- */
-    const I18N = {
-        ru: {
-            page_title: "Тир-лист по ссылкам на игры",
-            main_title: "Тир-лист по ссылкам на игры",
-            lang_label: "Язык",
-            subtitle_html:
-                "1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>" +
-                "2. Загружай метаданные и добавляй игры в список.<br>" +
-                "3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.",
-            label_url: "URL игры",
-            placeholder_url: "Например: https://store.steampowered.com/app/570/Dota_2/",
-            label_multi: "Несколько URL (по одному в строке)",
-            placeholder_multi:
-                "Каждый URL на новой строке\nНапример:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-            btn_add_game: "Загрузить и добавить игру",
-            btn_clear_list: "Очистить список",
-            btn_add_many: "Загрузить все ссылки",
-            hint_multi: "Пустые строки будут пропущены.",
-            section_collected: "Собранные игры",
-            hint_min_games: "Нужно минимум 5 игр.",
-            result_title: "Результат тир-листа",
-            finished_hint: "Отсортированный список (1 = любимая игра):",
-            tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
-            btn_download_image: "Скачать таблицу как картинку",
-            overlay_title: "Сравнение игр",
-            overlay_subtitle:
-                "Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.",
-            overlay_left_label: "Левый выбор",
-            overlay_right_label: "Правый выбор",
-            overlay_cancel: "Отменить",
-            manual_section_title: "Своя игра (ручной ввод)",
-            manual_label_name: "Название игры",
-            manual_label_image: "Картинка (файл)",
-            manual_label_image_url: "URL картинки (необязательно)",
-            btn_add_manual: "Добавить свою игру",
-            mode_label: "Режим ранжирования",
-            mode_exact: "Точный (больше кликов)",
-            mode_fast: "Быстрый (приблизительный)",
-            click_stats: "Теоретический минимум: {min} кликов. Полный режим ≈ {exact}, быстрый режим ≈ {fast}.",
-            progress_finished: "Готово! Всего {count}.",
-            progress_running: "Идёт сравнение… ({count})",
-            progress_need_two: "Нужно минимум 5 игр.",
-            progress_not_started: "Ещё не запущено",
-            progress_stopped: "Сравнение остановлено.",
-            progress_cancelled: "Сравнение отменено.",
-            overlay_status_start: "Идёт сравнение…",
-            overlay_status_incremental: "Сравнение новых игр с уже отсортированными…",
-            overlay_status_continue: "Продолжаем сравнение…",
-            status_update_game: "Обновляю игру: {title}",
-            status_update_game_ok: "Игра обновлена: {title}",
-            status_update_game_fail: "Не удалось обновить игру: {error}",
-            status_enter_url: "Пожалуйста, введите URL.",
-            status_loading_meta: "Загружаю метаданные…",
-            status_game_added: "Игра добавлена: {title}",
-            status_load_error: "Ошибка загрузки: {error}",
-            status_manual_need_title: "Введите название игры.",
-            status_manual_need_image: "Выберите файл картинки или введите URL.",
-            status_manual_loading: "Читаю файл картинки…",
-            status_manual_added: "Своя игра добавлена: {title}",
-            status_manual_file_error: "Не удалось прочитать файл картинки.",
-            status_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
-            status_loading_multi_progress: "Загружаю {current} из {total}…",
-            status_multi_success: "Успешно добавлено игр: {count}",
-            status_multi_partial: "Добавлено {success} игр, ошибок: {fail}.",
-            status_multi_fail: "Не удалось добавить ссылки.",
-            tierlist_not_created: "Сначала создай тир-лист.",
-            tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
-            share_title: "Шеринг списка игр (без ранкинга)",
-            share_hint: "Создай код или используй GitHub Gist и отправь другу. При импорте загружаются только игры.",
-            btn_export_games: "Создать код списка игр",
-            btn_import_games: "Загрузить код или Gist",
-            share_no_games: "Нет игр для экспорта.",
-            share_export_copied: "Код успешно скопирован в буфер обмена.",
-            share_export_copy_manual: "Скопируйте код вручную из окна.",
-            share_import_prompt: "Вставьте сюда код списка игр ИЛИ URL GitHub Gist:",
-            share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
-            share_import_fail: "Импорт не удался: {error}",
-            // Manual tier texts
-            manual_main_title: "Ручной тир-лист",
-            manual_sub_text: "Перетаскивай игры из списка слева в тиры справа.",
-            manual_pool_title: "Все игры",
-            manual_pool_sub: "Игры, которые ещё не помещены в тиры.",
-            manual_pool_hint: "Перетащи игру на нужный тир справа.",
-            manual_tier_title: "Тиры S / A / B / C / D",
-            manual_tier_sub: "Игры можно перетаскивать между тирами в любом порядке.",
-            manual_tier_hint: "Ручной результат — отдельная версия от авторанжирования.",
-            manual_back: "Назад",
-            manual_download: "Скачать ручной тир-лист",
-            manual_no_games: "Сначала добавь игры в основной список."
-        },
-        en: {
-            page_title: "Tierlist by Game Links",
-            main_title: "Tierlist by Game Links",
-            lang_label: "Language",
-            subtitle_html:
-                "1. Paste URLs of game pages (Steam, itch.io, Epic, GOG, etc.).<br>" +
-                "2. Load metadata and add the games to the list.<br>" +
-                "3. Click “Start tierlist” – a full screen with two games will appear.",
-            label_url: "Game URL",
-            placeholder_url: "Example: https://store.steampowered.com/app/570/Dota_2/",
-            label_multi: "Multiple URLs (one per line)",
-            placeholder_multi:
-                "One URL per line\nExample:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-            btn_add_game: "Load and add game",
-            btn_clear_list: "Clear list",
-            btn_add_many: "Load all links",
-            hint_multi: "Empty lines will be skipped.",
-            section_collected: "Collected games",
-            hint_min_games: "At least 5 games are required.",
-            result_title: "Tierlist result",
-            finished_hint: "Sorted list (1 = favorite game):",
-            tier_visual_hint: "Visual tierlist (S / A / B / C / D).",
-            btn_download_image: "Download table as image",
-            overlay_title: "Game comparison",
-            overlay_subtitle:
-                "Click on the game you like more. When it’s done, the result appears in the main window.",
-            overlay_left_label: "Left choice",
-            overlay_right_label: "Right choice",
-            overlay_cancel: "Cancel",
-            manual_section_title: "Custom game (manual input)",
-            manual_label_name: "Game title",
-            manual_label_image: "Cover image file",
-            manual_label_image_url: "Cover image URL (optional)",
-            btn_add_manual: "Add custom game",
-            mode_label: "Ranking mode",
-            mode_exact: "Exact (more clicks)",
-            mode_fast: "Fast (approximate)",
-            click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
-            progress_finished: "Done! Total {count}.",
-            progress_running: "Comparison running… ({count})",
-            progress_need_two: "At least 5 games are required.",
-            progress_not_started: "Not started yet",
-            progress_stopped: "Comparison stopped.",
-            progress_cancelled: "Comparison cancelled.",
-            overlay_status_start: "Comparison running…",
-            overlay_status_incremental: "Comparing new games with the existing order…",
-            overlay_status_continue: "Continuing comparison…",
-            status_update_game: "Updating game: {title}",
-            status_update_game_ok: "Game updated: {title}",
-            status_update_game_fail: "Could not update game: {error}",
-            status_enter_url: "Please enter a URL.",
-            status_loading_meta: "Loading metadata…",
-            status_game_added: "Game added: {title}",
-            status_load_error: "Load error: {error}",
-            status_manual_need_title: "Please enter a game title.",
-            status_manual_need_image: "Please choose an image file or enter an image URL.",
-            status_manual_loading: "Reading image file…",
-            status_manual_added: "Custom game added: {title}",
-            status_manual_file_error: "Could not read image file.",
-            status_no_links: "No links to add. Enter at least one line.",
-            status_loading_multi_progress: "Loading {current} of {total}…",
-            status_multi_success: "Successfully added games: {count}",
-            status_multi_partial: "Added {success} games, errors: {fail}.",
-            status_multi_fail: "Could not add links.",
-            tierlist_not_created: "Create the tierlist first.",
-            tierlist_save_error: "Could not save the tierlist image.",
-            share_title: "Share games (without ranking)",
-            share_hint: "Generate a code or use a GitHub Gist and share it. On import only the games are loaded.",
-            btn_export_games: "Create games export code",
-            btn_import_games: "Load export code / Gist",
-            share_no_games: "There are no games to export.",
-            share_export_copied: "Export code copied to clipboard.",
-            share_export_copy_manual: "Copy the export code manually from the window.",
-            share_import_prompt: "Paste the games export code OR a GitHub Gist URL here:",
-            share_import_success: "Games imported successfully. Ranking has been reset.",
-            share_import_fail: "Import failed: {error}",
-            manual_main_title: "Manual tierlist",
-            manual_sub_text: "Drag games from the list on the left into the tiers on the right.",
-            manual_pool_title: "All games",
-            manual_pool_sub: "Games that are not yet placed into tiers.",
-            manual_pool_hint: "Drag a game onto a tier on the right.",
-            manual_tier_title: "Tiers S / A / B / C / D",
-            manual_tier_sub: "You can drag games between tiers in any order.",
-            manual_tier_hint: "The manual result is a separate version from the auto ranking.",
-            manual_back: "Back",
-            manual_download: "Download manual tierlist",
-            manual_no_games: "Add games to the main list first."
-        },
-        de: {
-            page_title: "Tierlist aus Spiele-Links",
-            main_title: "Tierlist aus Spiele-Links",
-            lang_label: "Sprache",
-            subtitle_html:
-                "1. Füge URLs von Spieleseiten ein (Steam, itch.io, Epic, GOG usw.).<br>" +
-                "2. Lade Metadaten und füge die Spiele zur Liste hinzu.<br>" +
-                "3. Klicke auf „Tierlist starten“ – es erscheint ein Vollbild mit zwei Spielen.",
-            label_url: "Spiel-URL",
-            placeholder_url: "Beispiel: https://store.steampowered.com/app/570/Dota_2/",
-            label_multi: "Mehrere URLs (eine pro Zeile)",
-            placeholder_multi:
-                "Eine URL pro Zeile\nBeispiel:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-            btn_add_game: "Spiel laden und hinzufügen",
-            btn_clear_list: "Liste löschen",
-            btn_add_many: "Alle Links laden",
-            hint_multi: "Leere Zeilen werden übersprungen.",
-            section_collected: "Gesammelte Spiele",
-            hint_min_games: "Mindestens 5 Spiele werden benötigt.",
-            result_title: "Tierlist-Ergebnis",
-            finished_hint: "Sortierte Liste (1 = Lieblingsspiel):",
-            tier_visual_hint: "Visuelle Tierlist (S / A / B / C / D).",
-            btn_download_image: "Tabelle als Bild herunterladen",
-            overlay_title: "Spielvergleich",
-            overlay_subtitle:
-                "Klicke auf das Spiel, das du lieber magst. Danach erscheint das Ergebnis im Hauptfenster.",
-            overlay_left_label: "Linke Auswahl",
-            overlay_right_label: "Rechte Auswahl",
-            overlay_cancel: "Abbrechen",
-            manual_section_title: "Eigenes Spiel (manuell)",
-            manual_label_name: "Spielname",
-            manual_label_image: "Cover-Bild (Datei)",
-            manual_label_image_url: "Cover-Bild-URL (optional)",
-            btn_add_manual: "Eigenes Spiel hinzufügen",
-            mode_label: "Ranking-Modus",
-            mode_exact: "Genau (mehr Klicks)",
-            mode_fast: "Schnell (ungefähr)",
-            click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
-            progress_finished: "Fertig! Insgesamt {count}.",
-            progress_running: "Vergleich läuft… ({count})",
-            progress_need_two: "Mindestens 5 Spiele werden benötigt.",
-            progress_not_started: "Noch nicht gestartet",
-            progress_stopped: "Vergleich gestoppt.",
-            progress_cancelled: "Vergleich abgebrochen.",
-            overlay_status_start: "Vergleich läuft…",
-            overlay_status_incremental: "Vergleiche neue Spiele mit der vorhandenen Reihenfolge…",
-            overlay_status_continue: "Vergleich wird fortgesetzt…",
-            status_update_game: "Aktualisiere Spiel: {title}",
-            status_update_game_ok: "Spiel aktualisiert: {title}",
-            status_update_game_fail: "Spiel konnte nicht aktualisiert werden: {error}",
-            status_enter_url: "Bitte eine URL eingeben.",
-            status_loading_meta: "Lade Metadaten…",
-            status_game_added: "Spiel hinzugefügt: {title}",
-            status_load_error: "Fehler beim Laden: {error}",
-            status_manual_need_title: "Bitte einen Spielnamen eingeben.",
-            status_manual_need_image: "Bitte eine Bilddatei auswählen oder eine Bild-URL eingeben.",
-            status_manual_loading: "Lese Bilddatei…",
-            status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
-            status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
-            status_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
-            status_loading_multi_progress: "Lade {current} von {total}…",
-            status_multi_success: "{count} Spiele erfolgreich hinzugefügt.",
-            status_multi_partial: "{success} Spiele hinzugefügt, Fehler: {fail}.",
-            status_multi_fail: "Links konnten nicht hinzugefügt werden.",
-            tierlist_not_created: "Erstelle zuerst eine Tierlist.",
-            tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
-            share_title: "Spiele teilen (ohne Ranking)",
-            share_hint: "Erzeuge einen Code oder nutze GitHub Gist und teile ihn. Beim Import werden nur die Spiele übernommen.",
-            btn_export_games: "Spiele-Exportcode erzeugen",
-            btn_import_games: "Exportcode / Gist laden",
-            share_no_games: "Es gibt keine Spiele zum Exportieren.",
-            share_export_copied: "Exportcode in die Zwischenablage kopiert.",
-            share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
-            share_import_prompt: "Füge hier den Spiele-Exportcode ODER eine GitHub-Gist-URL ein:",
-            share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
-            share_import_fail: "Import fehlgeschlagen: {error}",
-            manual_main_title: "Manuelle Tierlist",
-            manual_sub_text: "Ziehe Spiele aus der linken Liste in die Tiers rechts.",
-            manual_pool_title: "Alle Spiele",
-            manual_pool_sub: "Spiele, die noch in keinem Tier sind.",
-            manual_pool_hint: "Ziehe ein Spiel auf einen Tier-Bereich rechts.",
-            manual_tier_title: "Tiers S / A / B / C / D",
-            manual_tier_sub: "Spiele können beliebig zwischen den Tiers verschoben werden.",
-            manual_tier_hint: "Das manuelle Ergebnis ist getrennt vom Auto-Ranking.",
-            manual_back: "Zurück",
-            manual_download: "Manuelle Tierlist herunterladen",
-            manual_no_games: "Bitte zuerst Spiele in die Hauptliste einfügen."
-        }
+/* ---------- I18N ---------- */
+const I18N = {
+  ru: {
+    page_title: "Тир-лист по ссылкам на игры",
+    main_title: "Тир-лист по ссылкам на игры",
+    lang_label: "Язык",
+    subtitle_html:
+      "1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>" +
+      "2. Загружай метаданные и добавляй игры в список.<br>" +
+      "3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.",
+    label_url: "URL игры",
+    placeholder_url: "Например: https://store.steampowered.com/app/570/Dota_2/",
+    label_multi: "Несколько URL (по одному в строке)",
+    placeholder_multi:
+      "Каждый URL на новой строке\nНапример:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+    btn_add_game: "Загрузить и добавить игру",
+    btn_clear_list: "Очистить список",
+    btn_add_many: "Загрузить все ссылки",
+    hint_multi: "Пустые строки будут пропущены.",
+    section_collected: "Собранные игры",
+    hint_min_games: "Нужно минимум 5 игр.",
+    result_title: "Результат тир-листа",
+    finished_hint: "Отсортированный список (1 = любимая игра):",
+    tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
+    btn_download_image: "Скачать таблицу как картинку",
+    overlay_title: "Сравнение игр",
+    overlay_subtitle:
+      "Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.",
+    overlay_left_label: "Левый выбор",
+    overlay_right_label: "Правый выбор",
+    overlay_cancel: "Отменить",
+    manual_section_title: "Своя игра (ручной ввод)",
+    manual_label_name: "Название игры",
+    manual_label_image: "Картинка (обложка, файл)",
+    manual_label_image_url: "Картинка по URL (опционально)",
+    btn_add_manual: "Добавить свою игру",
+    mode_label: "Режим ранжирования",
+    mode_exact: "Точный (больше кликов)",
+    mode_fast: "Быстрый (приблизительный)",
+    click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
+    progress_finished: "Готово! Всего {count}.",
+    progress_running: "Идёт сравнение… ({count})",
+    progress_need_two: "Нужно минимум 5 игр.",
+    progress_not_started: "Ещё не запущено",
+    progress_stopped: "Сравнение остановлено.",
+    progress_cancelled: "Сравнение отменено.",
+    overlay_status_start: "Начинаем сравнение…",
+    overlay_status_incremental: "Сравнение новых игр с уже отсортированными…",
+    overlay_status_continue: "Продолжаем сравнение…",
+    status_update_game: "Обновляю игру: {title}",
+    status_update_game_ok: "Игра обновлена: {title}",
+    status_update_game_fail: "Не удалось обновить игру: {error}",
+    status_enter_url: "Пожалуйста, введите URL.",
+    status_loading_meta: "Загружаю метаданные…",
+    status_game_added: "Игра добавлена: {title}",
+    status_load_error: "Ошибка загрузки: {error}",
+    status_manual_need_title: "Введите название игры.",
+    status_manual_need_image: "Выберите картинку (файл или URL).",
+    status_manual_loading: "Читаю файл картинки…",
+    status_manual_added: "Своя игра добавлена: {title}",
+    status_manual_file_error: "Не удалось прочитать файл картинки.",
+    status_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
+    status_loading_multi_progress: "Загружаю {current} из {total}…",
+    status_multi_success: "Успешно добавлено игр: {count}",
+    status_multi_partial: "Добавлено {success} игр, ошибок: {fail}.",
+    status_multi_fail: "Не удалось добавить ссылки.",
+    tierlist_not_created: "Сначала создай тир-лист.",
+    tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
+    share_title: "Шеринг списка игр (без ранкинга)",
+    share_hint: "Создай код и отправь его другу. При импорте загружаются только игры.",
+    btn_export_games: "Создать код списка игр",
+    btn_import_games: "Вставить код / GitHub Gist",
+    share_no_games: "Нет игр для экспорта.",
+    share_export_copied: "Код успешно скопирован в буфер обмена.",
+    share_export_copy_manual: "Скопируйте код вручную из окна.",
+    share_import_prompt: "Вставьте сюда код списка игр или ссылку на GitHub Gist:",
+    share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
+    share_import_fail: "Импорт не удался: {error}",
+    // Manual tier
+    manual_title: "Ручной тир-лист",
+    manual_subtitle: "Слева — список всех игр. Справа — ряды S–D. Перетаскивай игры мышкой, чтобы собрать свой тир-лист.",
+    manual_all_games_title: "Все игры",
+    btn_manual_open: "Открыть ручной тир-лист",
+    btn_manual_back: "Назад",
+    btn_manual_download: "Скачать ручной тир-лист как картинку",
+    manual_tier_save_error: "Не удалось сохранить картинку ручного тир-листа.",
+    // Edit
+    edit_button_title: "Редактировать игру",
+    edit_prompt_title: "Новое название игры (оставь пустым, чтобы не менять):",
+    edit_prompt_image: "Новый URL обложки (оставь пустым, чтобы не менять):",
+    edit_saved: "Игра обновлена: {title}"
+  },
+  en: {
+    page_title: "Tierlist by Game Links",
+    main_title: "Tierlist by Game Links",
+    lang_label: "Language",
+    subtitle_html:
+      "1. Paste URLs of game pages (Steam, itch.io, Epic, GOG, etc.).<br>" +
+      "2. Load metadata and add the games to the list.<br>" +
+      "3. Click “Start tierlist” – a full screen with two games will appear.",
+    label_url: "Game URL",
+    placeholder_url: "Example: https://store.steampowered.com/app/570/Dota_2/",
+    label_multi: "Multiple URLs (one per line)",
+    placeholder_multi:
+      "One URL per line\nExample:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+    btn_add_game: "Load and add game",
+    btn_clear_list: "Clear list",
+    btn_add_many: "Load all links",
+    hint_multi: "Empty lines will be skipped.",
+    section_collected: "Collected games",
+    hint_min_games: "At least 5 games are required.",
+    result_title: "Tierlist result",
+    finished_hint: "Sorted list (1 = favorite game):",
+    tier_visual_hint: "Visual tierlist (S / A / B / C / D).",
+    btn_download_image: "Download table as image",
+    overlay_title: "Game comparison",
+    overlay_subtitle:
+      "Click on the game you like more. When it’s done, the result appears in the main window.",
+    overlay_left_label: "Left choice",
+    overlay_right_label: "Right choice",
+    overlay_cancel: "Cancel",
+    manual_section_title: "Custom game (manual input)",
+    manual_label_name: "Game title",
+    manual_label_image: "Cover image file",
+    manual_label_image_url: "Cover image URL (optional)",
+    btn_add_manual: "Add custom game",
+    mode_label: "Ranking mode",
+    mode_exact: "Exact (more clicks)",
+    mode_fast: "Fast (approximate)",
+    click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
+    progress_finished: "Done! Total {count}.",
+    progress_running: "Comparison running… ({count})",
+    progress_need_two: "At least 5 games are required.",
+    progress_not_started: "Not started yet",
+    progress_stopped: "Comparison stopped.",
+    progress_cancelled: "Comparison cancelled.",
+    overlay_status_start: "Starting comparison…",
+    overlay_status_incremental: "Comparing new games with the existing order…",
+    overlay_status_continue: "Continuing comparison…",
+    status_update_game: "Updating game: {title}",
+    status_update_game_ok: "Game updated: {title}",
+    status_update_game_fail: "Could not update game: {error}",
+    status_enter_url: "Please enter a URL.",
+    status_loading_meta: "Loading metadata…",
+    status_game_added: "Game added: {title}",
+    status_load_error: "Load error: {error}",
+    status_manual_need_title: "Please enter a game title.",
+    status_manual_need_image: "Please choose a cover image (file or URL).",
+    status_manual_loading: "Reading image file…",
+    status_manual_added: "Custom game added: {title}",
+    status_manual_file_error: "Could not read image file.",
+    status_no_links: "No links to add. Enter at least one line.",
+    status_loading_multi_progress: "Loading {current} of {total}…",
+    status_multi_success: "Successfully added games: {count}",
+    status_multi_partial: "Added {success} games, errors: {fail}.",
+    status_multi_fail: "Could not add links.",
+    tierlist_not_created: "Create the tierlist first.",
+    tierlist_save_error: "Could not save the tierlist image.",
+    share_title: "Share games (without ranking)",
+    share_hint: "Generate a code and send it to someone. On import only the games are loaded.",
+    btn_export_games: "Create games export code",
+    btn_import_games: "Paste export code / GitHub Gist URL",
+    share_no_games: "There are no games to export.",
+    share_export_copied: "Export code copied to clipboard.",
+    share_export_copy_manual: "Copy the export code manually from the window.",
+    share_import_prompt: "Paste the games export code or a GitHub Gist URL here:",
+    share_import_success: "Games imported successfully. Ranking has been reset.",
+    share_import_fail: "Import failed: {error}",
+    manual_title: "Manual tierlist",
+    manual_subtitle: "Left: all games. Right: S–D rows. Drag games with the mouse to build your own tierlist.",
+    manual_all_games_title: "All games",
+    btn_manual_open: "Open manual tierlist",
+    btn_manual_back: "Back",
+    btn_manual_download: "Download manual tierlist as image",
+    manual_tier_save_error: "Could not save the manual tierlist image.",
+    edit_button_title: "Edit game",
+    edit_prompt_title: "New game title (leave empty to keep):",
+    edit_prompt_image: "New cover image URL (leave empty to keep):",
+    edit_saved: "Game updated: {title}"
+  },
+  de: {
+    page_title: "Tierlist aus Spiele-Links",
+    main_title: "Tierlist aus Spiele-Links",
+    lang_label: "Sprache",
+    subtitle_html:
+      "1. Füge URLs von Spieleseiten ein (Steam, itch.io, Epic, GOG usw.).<br>" +
+      "2. Lade Metadaten und füge die Spiele zur Liste hinzu.<br>" +
+      "3. Klicke auf „Tierlist starten“ – es erscheint ein Vollbild mit zwei Spielen.",
+    label_url: "Spiel-URL",
+    placeholder_url: "Beispiel: https://store.steampowered.com/app/570/Dota_2/",
+    label_multi: "Mehrere URLs (eine pro Zeile)",
+    placeholder_multi:
+      "Eine URL pro Zeile\nBeispiel:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+    btn_add_game: "Spiel laden und hinzufügen",
+    btn_clear_list: "Liste löschen",
+    btn_add_many: "Alle Links laden",
+    hint_multi: "Leere Zeilen werden übersprungen.",
+    section_collected: "Gesammelte Spiele",
+    hint_min_games: "Mindestens 5 Spiele werden benötigt.",
+    result_title: "Tierlist-Ergebnis",
+    finished_hint: "Sortierte Liste (1 = Lieblingsspiel):",
+    tier_visual_hint: "Visuelle Tierlist (S / A / B / C / D).",
+    btn_download_image: "Tabelle als Bild herunterladen",
+    overlay_title: "Spielvergleich",
+    overlay_subtitle:
+      "Klicke auf das Spiel, das du lieber magst. Danach erscheint das Ergebnis im Hauptfenster.",
+    overlay_left_label: "Linke Auswahl",
+    overlay_right_label: "Rechte Auswahl",
+    overlay_cancel: "Abbrechen",
+    manual_section_title: "Eigenes Spiel (manuell)",
+    manual_label_name: "Spielname",
+    manual_label_image: "Cover-Bild (Datei)",
+    manual_label_image_url: "Cover-Bild-URL (optional)",
+    btn_add_manual: "Eigenes Spiel hinzufügen",
+    mode_label: "Ranking-Modus",
+    mode_exact: "Genau (mehr Klicks)",
+    mode_fast: "Schnell (ungefähr)",
+    click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
+    progress_finished: "Fertig! Insgesamt {count}.",
+    progress_running: "Vergleich läuft… ({count})",
+    progress_need_two: "Mindestens 5 Spiele werden benötigt.",
+    progress_not_started: "Noch nicht gestartet",
+    progress_stopped: "Vergleich gestoppt.",
+    progress_cancelled: "Vergleich abgebrochen.",
+    overlay_status_start: "Starte Vergleich…",
+    overlay_status_incremental: "Vergleiche neue Spiele mit der vorhandenen Reihenfolge…",
+    overlay_status_continue: "Vergleich wird fortgesetzt…",
+    status_update_game: "Aktualisiere Spiel: {title}",
+    status_update_game_ok: "Spiel aktualisiert: {title}",
+    status_update_game_fail: "Spiel konnte nicht aktualisiert werden: {error}",
+    status_enter_url: "Bitte eine URL eingeben.",
+    status_loading_meta: "Lade Metadaten…",
+    status_game_added: "Spiel hinzugefügt: {title}",
+    status_load_error: "Fehler beim Laden: {error}",
+    status_manual_need_title: "Bitte einen Spielnamen eingeben.",
+    status_manual_need_image: "Bitte ein Cover-Bild auswählen (Datei oder URL).",
+    status_manual_loading: "Lese Bilddatei…",
+    status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
+    status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
+    status_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
+    status_loading_multi_progress: "Lade {current} von {total}…",
+    status_multi_success: "{count} Spiele erfolgreich hinzugefügt.",
+    status_multi_partial: "{success} Spiele hinzugefügt, Fehler: {fail}.",
+    status_multi_fail: "Links konnten nicht hinzugefügt werden.",
+    tierlist_not_created: "Erstelle zuerst eine Tierlist.",
+    tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
+    share_title: "Spiele teilen (ohne Ranking)",
+    share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.",
+    btn_export_games: "Spiele-Exportcode erzeugen",
+    btn_import_games: "Exportcode / GitHub-Gist-URL einfügen",
+    share_no_games: "Es gibt keine Spiele zum Exportieren.",
+    share_export_copied: "Exportcode in die Zwischenablage kopiert.",
+    share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
+    share_import_prompt: "Füge hier den Spiele-Exportcode oder eine GitHub-Gist-URL ein:",
+    share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
+    share_import_fail: "Import fehlgeschlagen: {error}",
+    manual_title: "Manuelle Tierlist",
+    manual_subtitle: "Links: alle Spiele. Rechts: S–D-Reihen. Ziehe Spiele mit der Maus in die gewünschten Reihen.",
+    manual_all_games_title: "Alle Spiele",
+    btn_manual_open: "Manuelle Tierlist öffnen",
+    btn_manual_back: "Zurück",
+    btn_manual_download: "Manuelle Tierlist als Bild herunterladen",
+    manual_tier_save_error: "Manuelle Tierlist konnte nicht als Bild gespeichert werden.",
+    edit_button_title: "Spiel bearbeiten",
+    edit_prompt_title: "Neuer Spielname (leer lassen zum Behalten):",
+    edit_prompt_image: "Neue Cover-Bild-URL (leer lassen zum Behalten):",
+    edit_saved: "Spiel aktualisiert: {title}"
+  }
+};
+
+const LANG_STORAGE_KEY = "tierlist_tool_lang";
+const MODE_STORAGE_KEY = "tierlist_tool_mode";
+
+let currentLang = "ru";
+let rankingMode = "exact";
+
+function tr(key, params) {
+  const dict = I18N[currentLang] || I18N.ru;
+  let s = dict[key] || (I18N.en && I18N.en[key]) || key;
+  if (params) {
+    for (const p in params) {
+      s = s.replace(new RegExp("\\{" + p + "\\}", "g"), params[p]);
+    }
+  }
+  return s;
+}
+
+function formatGameCount(count) {
+  if (currentLang === "ru") {
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    let word;
+    if (mod10 === 1 && mod100 !== 11) word = "игра";
+    else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "игры";
+    else word = "игр";
+    return count + " " + word;
+  } else if (currentLang === "de") {
+    return count + " " + (count === 1 ? "Spiel" : "Spiele");
+  } else {
+    return count + " " + (count === 1 ? "game" : "games");
+  }
+}
+
+function formatComparisonCount(n) {
+  if (currentLang === "ru") {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    let word;
+    if (mod10 === 1 && mod100 !== 11) word = "сравнение";
+    else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "сравнения";
+    else word = "сравнений";
+    return n + " " + word;
+  } else if (currentLang === "de") {
+    return n + " " + (n === 1 ? "Vergleich" : "Vergleiche");
+  } else {
+    return n + " " + (n === 1 ? "comparison" : "comparisons");
+  }
+}
+
+function factorialLog2(n) {
+  let sum = 0;
+  for (let k = 2; k <= n; k++) sum += Math.log2(k);
+  return sum;
+}
+
+function exactComparisonsEstimate(n) {
+  let res = 0;
+  for (let len = 1; len <= n - 1; len++) {
+    res += Math.ceil(Math.log2(len + 1));
+  }
+  return res;
+}
+
+function updateClickStatsDisplay() {
+  const n = games.length;
+  const el = document.getElementById("clickStats");
+  if (!el) return;
+
+  if (n <= 1) {
+    el.textContent = "";
+    return;
+  }
+
+  const min = Math.ceil(factorialLog2(n));
+  const exactEst = exactComparisonsEstimate(n);
+  const fastEst = Math.max(1, Math.round(exactEst * 0.5));
+
+  el.textContent = tr("click_stats", {
+    min,
+    exact: exactEst,
+    fast: fastEst
+  });
+}
+
+function applyLanguageStaticTexts() {
+  const s = I18N[currentLang] || I18N.ru;
+
+  document.title = s.page_title;
+  document.getElementById("txt_title").textContent = s.main_title;
+  document.getElementById("lbl_lang").textContent = s.lang_label;
+  document.getElementById("txt_subtitle").innerHTML = s.subtitle_html;
+  document.getElementById("lbl_url").textContent = s.label_url;
+  document.getElementById("urlInput").placeholder = s.placeholder_url;
+  document.getElementById("lbl_multi").textContent = s.label_multi;
+  document.getElementById("multiInput").placeholder = s.placeholder_multi;
+  document.getElementById("addButton").textContent = s.btn_add_game;
+  document.getElementById("clearButton").textContent = s.btn_clear_list;
+  document.getElementById("addManyButton").textContent = s.btn_add_many;
+  document.getElementById("hint_multi").textContent = s.hint_multi;
+  document.getElementById("title_collected").textContent = s.section_collected;
+  document.getElementById("gameCountHint").textContent = formatGameCount(games.length);
+  document.getElementById("hint_min_games").textContent = s.hint_min_games;
+  document.getElementById("title_result").textContent = s.result_title;
+  document.getElementById("hint_sorted_list").textContent = s.finished_hint;
+  document.getElementById("hint_visual").textContent = s.tier_visual_hint;
+  document.getElementById("downloadTierImageButton").textContent = s.btn_download_image;
+  document.getElementById("txt_overlay_title").textContent = s.overlay_title;
+  document.getElementById("txt_overlay_subtitle").textContent = s.overlay_subtitle;
+  document.getElementById("lbl_left_choice").textContent = s.overlay_left_label;
+  document.getElementById("lbl_right_choice").textContent = s.overlay_right_label;
+  document.getElementById("fsCancel").textContent = s.overlay_cancel;
+
+  document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
+  document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
+  document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
+  document.getElementById("lbl_manual_image_url").textContent = s.manual_label_image_url;
+  document.getElementById("addManualButton").textContent = s.btn_add_manual;
+
+  document.getElementById("modeLabel").textContent = s.mode_label;
+
+  const modeSelect = document.getElementById("modeSelect");
+  const optExact = modeSelect.querySelector('option[value="exact"]');
+  const optFast = modeSelect.querySelector('option[value="fast"]');
+  if (optExact) optExact.textContent = s.mode_exact;
+  if (optFast) optFast.textContent = s.mode_fast;
+
+  document.getElementById("share_title").textContent = s.share_title;
+  document.getElementById("share_hint").textContent = s.share_hint;
+  document.getElementById("btnExportGames").textContent = s.btn_export_games;
+  document.getElementById("btnImportGames").textContent = s.btn_import_games;
+
+  document.getElementById("txt_manual_title").textContent = s.manual_title;
+  document.getElementById("txt_manual_subtitle").textContent = s.manual_subtitle;
+  document.getElementById("manual_all_games_title").textContent = s.manual_all_games_title;
+  document.getElementById("btnManualStart").textContent = s.btn_manual_open;
+  document.getElementById("btnManualBack").textContent = s.btn_manual_back;
+  document.getElementById("btnManualDownload").textContent = s.btn_manual_download;
+
+  updateClickStatsDisplay();
+  refreshProgressInfoForCurrentState();
+}
+
+function refreshProgressInfoForCurrentState() {
+  const progressInfo = document.getElementById("progressInfo");
+  if (sortedIndices.length > 0 && !compareActive) {
+    progressInfo.textContent = tr("progress_finished", {
+      count: formatComparisonCount(comparisonsDone || 0)
+    });
+  } else if (compareActive) {
+    progressInfo.textContent = tr("progress_running", {
+      count: formatComparisonCount(comparisonsDone || 0)
+    });
+  } else if (games.length < 5) {
+    progressInfo.textContent = tr("progress_need_two");
+  } else {
+    progressInfo.textContent = tr("progress_not_started");
+  }
+}
+
+function initLanguage() {
+  const select = document.getElementById("langSelect");
+  let stored = "ru";
+  try {
+    const tmp = localStorage.getItem(LANG_STORAGE_KEY);
+    if (tmp && ["ru", "en", "de"].includes(tmp)) stored = tmp;
+  } catch (e) {}
+  currentLang = stored;
+  select.value = stored;
+
+  applyLanguageStaticTexts();
+  select.addEventListener("change", () => {
+    currentLang = select.value;
+    try {
+      localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+    } catch (e) {}
+    applyLanguageStaticTexts();
+    document.getElementById("fsProgress").textContent =
+      formatComparisonCount(comparisonsDone || 0);
+  });
+}
+
+function initMode() {
+  const sel = document.getElementById("modeSelect");
+  let stored = "exact";
+  try {
+    const tmp = localStorage.getItem(MODE_STORAGE_KEY);
+    if (tmp === "exact" || tmp === "fast") stored = tmp;
+  } catch (e) {}
+  rankingMode = stored;
+  sel.value = stored;
+
+  sel.addEventListener("change", () => {
+    rankingMode = sel.value;
+    try {
+      localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
+    } catch (e) {}
+    updateClickStatsDisplay();
+  });
+}
+
+const games = [];
+let nextId = 1;
+
+let sortedIndices = [];
+let pendingNewIndices = [];
+let currentNewIndex = null;
+let low = 0, high = 0, mid = 0;
+let compareActive = false;
+let comparisonsDone = 0;
+
+let comparisonsRunLimit = Infinity;
+let plannedRunComparisonsExact = 0;
+let plannedRunComparisonsFast = 0;
+
+const TIER_CONFIG = [
+  { label: "S", color: "#f97316" },
+  { label: "A", color: "#facc15" },
+  { label: "B", color: "#22c55e" },
+  { label: "C", color: "#38bdf8" },
+  { label: "D", color: "#a855f7" }
+];
+
+const STORAGE_KEY = "tierlist_tool_state_v2";
+
+let manualTiers = {
+  unassigned: [],
+  S: [],
+  A: [],
+  B: [],
+  C: [],
+  D: []
+};
+
+function cleanTitle(rawTitle, url) {
+  let t = (rawTitle || "").trim();
+  if (!t) return t;
+  if (url && url.includes("store.steampowered.com")) {
+    t = t.replace(/ on Steam$/i, "");
+    t = t.replace(/^Save \d+% on /i, "");
+    t = t.replace(/^Buy /i, "");
+  }
+  return t.trim();
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "status " + type;
+  el.classList.remove("hidden");
+}
+
+function hideStatus() {
+  document.getElementById("status").classList.add("hidden");
+}
+
+function updateGameCount() {
+  const count = games.length;
+  document.getElementById("gameCountHint").textContent = formatGameCount(count);
+  document.getElementById("startTierButton").disabled = count < 5;
+  updateClickStatsDisplay();
+}
+
+function resetTierResults() {
+  sortedIndices = [];
+  pendingNewIndices = [];
+  currentNewIndex = null;
+  comparisonsDone = 0;
+  compareActive = false;
+  comparisonsRunLimit = Infinity;
+  plannedRunComparisonsExact = 0;
+  plannedRunComparisonsFast = 0;
+
+  document.getElementById("finishedPanel").classList.add("hidden");
+  document.getElementById("tierTableSection").classList.add("hidden");
+  document.getElementById("rankList").innerHTML = "";
+  document.getElementById("tierTableWrapper").innerHTML = "";
+  document.getElementById("progressInfo").textContent = tr("progress_not_started");
+}
+
+function ensureManualTiersConsistency() {
+  const zones = ["unassigned","S","A","B","C","D"];
+  const present = new Set();
+
+  zones.forEach(z => {
+    let arr = manualTiers[z];
+    if (!Array.isArray(arr)) arr = [];
+    arr = arr.filter(i =>
+      Number.isInteger(i) &&
+      i >= 0 &&
+      i < games.length &&
+      !present.has(i)
+    );
+    arr.forEach(i => present.add(i));
+    manualTiers[z] = arr;
+  });
+
+  for (let i = 0; i < games.length; i++) {
+    if (!present.has(i)) {
+      manualTiers.unassigned.push(i);
+      present.add(i);
+    }
+  }
+}
+
+function deleteGame(index) {
+  if (index < 0 || index >= games.length) return;
+
+  const deletedIndex = index;
+  games.splice(deletedIndex, 1);
+
+  sortedIndices = sortedIndices
+    .filter(i => i !== deletedIndex)
+    .map(i => (i > deletedIndex ? i - 1 : i));
+
+  pendingNewIndices = pendingNewIndices
+    .filter(i => i !== deletedIndex)
+    .map(i => (i > deletedIndex ? i - 1 : i));
+
+  if (currentNewIndex !== null) {
+    if (currentNewIndex === deletedIndex) {
+      currentNewIndex = null;
+    } else if (currentNewIndex > deletedIndex) {
+      currentNewIndex--;
+    }
+  }
+
+  if (compareActive) {
+    compareActive = false;
+    document.getElementById("compareOverlay").classList.add("hidden");
+    document.getElementById("mainContainer").classList.remove("hidden");
+    document.getElementById("progressInfo").textContent = tr("progress_stopped");
+  }
+
+  ["unassigned","S","A","B","C","D"].forEach(z => {
+    manualTiers[z] = manualTiers[z]
+      .filter(i => i !== deletedIndex)
+      .map(i => (i > deletedIndex ? i - 1 : i));
+  });
+
+  if (games.length === 0) {
+    manualTiers = {
+      unassigned: [],
+      S: [],
+      A: [],
+      B: [],
+      C: [],
+      D: []
     };
+  }
 
-    const LANG_STORAGE_KEY = "tierlist_tool_lang";
-    const MODE_STORAGE_KEY = "tierlist_tool_mode";
-    const STORAGE_KEY = "tierlist_tool_state_v3";
+  renderGameList();
+  ensureManualTiersConsistency();
 
-    let currentLang = "ru";
-    let rankingMode = "exact";
+  const finishedPanel = document.getElementById("finishedPanel");
+  const tierTableSection = document.getElementById("tierTableSection");
+  const progressInfo = document.getElementById("progressInfo");
 
-    function tr(key, params) {
-        const dict = I18N[currentLang] || I18N.ru;
-        let s = dict[key] || (I18N.en && I18N.en[key]) || key;
-        if (params) {
-            for (const p in params) {
-                s = s.replace(new RegExp("\\{" + p + "\\}", "g"), params[p]);
-            }
-        }
-        return s;
+  if (sortedIndices.length > 0 && games.length >= 1) {
+    finishedPanel.classList.remove("hidden");
+    tierTableSection.classList.remove("hidden");
+    renderRankList();
+    renderTierTable();
+    progressInfo.textContent = tr("progress_finished", {
+      count: formatComparisonCount(comparisonsDone || 0)
+    });
+  } else {
+    finishedPanel.classList.add("hidden");
+    tierTableSection.classList.add("hidden");
+    sortedIndices = [];
+    pendingNewIndices = [];
+    currentNewIndex = null;
+    progressInfo.textContent =
+      games.length >= 5 ? tr("progress_not_started") : tr("progress_need_two");
+  }
+
+  updateGameCount();
+  saveState();
+}
+
+async function reloadGame(index) {
+  const g = games[index];
+  if (!g || !g.url) return;
+
+  const addBtn = document.getElementById("addButton");
+  const addManyBtn = document.getElementById("addManyButton");
+
+  hideStatus();
+  showStatus(tr("status_update_game", { title: g.title || g.url }), "info");
+
+  addBtn.disabled = true;
+  if (addManyBtn) addManyBtn.disabled = true;
+
+  let finalUrl = g.url || "";
+  if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
+
+  const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Unknown error");
+
+    const rawTitle = data.title || "(no title)";
+    const url = data.url || finalUrl;
+    const title = cleanTitle(rawTitle, url);
+    const image = data.image || "";
+
+    games[index].title = title;
+    games[index].image = image;
+    games[index].url   = url;
+
+    renderGameList();
+    if (!document.getElementById("manualOverlay").classList.contains("hidden")) {
+      renderManualTierlist();
     }
 
-    function formatGameCount(count) {
-        if (currentLang === "ru") {
-            const mod10 = count % 10;
-            const mod100 = count % 100;
-            let word;
-            if (mod10 === 1 && mod100 !== 11) word = "игра";
-            else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "игры";
-            else word = "игр";
-            return count + " " + word;
-        } else if (currentLang === "de") {
-            return count + " " + (count === 1 ? "Spiel" : "Spiele");
-        } else {
-            return count + " " + (count === 1 ? "game" : "games");
-        }
+    showStatus(tr("status_update_game_ok", { title }), "success");
+    saveState();
+  } catch (err) {
+    console.error(err);
+    showStatus(
+      tr("status_update_game_fail", { error: err.message }),
+      "error"
+    );
+  } finally {
+    addBtn.disabled = false;
+    if (addManyBtn) addManyBtn.disabled = false;
+  }
+}
+
+function editGame(index) {
+  const g = games[index];
+  if (!g) return;
+
+  const newTitleRaw = prompt(tr("edit_prompt_title"), g.title || "");
+  if (newTitleRaw === null) return;
+  const newTitle = newTitleRaw.trim() || g.title;
+
+  const newImageRaw = prompt(tr("edit_prompt_image"), g.image || "");
+  if (newImageRaw === null) return;
+  const newImage = newImageRaw.trim() || g.image;
+
+  g.title = newTitle;
+  g.image = newImage;
+
+  renderGameList();
+  if (!document.getElementById("manualOverlay").classList.contains("hidden")) {
+    renderManualTierlist();
+  }
+  showStatus(tr("edit_saved", { title: newTitle }), "success");
+  saveState();
+}
+
+function renderGameList() {
+  const listEl = document.getElementById("gameList");
+  listEl.innerHTML = "";
+
+  games.forEach((g, index) => {
+    const row = document.createElement("div");
+    row.className = "game-item";
+
+    const img = document.createElement("img");
+    img.className = "game-thumb";
+    img.crossOrigin = "anonymous";
+    img.src = g.image || "";
+    img.alt = g.title || "Image";
+
+    const info = document.createElement("div");
+    info.className = "game-info";
+
+    const title = document.createElement("div");
+    title.className = "game-title";
+    title.textContent = g.title || "(no title)";
+
+    const url = document.createElement("div");
+    url.className = "game-url";
+    url.textContent = g.url;
+
+    info.appendChild(title);
+    info.appendChild(url);
+
+    const badge = document.createElement("div");
+    badge.className = "rank-badge";
+    badge.textContent = "#" + (index + 1);
+
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "btn-icon";
+    editBtn.textContent = "✎";
+    editBtn.title = tr("edit_button_title");
+    editBtn.addEventListener("click", () => editGame(index));
+
+    const reloadBtn = document.createElement("button");
+    reloadBtn.type = "button";
+    reloadBtn.className = "btn-icon";
+    reloadBtn.textContent = "⟳";
+    reloadBtn.title = "Reload";
+    reloadBtn.addEventListener("click", () => reloadGame(index));
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "btn-icon danger";
+    delBtn.textContent = "×";
+    delBtn.title = "Delete";
+    delBtn.addEventListener("click", () => deleteGame(index));
+
+    row.appendChild(img);
+    row.appendChild(info);
+    row.appendChild(badge);
+    row.appendChild(editBtn);
+    row.appendChild(reloadBtn);
+    row.appendChild(delBtn);
+
+    listEl.appendChild(row);
+  });
+
+  updateGameCount();
+}
+
+async function fetchAndAddGame(rawUrl) {
+  let finalUrl = (rawUrl || "").trim();
+  if (!finalUrl) {
+    return { success: false, skipped: true, error: "empty" };
+  }
+
+  if (!/^https?:\/\//i.test(finalUrl)) {
+    finalUrl = "https://" + finalUrl;
+  }
+
+  const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Unknown error");
+
+    const rawTitle = data.title || "(no title)";
+    const url = data.url || finalUrl;
+    const title = cleanTitle(rawTitle, url);
+    const image = data.image || "";
+
+    games.push({ id: nextId++, title, image, url });
+    ensureManualTiersConsistency();
+    renderGameList();
+    saveState();
+
+    return { success: true, title };
+  } catch (err) {
+    console.error(err);
+    return { success: false, skipped: false, error: err.message };
+  }
+}
+
+async function addGameFromUrl() {
+  const inputEl = document.getElementById("urlInput");
+  const rawUrl = inputEl.value.trim();
+  const addBtn = document.getElementById("addButton");
+  const addManyBtn = document.getElementById("addManyButton");
+
+  if (!rawUrl) {
+    showStatus(tr("status_enter_url"), "error");
+    return;
+  }
+
+  hideStatus();
+  showStatus(tr("status_loading_meta"), "info");
+  addBtn.disabled = true;
+  if (addManyBtn) addManyBtn.disabled = true;
+
+  const result = await fetchAndAddGame(rawUrl);
+
+  if (result.success) {
+    showStatus(tr("status_game_added", { title: result.title }), "success");
+    inputEl.value = "";
+  } else if (!result.skipped) {
+    showStatus(tr("status_load_error", { error: result.error }), "error");
+  }
+
+  addBtn.disabled = false;
+  if (addManyBtn) addManyBtn.disabled = false;
+}
+
+function addManualGame() {
+  const titleInput = document.getElementById("manualTitle");
+  const fileInput = document.getElementById("manualImageFile");
+  const urlInput = document.getElementById("manualImageUrl");
+
+  const rawTitle = (titleInput.value || "").trim();
+  const file = fileInput.files[0];
+  const imageUrl = (urlInput.value || "").trim();
+
+  const addBtn = document.getElementById("addButton");
+  const addManyBtn = document.getElementById("addManyButton");
+  const addManualBtn = document.getElementById("addManualButton");
+
+  if (!rawTitle) {
+    showStatus(tr("status_manual_need_title"), "error");
+    return;
+  }
+  if (!file && !imageUrl) {
+    showStatus(tr("status_manual_need_image"), "error");
+    return;
+  }
+
+  hideStatus();
+  addBtn.disabled = true;
+  if (addManyBtn) addManyBtn.disabled = true;
+  addManualBtn.disabled = true;
+
+  const finishAdd = (imgValue) => {
+    games.push({
+      id: nextId++,
+      title: rawTitle,
+      image: imgValue,
+      url: ""
+    });
+
+    ensureManualTiersConsistency();
+    renderGameList();
+    showStatus(tr("status_manual_added", { title: rawTitle }), "success");
+    titleInput.value = "";
+    fileInput.value = "";
+    urlInput.value = "";
+    saveState();
+
+    addBtn.disabled = false;
+    if (addManyBtn) addManyBtn.disabled = false;
+    addManualBtn.disabled = false;
+  };
+
+  if (imageUrl) {
+    finishAdd(imageUrl);
+    return;
+  }
+
+  showStatus(tr("status_manual_loading"), "info");
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    finishAdd(dataUrl);
+  };
+  reader.onerror = (e) => {
+    console.error("FileReader error", e);
+    showStatus(tr("status_manual_file_error"), "error");
+    addBtn.disabled = false;
+    if (addManyBtn) addManyBtn.disabled = false;
+    addManualBtn.disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addGamesFromMultiInput() {
+  const multiEl = document.getElementById("multiInput");
+  const text = multiEl.value;
+  const addBtn = document.getElementById("addButton");
+  const addManyBtn = document.getElementById("addManyButton");
+
+  const lines = text
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  if (!lines.length) {
+    showStatus(tr("status_no_links"), "error");
+    return;
+  }
+
+  hideStatus();
+  let successCount = 0;
+  let failCount = 0;
+
+  addBtn.disabled = true;
+  addManyBtn.disabled = true;
+
+  for (let i = 0; i < lines.length; i++) {
+    showStatus(
+      tr("status_loading_multi_progress", {
+        current: i + 1,
+        total: lines.length
+      }),
+      "info"
+    );
+    const res = await fetchAndAddGame(lines[i]);
+    if (res.success) {
+      successCount++;
+    } else if (!res.skipped) {
+      failCount++;
+    }
+  }
+
+  if (successCount > 0 && failCount === 0) {
+    showStatus(
+      tr("status_multi_success", { count: successCount }),
+      "success"
+    );
+  } else if (successCount > 0) {
+    showStatus(
+      tr("status_multi_partial", {
+        success: successCount,
+        fail: failCount
+      }),
+      "success"
+    );
+  } else {
+    showStatus(tr("status_multi_fail"), "error");
+  }
+
+  addBtn.disabled = false;
+  addManyBtn.disabled = false;
+  saveState();
+}
+
+const mainContainer = document.getElementById("mainContainer");
+const overlay = document.getElementById("compareOverlay");
+const manualOverlay = document.getElementById("manualOverlay");
+const fsStatus = document.getElementById("fsStatus");
+const fsProgress = document.getElementById("fsProgress");
+const fsImgLeft = document.getElementById("fsImgLeft");
+const fsImgRight = document.getElementById("fsImgRight");
+const fsNameLeft = document.getElementById("fsNameLeft");
+const fsNameRight = document.getElementById("fsNameRight");
+
+function buildPendingNewIndicesForFullSort() {
+  pendingNewIndices = [];
+  if (games.length <= 1) return;
+  for (let i = 1; i < games.length; i++) {
+    pendingNewIndices.push(i);
+  }
+}
+
+function buildPendingNewIndicesIncremental() {
+  pendingNewIndices = [];
+  const present = new Set(sortedIndices);
+  for (let i = 0; i < games.length; i++) {
+    if (!present.has(i)) pendingNewIndices.push(i);
+  }
+}
+
+function moveToNextNewGame() {
+  if (!pendingNewIndices.length) {
+    currentNewIndex = null;
+    finishTierlist();
+    return;
+  }
+  currentNewIndex = pendingNewIndices.shift();
+  low = 0;
+  high = sortedIndices.length;
+  showNextComparisonStep();
+}
+
+function startTierlist() {
+  if (games.length < 5) {
+    showStatus(tr("progress_need_two"), "error");
+    return;
+  }
+
+  hideStatus();
+
+  const isFirstSort = sortedIndices.length === 0;
+
+  if (isFirstSort) {
+    sortedIndices = [0];
+    buildPendingNewIndicesForFullSort();
+    comparisonsDone = 0;
+  } else {
+    buildPendingNewIndicesIncremental();
+    if (!pendingNewIndices.length) {
+      showStatus(tr("status_multi_fail"), "info");
+      return;
+    }
+  }
+
+  const existingLen = sortedIndices.length;
+  const newCount = pendingNewIndices.length;
+  let simLen = existingLen;
+  let runExact = 0;
+  for (let i = 0; i < newCount; i++) {
+    runExact += Math.ceil(Math.log2(Math.max(2, simLen + 1)));
+    simLen++;
+  }
+  plannedRunComparisonsExact = runExact;
+  plannedRunComparisonsFast = Math.max(1, Math.ceil(runExact * 0.5));
+
+  if (rankingMode === "exact") {
+    comparisonsRunLimit = comparisonsDone + plannedRunComparisonsExact;
+  } else {
+    comparisonsRunLimit = comparisonsDone + plannedRunComparisonsFast;
+  }
+
+  compareActive = true;
+
+  document.getElementById("finishedPanel").classList.add("hidden");
+  document.getElementById("tierTableSection").classList.add("hidden");
+  document.getElementById("progressInfo").textContent = tr("progress_running", {
+    count: formatComparisonCount(comparisonsDone || 0)
+  });
+
+  mainContainer.classList.add("hidden");
+  manualOverlay.classList.add("hidden");
+  overlay.classList.remove("hidden");
+  fsStatus.textContent = isFirstSort
+    ? tr("overlay_status_start")
+    : tr("overlay_status_incremental");
+  fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+
+  saveState();
+  moveToNextNewGame();
+}
+
+function showNextComparisonStep() {
+  if (!compareActive || currentNewIndex === null) return;
+
+  if (sortedIndices.includes(currentNewIndex)) {
+    moveToNextNewGame();
+    return;
+  }
+
+  if (low >= high) {
+    sortedIndices.splice(low, 0, currentNewIndex);
+    saveState();
+    moveToNextNewGame();
+    return;
+  }
+
+  mid = Math.floor((low + high) / 2);
+  const existingIndex = sortedIndices[mid];
+
+  const newGame = games[currentNewIndex];
+  const existingGame = games[existingIndex];
+
+  fsImgLeft.crossOrigin = "anonymous";
+  fsImgRight.crossOrigin = "anonymous";
+
+  fsImgLeft.src = newGame.image || "";
+  fsImgLeft.alt = newGame.title || "";
+  fsNameLeft.textContent = newGame.title || "(no title)";
+
+  fsImgRight.src = existingGame.image || "";
+  fsImgRight.alt = existingGame.title || "";
+  fsNameRight.textContent = existingGame.title || "(no title)";
+
+  fsStatus.textContent = tr("overlay_status_start");
+  fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+}
+
+function fastFinishTierlistPartial() {
+  const extra = [];
+  if (currentNewIndex !== null && !sortedIndices.includes(currentNewIndex)) {
+    extra.push(currentNewIndex);
+  }
+  pendingNewIndices.forEach(i => {
+    if (!sortedIndices.includes(i) && i !== currentNewIndex) extra.push(i);
+  });
+  const uniqueExtra = [...new Set(extra)];
+  sortedIndices = sortedIndices.concat(uniqueExtra);
+  pendingNewIndices = [];
+  currentNewIndex = null;
+  finishTierlist();
+}
+
+function chooseLeft() {
+  if (!compareActive || currentNewIndex === null) return;
+  comparisonsDone++;
+  high = mid;
+  fsProgress.textContent = formatComparisonCount(comparisonsDone);
+  saveState();
+
+  if (
+    rankingMode === "fast" &&
+    comparisonsDone >= comparisonsRunLimit &&
+    (pendingNewIndices.length > 0 || currentNewIndex !== null)
+  ) {
+    fastFinishTierlistPartial();
+    return;
+  }
+
+  showNextComparisonStep();
+}
+
+function chooseRight() {
+  if (!compareActive || currentNewIndex === null) return;
+  comparisonsDone++;
+  low = mid + 1;
+  fsProgress.textContent = formatComparisonCount(comparisonsDone);
+  saveState();
+
+  if (
+    rankingMode === "fast" &&
+    comparisonsDone >= comparisonsRunLimit &&
+    (pendingNewIndices.length > 0 || currentNewIndex !== null)
+  ) {
+    fastFinishTierlistPartial();
+    return;
+  }
+
+  showNextComparisonStep();
+}
+
+function finishTierlist() {
+  compareActive = false;
+  overlay.classList.add("hidden");
+  mainContainer.classList.remove("hidden");
+
+  document.getElementById("progressInfo").textContent = tr("progress_finished", {
+    count: formatComparisonCount(comparisonsDone || 0)
+  });
+
+  document.getElementById("finishedPanel").classList.remove("hidden");
+  document.getElementById("tierTableSection").classList.remove("hidden");
+
+  renderRankList();
+  renderTierTable();
+  saveState();
+}
+
+function cancelTierlist() {
+  compareActive = false;
+  overlay.classList.add("hidden");
+  mainContainer.classList.remove("hidden");
+  document.getElementById("progressInfo").textContent = tr("progress_cancelled");
+  saveState();
+}
+
+function renderRankList() {
+  const list = document.getElementById("rankList");
+  list.innerHTML = "";
+
+  const total = sortedIndices.length;
+
+  sortedIndices.forEach((gameIndex, i) => {
+    const g = games[gameIndex];
+    const row = document.createElement("div");
+    row.className = "rank-row";
+
+    const n = document.createElement("div");
+    n.className = "rank-number";
+    n.textContent = (i + 1) + ".";
+
+    const t = document.createElement("div");
+    t.className = "rank-title";
+    t.textContent = g.title;
+
+    const badge = document.createElement("div");
+    badge.className = "rank-badge";
+    badge.textContent = getTierLabelByIndex(i, total) + "-tier";
+
+    row.appendChild(n);
+    row.appendChild(t);
+    row.appendChild(badge);
+    list.appendChild(row);
+  });
+}
+
+function getTierLabelByIndex(index, total) {
+  if (total <= 1) return "S";
+  const ratio = index / (total - 1);
+  if (ratio <= 0.2) return "S";
+  if (ratio <= 0.4) return "A";
+  if (ratio <= 0.6) return "B";
+  if (ratio <= 0.8) return "C";
+  return "D";
+}
+
+function renderTierTable() {
+  const section = document.getElementById("tierTableSection");
+  const wrapper = document.getElementById("tierTableWrapper");
+  wrapper.innerHTML = "";
+
+  const total = sortedIndices.length;
+  if (!total) {
+    section.classList.add("hidden");
+    return;
+  }
+
+  const tiers = { S: [], A: [], B: [], C: [], D: [] };
+
+  sortedIndices.forEach((gameIndex, i) => {
+    const g = games[gameIndex];
+    const tierLabel = getTierLabelByIndex(i, total);
+    tiers[tierLabel].push(g);
+  });
+
+  TIER_CONFIG.forEach(cfg => {
+    const row = document.createElement("div");
+    row.className = "tier-row";
+
+    const labelCell = document.createElement("div");
+    labelCell.className = "tier-label-cell";
+    labelCell.style.background = cfg.color;
+    labelCell.textContent = cfg.label;
+
+    const itemsCell = document.createElement("div");
+    itemsCell.className = "tier-items-cell";
+
+    const list = tiers[cfg.label] || [];
+    if (!list.length) {
+      const emptyText = document.createElement("span");
+      emptyText.className = "small-hint";
+      emptyText.textContent = "—";
+      itemsCell.appendChild(emptyText);
+    } else {
+      list.forEach(g => {
+        const img = document.createElement("img");
+        img.className = "tier-item-img";
+        img.crossOrigin = "anonymous";
+        img.src = g.image || "";
+        img.alt = g.title;
+        itemsCell.appendChild(img);
+      });
     }
 
-    function formatComparisonCount(n) {
-        if (currentLang === "ru") {
-            const mod10 = n % 10;
-            const mod100 = n % 100;
-            let word;
-            if (mod10 === 1 && mod100 !== 11) word = "сравнение";
-            else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "сравнения";
-            else word = "сравнений";
-            return n + " " + word;
-        } else if (currentLang === "de") {
-            return n + " " + (n === 1 ? "Vergleich" : "Vergleiche");
-        } else {
-            return n + " " + (n === 1 ? "comparison" : "comparisons");
-        }
+    row.appendChild(labelCell);
+    row.appendChild(itemsCell);
+    wrapper.appendChild(row);
+  });
+}
+
+async function downloadTierImage() {
+  const wrapper = document.getElementById("tierTableWrapper");
+  if (!wrapper || !wrapper.children.length) {
+    alert(tr("tierlist_not_created"));
+    return;
+  }
+
+  try {
+    const canvas = await html2canvas(wrapper, {
+      backgroundColor: "#020617",
+      scale: 2,
+      useCORS: true
+    });
+
+    const link = document.createElement("a");
+    link.download = "tierlist_auto.png";
+    link.href = canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (e) {
+    console.error(e);
+    alert(tr("tierlist_save_error"));
+  }
+}
+
+function clearGames() {
+  games.length = 0;
+  nextId = 1;
+  resetTierResults();
+  manualTiers = {
+    unassigned: [],
+    S: [],
+    A: [],
+    B: [],
+    C: [],
+    D: []
+  };
+  renderGameList();
+  hideStatus();
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (e) {
+    console.error("Error clearing localStorage", e);
+  }
+}
+
+function saveState() {
+  try {
+    const finishedPanelHidden = document
+      .getElementById("finishedPanel")
+      .classList.contains("hidden");
+
+    const state = {
+      games: games,
+      sortedIndices: sortedIndices,
+      pendingNewIndices: pendingNewIndices,
+      comparisonsDone: comparisonsDone,
+      compareActive: compareActive,
+      currentNewIndex: currentNewIndex,
+      low: low,
+      high: high,
+      mid: mid,
+      nextId: nextId,
+      finished: !finishedPanelHidden,
+      manualTiers: manualTiers
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("Fehler beim Speichern", e);
+  }
+}
+
+function loadState() {
+  let raw;
+  try {
+    raw = localStorage.getItem(STORAGE_KEY);
+  } catch (e) {
+    console.error("Fehler beim Lesen aus localStorage", e);
+    return;
+  }
+  if (!raw) return;
+
+  try {
+    const state = JSON.parse(raw);
+    if (!state || !Array.isArray(state.games)) return;
+
+    games.length = 0;
+    state.games.forEach((g, i) => {
+      if (typeof g.id !== "number") g.id = i + 1;
+      games.push({
+        id: g.id,
+        title: g.title || "",
+        image: g.image || "",
+        url: g.url || ""
+      });
+    });
+
+    let tmpSorted = Array.isArray(state.sortedIndices)
+      ? state.sortedIndices.filter(i =>
+          Number.isInteger(i) && i >= 0 && i < games.length
+        )
+      : [];
+    {
+      const seen = new Set();
+      sortedIndices = tmpSorted.filter(i => {
+        if (seen.has(i)) return false;
+        seen.add(i);
+        return true;
+      });
     }
 
-    function factorialLog2(n) {
-        let sum = 0;
-        for (let k = 2; k <= n; k++) sum += Math.log2(k);
-        return sum;
+    let tmpPending = Array.isArray(state.pendingNewIndices)
+      ? state.pendingNewIndices.filter(i =>
+          Number.isInteger(i) && i >= 0 && i < games.length
+        )
+      : [];
+    {
+      const seenP = new Set();
+      pendingNewIndices = tmpPending.filter(i => {
+        if (seenP.has(i)) return false;
+        seenP.add(i);
+        return true;
+      });
     }
 
-    function exactComparisonsEstimate(n) {
-        let res = 0;
-        for (let len = 1; len <= n - 1; len++) {
-            res += Math.ceil(Math.log2(len + 1));
-        }
-        return res;
+    comparisonsDone = typeof state.comparisonsDone === "number"
+      ? state.comparisonsDone
+      : 0;
+
+    compareActive = !!state.compareActive;
+    currentNewIndex =
+      typeof state.currentNewIndex === "number"
+        ? state.currentNewIndex
+        : null;
+    if (currentNewIndex !== null &&
+        (currentNewIndex < 0 || currentNewIndex >= games.length)) {
+      currentNewIndex = null;
     }
 
-    function updateClickStatsDisplay() {
-        const n = games.length;
-        const el = document.getElementById("clickStats");
-        if (!el) return;
+    low = typeof state.low === "number" ? state.low : 0;
+    high = typeof state.high === "number" ? state.high : 0;
+    mid = typeof state.mid === "number" ? state.mid : 0;
 
-        if (n <= 1) {
-            el.textContent = "";
-            return;
-        }
-
-        const min = Math.ceil(factorialLog2(n));
-        const exactEst = exactComparisonsEstimate(n);
-        const fastEst = Math.max(1, Math.round(exactEst * 0.5));
-
-        el.textContent = tr("click_stats", {
-            min,
-            exact: exactEst,
-            fast: fastEst
-        });
+    if (typeof state.nextId === "number") {
+      nextId = state.nextId;
+    } else {
+      let maxId = 0;
+      games.forEach(g => {
+        if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+      });
+      nextId = maxId + 1;
     }
 
-    function applyLanguageStaticTexts() {
-        const s = I18N[currentLang] || I18N.ru;
-
-        document.title = s.page_title;
-        document.getElementById("txt_title").textContent = s.main_title;
-        document.getElementById("lbl_lang").textContent = s.lang_label;
-        document.getElementById("txt_subtitle").innerHTML = s.subtitle_html;
-        document.getElementById("lbl_url").textContent = s.label_url;
-        document.getElementById("urlInput").placeholder = s.placeholder_url;
-        document.getElementById("lbl_multi").textContent = s.label_multi;
-        document.getElementById("multiInput").placeholder = s.placeholder_multi;
-        document.getElementById("addButton").textContent = s.btn_add_game;
-        document.getElementById("clearButton").textContent = s.btn_clear_list;
-        document.getElementById("addManyButton").textContent = s.btn_add_many;
-        document.getElementById("hint_multi").textContent = s.hint_multi;
-        document.getElementById("title_collected").textContent = s.section_collected;
-        document.getElementById("hint_min_games").textContent = s.hint_min_games;
-        document.getElementById("title_result").textContent = s.result_title;
-        document.getElementById("hint_sorted_list").textContent = s.finished_hint;
-        document.getElementById("hint_visual").textContent = s.tier_visual_hint;
-        document.getElementById("downloadTierImageButton").textContent = s.btn_download_image;
-        document.getElementById("txt_overlay_title").textContent = s.overlay_title;
-        document.getElementById("txt_overlay_subtitle").textContent = s.overlay_subtitle;
-        document.getElementById("lbl_left_choice").textContent = s.overlay_left_label;
-        document.getElementById("lbl_right_choice").textContent = s.overlay_right_label;
-        document.getElementById("fsCancel").textContent = s.overlay_cancel;
-        document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
-        document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
-        document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
-        document.getElementById("lbl_manual_image_url").textContent = s.manual_label_image_url;
-        document.getElementById("addManualButton").textContent = s.btn_add_manual;
-        document.getElementById("modeLabel").textContent = s.mode_label;
-
-        const modeSelect = document.getElementById("modeSelect");
-        const optExact = modeSelect.querySelector('option[value="exact"]');
-        const optFast = modeSelect.querySelector('option[value="fast"]');
-        if (optExact) optExact.textContent = s.mode_exact;
-        if (optFast) optFast.textContent = s.mode_fast;
-
-        document.getElementById("share_title").textContent = s.share_title;
-        document.getElementById("share_hint").textContent = s.share_hint;
-        document.getElementById("btnExportGames").textContent = s.btn_export_games;
-        document.getElementById("btnImportGames").textContent = s.btn_import_games;
-
-        // Manual view texts
-        document.getElementById("manualMainTitle").textContent = s.manual_main_title;
-        document.getElementById("manualSubText").textContent = s.manual_sub_text;
-        document.getElementById("manualPoolTitle").textContent = s.manual_pool_title;
-        document.getElementById("manualPoolSub").textContent = s.manual_pool_sub;
-        document.getElementById("manualPoolHint").textContent = s.manual_pool_hint;
-        document.getElementById("manualTierTitle").textContent = s.manual_tier_title;
-        document.getElementById("manualTierSub").textContent = s.manual_tier_sub;
-        document.getElementById("manualTierHint").textContent = s.manual_tier_hint;
-        document.getElementById("btnBackFromManual").textContent = s.manual_back;
-        document.getElementById("btnDownloadManualImage").textContent = s.manual_download;
-
-        updateClickStatsDisplay();
-    }
-
-    function refreshProgressInfoForCurrentState() {
-        const progressInfo = document.getElementById("progressInfo");
-        if (sortedIndices.length > 0 && !compareActive) {
-            progressInfo.textContent = tr("progress_finished", {
-                count: formatComparisonCount(comparisonsDone || 0)
-            });
-        } else if (compareActive) {
-            progressInfo.textContent = tr("progress_running", {
-                count: formatComparisonCount(comparisonsDone || 0)
-            });
-        } else if (games.length < 5) {
-            progressInfo.textContent = tr("progress_need_two");
-        } else {
-            progressInfo.textContent = tr("progress_not_started");
-        }
-    }
-
-    function initLanguage() {
-        const select = document.getElementById("langSelect");
-        let stored = "ru";
-        try {
-            const tmp = localStorage.getItem(LANG_STORAGE_KEY);
-            if (tmp && ["ru", "en", "de"].includes(tmp)) stored = tmp;
-        } catch (e) {}
-        currentLang = stored;
-        select.value = stored;
-
-        applyLanguageStaticTexts();
-        select.addEventListener("change", () => {
-            currentLang = select.value;
-            try {
-                localStorage.setItem(LANG_STORAGE_KEY, currentLang);
-            } catch (e) {}
-            applyLanguageStaticTexts();
-            updateGameCount();
-            refreshProgressInfoForCurrentState();
-            document.getElementById("fsProgress").textContent =
-                formatComparisonCount(comparisonsDone || 0);
-            renderManualUI();
-        });
-    }
-
-    function initMode() {
-        const sel = document.getElementById("modeSelect");
-        let stored = "exact";
-        try {
-            const tmp = localStorage.getItem(MODE_STORAGE_KEY);
-            if (tmp === "exact" || tmp === "fast") stored = tmp;
-        } catch (e) {}
-        rankingMode = stored;
-        sel.value = stored;
-
-        sel.addEventListener("change", () => {
-            rankingMode = sel.value;
-            try {
-                localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
-            } catch (e) {}
-            updateClickStatsDisplay();
-        });
-    }
-
-    /* ---------- Ranking-Zustand ---------- */
-    const games = [];  // {id,title,image,url}
-    let nextId = 1;
-
-    let sortedIndices = [];
-    let pendingNewIndices = [];
-    let currentNewIndex = null;
-    let low = 0, high = 0, mid = 0;
-    let compareActive = false;
-    let comparisonsDone = 0;
-
-    let comparisonsRunLimit = Infinity;
-    let plannedRunComparisonsExact = 0;
-    let plannedRunComparisonsFast = 0;
-
-    const TIER_CONFIG = [
-        { label: "S", color: "#f97316" },
-        { label: "A", color: "#facc15" },
-        { label: "B", color: "#22c55e" },
-        { label: "C", color: "#38bdf8" },
-        { label: "D", color: "#a855f7" }
-    ];
-
-    // Manueller Tierlist: nach Game-ID
-    let manualTiersById = {
+    if (state.manualTiers && typeof state.manualTiers === "object") {
+      manualTiers = {
+        unassigned: Array.isArray(state.manualTiers.unassigned) ? state.manualTiers.unassigned.slice() : [],
+        S: Array.isArray(state.manualTiers.S) ? state.manualTiers.S.slice() : [],
+        A: Array.isArray(state.manualTiers.A) ? state.manualTiers.A.slice() : [],
+        B: Array.isArray(state.manualTiers.B) ? state.manualTiers.B.slice() : [],
+        C: Array.isArray(state.manualTiers.C) ? state.manualTiers.C.slice() : [],
+        D: Array.isArray(state.manualTiers.D) ? state.manualTiers.D.slice() : []
+      };
+    } else {
+      manualTiers = {
+        unassigned: [],
         S: [],
         A: [],
         B: [],
         C: [],
         D: []
-    };
-
-    // --- Hilfsfunktionen ---
-    function cleanTitle(rawTitle, url) {
-        let t = (rawTitle || "").trim();
-        if (!t) return t;
-        if (url && url.includes("store.steampowered.com")) {
-            t = t.replace(/ on Steam$/i, "");
-            t = t.replace(/^Save \d+% on /i, "");
-            t = t.replace(/^Buy /i, "");
-        }
-        return t.trim();
+      };
     }
-
-    function showStatus(msg, type) {
-        const el = document.getElementById("status");
-        el.textContent = msg;
-        el.className = "status " + type;
-        el.classList.remove("hidden");
-    }
-
-    function hideStatus() {
-        document.getElementById("status").classList.add("hidden");
-    }
-
-    function updateGameCount() {
-        const count = games.length;
-        document.getElementById("gameCountHint").textContent = formatGameCount(count);
-        document.getElementById("startTierButton").disabled = count < 5;
-        document.getElementById("btnManualTier").disabled = count === 0;
-        updateClickStatsDisplay();
-    }
-
-    function resetTierResults() {
-        sortedIndices = [];
-        pendingNewIndices = [];
-        currentNewIndex = null;
-        comparisonsDone = 0;
-        compareActive = false;
-        comparisonsRunLimit = Infinity;
-        plannedRunComparisonsExact = 0;
-        plannedRunComparisonsFast = 0;
-
-        document.getElementById("finishedPanel").classList.add("hidden");
-        document.getElementById("tierTableSection").classList.add("hidden");
-        document.getElementById("rankList").innerHTML = "";
-        document.getElementById("tierTableWrapper").innerHTML = "";
-        document.getElementById("progressInfo").textContent = tr("progress_not_started");
-    }
-
-    function deleteGame(index) {
-        if (index < 0 || index >= games.length) return;
-        const deletedGame = games[index];
-        const deletedId = deletedGame.id;
-
-        games.splice(index, 1);
-
-        // Auto-Ranking Indizes anpassen
-        sortedIndices = sortedIndices
-            .filter(i => i !== index)
-            .map(i => (i > index ? i - 1 : i));
-
-        pendingNewIndices = pendingNewIndices
-            .filter(i => i !== index)
-            .map(i => (i > index ? i - 1 : i));
-
-        if (currentNewIndex !== null) {
-            if (currentNewIndex === index) {
-                currentNewIndex = null;
-            } else if (currentNewIndex > index) {
-                currentNewIndex--;
-            }
-        }
-
-        // Manuellen Tierlist nach ID bereinigen
-        for (const tier of ["S", "A", "B", "C", "D"]) {
-            manualTiersById[tier] = manualTiersById[tier].filter(id => id !== deletedId);
-        }
-
-        if (compareActive) {
-            compareActive = false;
-            document.getElementById("compareOverlay").classList.add("hidden");
-            document.getElementById("mainContainer").classList.remove("hidden");
-            document.getElementById("progressInfo").textContent = tr("progress_stopped");
-        }
-
-        renderGameList();
-        renderManualUI();
-
-        const finishedPanel = document.getElementById("finishedPanel");
-        const tierTableSection = document.getElementById("tierTableSection");
-        const progressInfo = document.getElementById("progressInfo");
-
-        if (sortedIndices.length > 0 && games.length >= 1) {
-            finishedPanel.classList.remove("hidden");
-            tierTableSection.classList.remove("hidden");
-            renderRankList();
-            renderTierTable();
-            progressInfo.textContent = tr("progress_finished", {
-                count: formatComparisonCount(comparisonsDone || 0)
-            });
-        } else {
-            finishedPanel.classList.add("hidden");
-            tierTableSection.classList.add("hidden");
-            sortedIndices = [];
-            pendingNewIndices = [];
-            currentNewIndex = null;
-            progressInfo.textContent =
-                games.length >= 5 ? tr("progress_not_started") : tr("progress_need_two");
-        }
-
-        updateGameCount();
-        saveState();
-    }
-
-    async function reloadGame(index) {
-        const g = games[index];
-        if (!g || !g.url) return;
-
-        const addBtn = document.getElementById("addButton");
-        const addManyBtn = document.getElementById("addManyButton");
-
-        hideStatus();
-        showStatus(tr("status_update_game", { title: g.title || g.url }), "info");
-
-        addBtn.disabled = true;
-        if (addManyBtn) addManyBtn.disabled = true;
-
-        let finalUrl = g.url || "";
-        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
-
-        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
-
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error("HTTP " + response.status);
-
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error || "Unknown error");
-
-            const rawTitle = data.title || "(no title)";
-            const url = data.url || finalUrl;
-            const title = cleanTitle(rawTitle, url);
-            const image = data.image || "";
-
-            g.title = title;
-            g.image = image;
-            g.url = url;
-
-            renderGameList();
-            renderManualUI();
-            showStatus(tr("status_update_game_ok", { title }), "success");
-            saveState();
-        } catch (err) {
-            console.error(err);
-            showStatus(
-                tr("status_update_game_fail", { error: err.message }),
-                "error"
-            );
-        } finally {
-            addBtn.disabled = false;
-            if (addManyBtn) addManyBtn.disabled = false;
-        }
-    }
-
-    function editGame(index) {
-        const g = games[index];
-        if (!g) return;
-
-        const newTitle = prompt(
-            currentLang === "de" ? "Neuer Spielname:" :
-            currentLang === "en" ? "New game title:" :
-            "Новое название игры:",
-            g.title || ""
-        );
-        if (newTitle === null) return;
-
-        const newImageUrl = prompt(
-            currentLang === "de" ? "Neue Bild-URL (leer lassen zum Beibehalten):" :
-            currentLang === "en" ? "New image URL (leave empty to keep):" :
-            "Новый URL картинки (оставьте пустым, чтобы не менять):",
-            g.url && g.image && g.image.startsWith("http") ? g.image : ""
-        );
-        if (newImageUrl === null) return;
-
-        g.title = newTitle.trim() || g.title;
-        if (newImageUrl.trim()) {
-            g.image = newImageUrl.trim();
-        }
-
-        renderGameList();
-        renderManualUI();
-        renderTierTable();
-        saveState();
-    }
-
-    function renderGameList() {
-        const listEl = document.getElementById("gameList");
-        listEl.innerHTML = "";
-
-        games.forEach((g, index) => {
-            const row = document.createElement("div");
-            row.className = "game-item";
-
-            const img = document.createElement("img");
-            img.className = "game-thumb";
-            img.crossOrigin = "anonymous";
-            img.src = g.image || "";
-            img.alt = g.title || "Image";
-
-            const info = document.createElement("div");
-            info.className = "game-info";
-
-            const title = document.createElement("div");
-            title.className = "game-title";
-            title.textContent = g.title || "(no title)";
-
-            const url = document.createElement("div");
-            url.className = "game-url";
-            url.textContent = g.url;
-
-            info.appendChild(title);
-            info.appendChild(url);
-
-            const badge = document.createElement("div");
-            badge.className = "rank-badge";
-            badge.textContent = "#" + (index + 1);
-
-            const editBtn = document.createElement("button");
-            editBtn.type = "button";
-            editBtn.className = "btn-icon";
-            editBtn.textContent = "✎";
-            editBtn.title = currentLang === "de" ? "Bearbeiten" :
-                            currentLang === "en" ? "Edit" : "Редактировать";
-            editBtn.addEventListener("click", () => editGame(index));
-
-            const reloadBtn = document.createElement("button");
-            reloadBtn.type = "button";
-            reloadBtn.className = "btn-icon";
-            reloadBtn.textContent = "⟳";
-            reloadBtn.title = "Reload";
-            reloadBtn.addEventListener("click", () => reloadGame(index));
-
-            const delBtn = document.createElement("button");
-            delBtn.type = "button";
-            delBtn.className = "btn-icon danger";
-            delBtn.textContent = "×";
-            delBtn.title = "Delete";
-            delBtn.addEventListener("click", () => deleteGame(index));
-
-            row.appendChild(img);
-            row.appendChild(info);
-            row.appendChild(badge);
-            row.appendChild(editBtn);
-            row.appendChild(reloadBtn);
-            row.appendChild(delBtn);
-
-            listEl.appendChild(row);
-        });
-
-        updateGameCount();
-    }
-
-    async function fetchAndAddGame(rawUrl) {
-        let finalUrl = (rawUrl || "").trim();
-        if (!finalUrl) {
-            return { success: false, skipped: true, error: "empty" };
-        }
-
-        if (!/^https?:\/\//i.test(finalUrl)) {
-            finalUrl = "https://" + finalUrl;
-        }
-
-        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
-
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error("HTTP " + response.status);
-
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error || "Unknown error");
-
-            const rawTitle = data.title || "(no title)";
-            const url = data.url || finalUrl;
-            const title = cleanTitle(rawTitle, url);
-            const image = data.image || "";
-
-            games.push({ id: nextId++, title, image, url });
-            renderGameList();
-            renderManualUI();
-            saveState();
-
-            return { success: true, title };
-        } catch (err) {
-            console.error(err);
-            return { success: false, skipped: false, error: err.message };
-        }
-    }
-
-    async function addGameFromUrl() {
-        const inputEl = document.getElementById("urlInput");
-        const rawUrl = inputEl.value.trim();
-        const addBtn = document.getElementById("addButton");
-        const addManyBtn = document.getElementById("addManyButton");
-
-        if (!rawUrl) {
-            showStatus(tr("status_enter_url"), "error");
-            return;
-        }
-
-        hideStatus();
-        showStatus(tr("status_loading_meta"), "info");
-        addBtn.disabled = true;
-        if (addManyBtn) addManyBtn.disabled = true;
-
-        const result = await fetchAndAddGame(rawUrl);
-
-        if (result.success) {
-            showStatus(tr("status_game_added", { title: result.title }), "success");
-            inputEl.value = "";
-        } else if (!result.skipped) {
-            showStatus(tr("status_load_error", { error: result.error }), "error");
-        }
-
-        addBtn.disabled = false;
-        if (addManyBtn) addManyBtn.disabled = false;
-    }
-
-    function addManualGame() {
-        const titleInput = document.getElementById("manualTitle");
-        const fileInput = document.getElementById("manualImageFile");
-        const urlInput  = document.getElementById("manualImageUrl");
-
-        const rawTitle = (titleInput.value || "").trim();
-        const file = fileInput.files[0];
-        const imgUrl = (urlInput.value || "").trim();
-
-        const addBtn = document.getElementById("addButton");
-        const addManyBtn = document.getElementById("addManyButton");
-        const addManualBtn = document.getElementById("addManualButton");
-
-        if (!rawTitle) {
-            showStatus(tr("status_manual_need_title"), "error");
-            return;
-        }
-        if (!file && !imgUrl) {
-            showStatus(tr("status_manual_need_image"), "error");
-            return;
-        }
-
-        hideStatus();
-        if (file) {
-            showStatus(tr("status_manual_loading"), "info");
-        }
-
-        addBtn.disabled = true;
-        if (addManyBtn) addManyBtn.disabled = true;
-        addManualBtn.disabled = true;
-
-        const finishAdd = (imageDataUrl) => {
-            games.push({
-                id: nextId++,
-                title: rawTitle,
-                image: imageDataUrl,
-                url: ""
-            });
-
-            renderGameList();
-            renderManualUI();
-            showStatus(tr("status_manual_added", { title: rawTitle }), "success");
-            titleInput.value = "";
-            fileInput.value = "";
-            urlInput.value = "";
-            saveState();
-
-            addBtn.disabled = false;
-            if (addManyBtn) addManyBtn.disabled = false;
-            addManualBtn.disabled = false;
-        };
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                finishAdd(e.target.result);
-            };
-            reader.onerror = (e) => {
-                console.error("FileReader error", e);
-                showStatus(tr("status_manual_file_error"), "error");
-                addBtn.disabled = false;
-                if (addManyBtn) addManyBtn.disabled = false;
-                addManualBtn.disabled = false;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // nur URL
-            finishAdd(imgUrl);
-        }
-    }
-
-    async function addGamesFromMultiInput() {
-        const multiEl = document.getElementById("multiInput");
-        const text = multiEl.value;
-        const addBtn = document.getElementById("addButton");
-        const addManyBtn = document.getElementById("addManyButton");
-
-        const lines = text
-            .split(/\r?\n/)
-            .map(l => l.trim())
-            .filter(l => l.length > 0);
-
-        if (!lines.length) {
-            showStatus(tr("status_no_links"), "error");
-            return;
-        }
-
-        hideStatus();
-        let successCount = 0;
-        let failCount = 0;
-
-        addBtn.disabled = true;
-        addManyBtn.disabled = true;
-
-        for (let i = 0; i < lines.length; i++) {
-            showStatus(
-                tr("status_loading_multi_progress", {
-                    current: i + 1,
-                    total: lines.length
-                }),
-                "info"
-            );
-            const res = await fetchAndAddGame(lines[i]);
-            if (res.success) {
-                successCount++;
-            } else if (!res.skipped) {
-                failCount++;
-            }
-        }
-
-        if (successCount > 0 && failCount === 0) {
-            showStatus(
-                tr("status_multi_success", { count: successCount }),
-                "success"
-            );
-        } else if (successCount > 0) {
-            showStatus(
-                tr("status_multi_partial", {
-                    success: successCount,
-                    fail: failCount
-                }),
-                "success"
-            );
-        } else {
-            showStatus(tr("status_multi_fail"), "error");
-        }
-
-        addBtn.disabled = false;
-        addManyBtn.disabled = false;
-        saveState();
-    }
-
-    const mainContainer = document.getElementById("mainContainer");
-    const overlay = document.getElementById("compareOverlay");
-    const fsStatus = document.getElementById("fsStatus");
-    const fsProgress = document.getElementById("fsProgress");
-    const fsImgLeft = document.getElementById("fsImgLeft");
-    const fsImgRight = document.getElementById("fsImgRight");
-    const fsNameLeft = document.getElementById("fsNameLeft");
-    const fsNameRight = document.getElementById("fsNameRight");
-
-    function buildPendingNewIndicesForFullSort() {
-        pendingNewIndices = [];
-        if (games.length <= 1) return;
-        for (let i = 1; i < games.length; i++) {
-            pendingNewIndices.push(i);
-        }
-    }
-
-    function buildPendingNewIndicesIncremental() {
-        pendingNewIndices = [];
-        const present = new Set(sortedIndices);
-        for (let i = 0; i < games.length; i++) {
-            if (!present.has(i)) pendingNewIndices.push(i);
-        }
-    }
-
-    function moveToNextNewGame() {
-        if (!pendingNewIndices.length) {
-            currentNewIndex = null;
-            finishTierlist();
-            return;
-        }
-        currentNewIndex = pendingNewIndices.shift();
-        low = 0;
-        high = sortedIndices.length;
-        showNextComparisonStep();
-    }
-
-    function startTierlist() {
-        if (games.length < 5) {
-            showStatus(tr("progress_need_two"), "error");
-            return;
-        }
-
-        hideStatus();
-
-        const isFirstSort = sortedIndices.length === 0;
-
-        if (isFirstSort) {
-            sortedIndices = [0];
-            buildPendingNewIndicesForFullSort();
-            comparisonsDone = 0;
-        } else {
-            buildPendingNewIndicesIncremental();
-            if (!pendingNewIndices.length) {
-                showStatus(tr("status_multi_fail"), "info");
-                return;
-            }
-        }
-
-        const existingLen = sortedIndices.length;
-        const newCount = pendingNewIndices.length;
-        let simLen = existingLen;
-        let runExact = 0;
-        for (let i = 0; i < newCount; i++) {
-            runExact += Math.ceil(Math.log2(Math.max(2, simLen + 1)));
-            simLen++;
-        }
-        plannedRunComparisonsExact = runExact;
-        plannedRunComparisonsFast = Math.max(1, Math.ceil(runExact * 0.5));
-
-        if (rankingMode === "exact") {
-            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsExact;
-        } else {
-            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsFast;
-        }
-
-        compareActive = true;
-
-        document.getElementById("finishedPanel").classList.add("hidden");
-        document.getElementById("tierTableSection").classList.add("hidden");
-        document.getElementById("progressInfo").textContent = tr("progress_running", {
-            count: formatComparisonCount(comparisonsDone || 0)
-        });
-
-        mainContainer.classList.add("hidden");
-        overlay.classList.remove("hidden");
-        fsStatus.textContent = isFirstSort
-            ? tr("overlay_status_start")
-            : tr("overlay_status_incremental");
-        fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
-
-        saveState();
+    ensureManualTiersConsistency();
+
+    renderGameList();
+
+    const finished = !!state.finished;
+    const finishedPanel = document.getElementById("finishedPanel");
+    const tierTableSection = document.getElementById("tierTableSection");
+    const progressInfo = document.getElementById("progressInfo");
+
+    if (finished && sortedIndices.length > 0) {
+      finishedPanel.classList.remove("hidden");
+      tierTableSection.classList.remove("hidden");
+      renderRankList();
+      renderTierTable();
+      progressInfo.textContent = tr("progress_finished", {
+        count: formatComparisonCount(comparisonsDone || 0)
+      });
+      mainContainer.classList.remove("hidden");
+      overlay.classList.add("hidden");
+      manualOverlay.classList.add("hidden");
+    } else if (
+      compareActive &&
+      sortedIndices.length > 0 &&
+      (currentNewIndex !== null || pendingNewIndices.length > 0)
+    ) {
+      mainContainer.classList.add("hidden");
+      manualOverlay.classList.add("hidden");
+      overlay.classList.remove("hidden");
+      fsStatus.textContent = tr("overlay_status_continue");
+      fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+      progressInfo.textContent = tr("progress_running", {
+        count: formatComparisonCount(comparisonsDone || 0)
+      });
+
+      if (currentNewIndex === null && pendingNewIndices.length > 0) {
         moveToNextNewGame();
-    }
-
-    function showNextComparisonStep() {
-        if (!compareActive || currentNewIndex === null) return;
-
-        if (sortedIndices.includes(currentNewIndex)) {
-            moveToNextNewGame();
-            return;
-        }
-
-        if (low >= high) {
-            sortedIndices.splice(low, 0, currentNewIndex);
-            saveState();
-            moveToNextNewGame();
-            return;
-        }
-
-        mid = Math.floor((low + high) / 2);
-        const existingIndex = sortedIndices[mid];
-
-        const newGame = games[currentNewIndex];
-        const existingGame = games[existingIndex];
-
-        fsImgLeft.crossOrigin = "anonymous";
-        fsImgRight.crossOrigin = "anonymous";
-
-        fsImgLeft.src = newGame.image || "";
-        fsImgLeft.alt = newGame.title || "";
-        fsNameLeft.textContent = newGame.title || "(no title)";
-
-        fsImgRight.src = existingGame.image || "";
-        fsImgRight.alt = existingGame.title || "";
-        fsNameRight.textContent = existingGame.title || "(no title)";
-
-        fsStatus.textContent = tr("overlay_status_start");
-        fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
-    }
-
-    function fastFinishTierlistPartial() {
-        const extra = [];
-        if (currentNewIndex !== null && !sortedIndices.includes(currentNewIndex)) {
-            extra.push(currentNewIndex);
-        }
-        pendingNewIndices.forEach(i => {
-            if (!sortedIndices.includes(i) && i !== currentNewIndex) extra.push(i);
-        });
-        const uniqueExtra = [...new Set(extra)];
-        sortedIndices = sortedIndices.concat(uniqueExtra);
-        pendingNewIndices = [];
-        currentNewIndex = null;
-        finishTierlist();
-    }
-
-    function chooseLeft() {
-        if (!compareActive || currentNewIndex === null) return;
-        comparisonsDone++;
-        low = mid;
-        fsProgress.textContent = formatComparisonCount(comparisonsDone);
-        saveState();
-
-        if (
-            rankingMode === "fast" &&
-            comparisonsDone >= comparisonsRunLimit &&
-            (pendingNewIndices.length > 0 || currentNewIndex !== null)
-        ) {
-            fastFinishTierlistPartial();
-            return;
-        }
-
+      } else {
         showNextComparisonStep();
+      }
+    } else {
+      compareActive = false;
+      finishedPanel.classList.add("hidden");
+      tierTableSection.classList.add("hidden");
+      progressInfo.textContent = games.length >= 5
+        ? tr("progress_not_started")
+        : tr("progress_need_two");
+      mainContainer.classList.remove("hidden");
+      overlay.classList.add("hidden");
+      manualOverlay.classList.add("hidden");
+    }
+  } catch (e) {
+    console.error("Fehler beim Parsen des gespeicherten Zustands", e);
+  }
+}
+
+const MANUAL_ZONES = ["unassigned","S","A","B","C","D"];
+let manualDnDInitialized = false;
+let manualDragGameIndex = null;
+
+function initManualDnD() {
+  if (manualDnDInitialized) return;
+  MANUAL_ZONES.forEach(name => {
+    const el = document.getElementById("manualZone_" + name);
+    if (!el) return;
+    el.dataset.zone = name;
+    el.addEventListener("dragover", manualOnDragOver);
+    el.addEventListener("dragleave", manualOnDragLeave);
+    el.addEventListener("drop", manualOnDrop);
+  });
+  manualDnDInitialized = true;
+}
+
+function createManualCard(gameIndex) {
+  const g = games[gameIndex];
+  const card = document.createElement("div");
+  card.className = "manual-card";
+  card.draggable = true;
+  card.dataset.gameIndex = String(gameIndex);
+
+  const img = document.createElement("img");
+  img.className = "manual-card-thumb";
+  img.crossOrigin = "anonymous";
+  img.src = g.image || "";
+  img.alt = g.title || "";
+
+  const name = document.createElement("div");
+  name.className = "manual-card-name";
+  name.textContent = g.title || "(no title)";
+
+  card.appendChild(img);
+  card.appendChild(name);
+
+  card.addEventListener("dragstart", manualOnDragStart);
+  card.addEventListener("dragend", manualOnDragEnd);
+
+  return card;
+}
+
+function renderManualTierlist() {
+  ensureManualTiersConsistency();
+  const zoneEls = {};
+  MANUAL_ZONES.forEach(name => {
+    zoneEls[name] = document.getElementById("manualZone_" + name);
+    if (zoneEls[name]) zoneEls[name].innerHTML = "";
+  });
+
+  MANUAL_ZONES.forEach(name => {
+    const zoneArr = manualTiers[name] || [];
+    const root = zoneEls[name];
+    if (!root) return;
+    zoneArr.forEach(idx => {
+      if (idx >= 0 && idx < games.length) {
+        root.appendChild(createManualCard(idx));
+      }
+    });
+  });
+}
+
+function manualOnDragStart(e) {
+  const idx = parseInt(e.currentTarget.dataset.gameIndex, 10);
+  manualDragGameIndex = Number.isInteger(idx) ? idx : null;
+  e.dataTransfer.effectAllowed = "move";
+}
+
+function manualOnDragEnd() {
+  manualDragGameIndex = null;
+  document.querySelectorAll(".manual-dropzone.drag-over").forEach(z => {
+    z.classList.remove("drag-over");
+  });
+}
+
+function manualOnDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  e.currentTarget.classList.add("drag-over");
+}
+
+function manualOnDragLeave(e) {
+  e.currentTarget.classList.remove("drag-over");
+}
+
+function moveGameToManualZone(idx, zoneName) {
+  if (!Number.isInteger(idx) || idx < 0 || idx >= games.length) return;
+  if (!MANUAL_ZONES.includes(zoneName)) return;
+
+  MANUAL_ZONES.forEach(z => {
+    manualTiers[z] = manualTiers[z].filter(i => i !== idx);
+  });
+  manualTiers[zoneName].push(idx);
+  renderManualTierlist();
+  saveState();
+}
+
+function manualOnDrop(e) {
+  e.preventDefault();
+  const zoneName = e.currentTarget.dataset.zone;
+  e.currentTarget.classList.remove("drag-over");
+
+  let idx = manualDragGameIndex;
+  if (!Number.isInteger(idx)) {
+    const data = e.dataTransfer.getData("text/plain");
+    idx = parseInt(data, 10);
+  }
+  moveGameToManualZone(idx, zoneName);
+}
+
+function openManualTierlist() {
+  if (games.length < 5) {
+    showStatus(tr("progress_need_two"), "error");
+    return;
+  }
+  hideStatus();
+  ensureManualTiersConsistency();
+  renderManualTierlist();
+  mainContainer.classList.add("hidden");
+  overlay.classList.add("hidden");
+  manualOverlay.classList.remove("hidden");
+  saveState();
+}
+
+function closeManualTierlist() {
+  manualOverlay.classList.add("hidden");
+  mainContainer.classList.remove("hidden");
+  saveState();
+}
+
+async function downloadManualTierImage() {
+  const wrapper = document.getElementById("manualTierWrapper");
+  if (!wrapper || !wrapper.children.length) {
+    alert(tr("tierlist_not_created"));
+    return;
+  }
+  try {
+    const canvas = await html2canvas(wrapper, {
+      backgroundColor: "#020617",
+      scale: 2,
+      useCORS: true
+    });
+    const link = document.createElement("a");
+    link.download = "tierlist_manual.png";
+    link.href = canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (e) {
+    console.error(e);
+    alert(tr("manual_tier_save_error"));
+  }
+}
+
+function exportGamesOnly() {
+  if (!games.length) {
+    showStatus(tr("share_no_games"), "error");
+    return;
+  }
+
+  const data = {
+    games: games.map(g => ({
+      id: g.id,
+      title: g.title,
+      image: g.image,
+      url: g.url
+    }))
+  };
+
+  const json = JSON.stringify(data);
+  const base64 = btoa(unescape(encodeURIComponent(json)));
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(base64).then(() => {
+      showStatus(tr("share_export_copied"), "success");
+    }).catch(() => {
+      showStatus(tr("share_export_copy_manual"), "info");
+      alert(base64);
+    });
+  } else {
+    showStatus(tr("share_export_copy_manual"), "info");
+    alert(base64);
+  }
+}
+
+function importGamesOnly() {
+  const input = prompt(tr("share_import_prompt"));
+  if (!input) return;
+  const trimmed = input.trim();
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    importGamesFromUrl(trimmed);
+  } else {
+    importGamesFromBase64(trimmed);
+  }
+}
+
+async function fetchTextFromUrl(anyUrl) {
+  let targetUrl = anyUrl;
+  if (targetUrl.includes("gist.github.com")) {
+    const m = targetUrl.match(/gist\.github\.com\/([^\/]+)\/([a-f0-9]+)/i);
+    if (m) {
+      targetUrl = "https://gist.githubusercontent.com/" + m[1] + "/" + m[2] + "/raw";
+    }
+  }
+  const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+  const resp = await fetch(proxyUrl);
+  if (!resp.ok) throw new Error("HTTP " + resp.status);
+  return await resp.text();
+}
+
+async function importGamesFromUrl(url) {
+  try {
+    hideStatus();
+    showStatus(tr("status_loading_meta"), "info");
+    const text = await fetchTextFromUrl(url);
+    importGamesFromBase64(text.trim());
+  } catch (e) {
+    console.error(e);
+    showStatus(tr("share_import_fail", { error: e.message }), "error");
+  }
+}
+
+function importGamesFromBase64(base64) {
+  try {
+    const json = decodeURIComponent(escape(atob(base64)));
+    const data = JSON.parse(json);
+
+    if (!data || !Array.isArray(data.games)) {
+      throw new Error("Invalid format (games missing).");
     }
 
-    function chooseRight() {
-        if (!compareActive || currentNewIndex === null) return;
-        comparisonsDone++;
-        low = mid + 1;
-        fsProgress.textContent = formatComparisonCount(comparisonsDone);
-        saveState();
-
-        if (
-            rankingMode === "fast" &&
-            comparisonsDone >= comparisonsRunLimit &&
-            (pendingNewIndices.length > 0 || currentNewIndex !== null)
-        ) {
-            fastFinishTierlistPartial();
-            return;
-        }
-
-        showNextComparisonStep();
-    }
-
-    function finishTierlist() {
-        compareActive = false;
-        overlay.classList.add("hidden");
-        mainContainer.classList.remove("hidden");
-
-        document.getElementById("progressInfo").textContent = tr("progress_finished", {
-            count: formatComparisonCount(comparisonsDone || 0)
-        });
-
-        document.getElementById("finishedPanel").classList.remove("hidden");
-        document.getElementById("tierTableSection").classList.remove("hidden");
-
-        renderRankList();
-        renderTierTable();
-        saveState();
-    }
-
-    function cancelTierlist() {
-        compareActive = false;
-        overlay.classList.add("hidden");
-        mainContainer.classList.remove("hidden");
-        document.getElementById("progressInfo").textContent = tr("progress_cancelled");
-        saveState();
-    }
-
-    function getTierLabelByIndex(index, total) {
-        if (total <= 1) return "S";
-        const ratio = index / (total - 1);
-        if (ratio <= 0.2) return "S";
-        if (ratio <= 0.4) return "A";
-        if (ratio <= 0.6) return "B";
-        if (ratio <= 0.8) return "C";
-        return "D";
-    }
-
-    function renderRankList() {
-        const list = document.getElementById("rankList");
-        list.innerHTML = "";
-
-        const total = sortedIndices.length;
-
-        sortedIndices.forEach((gameIndex, i) => {
-            const g = games[gameIndex];
-            const row = document.createElement("div");
-            row.className = "rank-row";
-
-            const n = document.createElement("div");
-            n.className = "rank-number";
-            n.textContent = (i + 1) + ".";
-
-            const t = document.createElement("div");
-            t.className = "rank-title";
-            t.textContent = g.title;
-
-            const badge = document.createElement("div");
-            badge.className = "rank-badge";
-            badge.textContent = getTierLabelByIndex(i, total) + "-tier";
-
-            row.appendChild(n);
-            row.appendChild(t);
-            row.appendChild(badge);
-            list.appendChild(row);
-        });
-    }
-
-    function renderTierTable() {
-        const section = document.getElementById("tierTableSection");
-        const wrapper = document.getElementById("tierTableWrapper");
-        wrapper.innerHTML = "";
-
-        const total = sortedIndices.length;
-        if (!total) {
-            section.classList.add("hidden");
-            return;
-        }
-
-        const tiers = { S: [], A: [], B: [], C: [], D: [] };
-
-        sortedIndices.forEach((gameIndex, i) => {
-            const g = games[gameIndex];
-            const tierLabel = getTierLabelByIndex(i, total);
-            tiers[tierLabel].push(g);
-        });
-
-        TIER_CONFIG.forEach(cfg => {
-            const row = document.createElement("div");
-            row.className = "tier-row";
-
-            const labelCell = document.createElement("div");
-            labelCell.className = "tier-label-cell";
-            labelCell.style.background = cfg.color;
-            labelCell.textContent = cfg.label;
-
-            const itemsCell = document.createElement("div");
-            itemsCell.className = "tier-items-cell";
-
-            const list = tiers[cfg.label] || [];
-            if (!list.length) {
-                const emptyText = document.createElement("span");
-                emptyText.className = "small-hint";
-                emptyText.textContent = "—";
-                itemsCell.appendChild(emptyText);
-            } else {
-                list.forEach(g => {
-                    const img = document.createElement("img");
-                    img.className = "tier-item-img";
-                    img.crossOrigin = "anonymous";
-                    img.src = g.image || "";
-                    img.alt = g.title;
-                    itemsCell.appendChild(img);
-                });
-            }
-
-            row.appendChild(labelCell);
-            row.appendChild(itemsCell);
-            wrapper.appendChild(row);
-        });
-    }
-
-    async function downloadTierImage() {
-        const wrapper = document.getElementById("tierTableWrapper");
-        if (!wrapper || !wrapper.children.length) {
-            alert(tr("tierlist_not_created"));
-            return;
-        }
-
-        try {
-            const canvas = await html2canvas(wrapper, {
-                backgroundColor: "#020617",
-                scale: 2,
-                useCORS: true
-            });
-
-            const link = document.createElement("a");
-            link.download = "tierlist.png";
-            link.href = canvas.toDataURL("image/png");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error(e);
-            alert(tr("tierlist_save_error"));
-        }
-    }
-
-    function clearGames() {
-        games.length = 0;
-        nextId = 1;
-        resetTierResults();
-        manualTiersById = { S: [], A: [], B: [], C: [], D: [] };
-        renderGameList();
-        renderManualUI();
-        hideStatus();
-        try {
-            localStorage.removeItem(STORAGE_KEY);
-        } catch (e) {
-            console.error("Error clearing localStorage", e);
-        }
-    }
-
-    function saveState() {
-        try {
-            const finishedPanelHidden = document
-                .getElementById("finishedPanel")
-                .classList.contains("hidden");
-
-            const state = {
-                games: games,
-                sortedIndices: sortedIndices,
-                pendingNewIndices: pendingNewIndices,
-                comparisonsDone: comparisonsDone,
-                compareActive: compareActive,
-                currentNewIndex: currentNewIndex,
-                low: low,
-                high: high,
-                mid: mid,
-                nextId: nextId,
-                finished: !finishedPanelHidden,
-                manualTiersById: manualTiersById
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {
-            console.error("Fehler beim Speichern", e);
-        }
-    }
-
-    function loadState() {
-        let raw;
-        try {
-            raw = localStorage.getItem(STORAGE_KEY);
-        } catch (e) {
-            console.error("Fehler beim Lesen aus localStorage", e);
-            return;
-        }
-        if (!raw) return;
-
-        try {
-            const state = JSON.parse(raw);
-            if (!state || !Array.isArray(state.games)) return;
-
-            games.length = 0;
-            state.games.forEach((g, i) => {
-                if (typeof g.id !== "number") g.id = i + 1;
-                games.push({
-                    id: g.id,
-                    title: g.title || "",
-                    image: g.image || "",
-                    url: g.url || ""
-                });
-            });
-
-            let tmpSorted = Array.isArray(state.sortedIndices)
-                ? state.sortedIndices.filter(i =>
-                    Number.isInteger(i) && i >= 0 && i < games.length
-                )
-                : [];
-            {
-                const seen = new Set();
-                sortedIndices = tmpSorted.filter(i => {
-                    if (seen.has(i)) return false;
-                    seen.add(i);
-                    return true;
-                });
-            }
-
-            let tmpPending = Array.isArray(state.pendingNewIndices)
-                ? state.pendingNewIndices.filter(i =>
-                    Number.isInteger(i) && i >= 0 && i < games.length
-                )
-                : [];
-            {
-                const seenP = new Set();
-                pendingNewIndices = tmpPending.filter(i => {
-                    if (seenP.has(i)) return false;
-                    seenP.add(i);
-                    return true;
-                });
-            }
-
-            comparisonsDone = typeof state.comparisonsDone === "number"
-                ? state.comparisonsDone
-                : 0;
-
-            compareActive = !!state.compareActive;
-            currentNewIndex =
-                typeof state.currentNewIndex === "number"
-                    ? state.currentNewIndex
-                    : null;
-            if (currentNewIndex !== null &&
-                (currentNewIndex < 0 || currentNewIndex >= games.length)) {
-                currentNewIndex = null;
-            }
-
-            low = typeof state.low === "number" ? state.low : 0;
-            high = typeof state.high === "number" ? state.high : 0;
-            mid = typeof state.mid === "number" ? state.mid : 0;
-
-            if (typeof state.nextId === "number") {
-                nextId = state.nextId;
-            } else {
-                let maxId = 0;
-                games.forEach(g => {
-                    if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
-                });
-                nextId = maxId + 1;
-            }
-
-            // manueller Tierlist
-            if (state.manualTiersById && typeof state.manualTiersById === "object") {
-                manualTiersById = {
-                    S: Array.isArray(state.manualTiersById.S) ? state.manualTiersById.S : [],
-                    A: Array.isArray(state.manualTiersById.A) ? state.manualTiersById.A : [],
-                    B: Array.isArray(state.manualTiersById.B) ? state.manualTiersById.B : [],
-                    C: Array.isArray(state.manualTiersById.C) ? state.manualTiersById.C : [],
-                    D: Array.isArray(state.manualTiersById.D) ? state.manualTiersById.D : []
-                };
-            }
-
-            renderGameList();
-            renderManualUI();
-
-            const finished = !!state.finished;
-            const finishedPanel = document.getElementById("finishedPanel");
-            const tierTableSection = document.getElementById("tierTableSection");
-            const progressInfo = document.getElementById("progressInfo");
-
-            if (finished && sortedIndices.length > 0) {
-                finishedPanel.classList.remove("hidden");
-                tierTableSection.classList.remove("hidden");
-                renderRankList();
-                renderTierTable();
-                progressInfo.textContent = tr("progress_finished", {
-                    count: formatComparisonCount(comparisonsDone || 0)
-                });
-                mainContainer.classList.remove("hidden");
-                overlay.classList.add("hidden");
-            } else if (
-                compareActive &&
-                sortedIndices.length > 0 &&
-                (currentNewIndex !== null || pendingNewIndices.length > 0)
-            ) {
-                mainContainer.classList.add("hidden");
-                overlay.classList.remove("hidden");
-                fsStatus.textContent = tr("overlay_status_continue");
-                fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
-                progressInfo.textContent = tr("progress_running", {
-                    count: formatComparisonCount(comparisonsDone || 0)
-                });
-
-                if (currentNewIndex === null && pendingNewIndices.length > 0) {
-                    moveToNextNewGame();
-                } else {
-                    showNextComparisonStep();
-                }
-            } else {
-                compareActive = false;
-                finishedPanel.classList.add("hidden");
-                tierTableSection.classList.add("hidden");
-                progressInfo.textContent = tr("progress_not_started");
-                mainContainer.classList.remove("hidden");
-                overlay.classList.add("hidden");
-            }
-        } catch (e) {
-            console.error("Fehler beim Parsen des gespeicherten Zustands", e);
-        }
-    }
-
-    // --- Spiele-Export ohne Ranking (Base64) + GitHub Gist Import ---
-    function exportGamesOnly() {
-        if (!games.length) {
-            showStatus(tr("share_no_games"), "error");
-            return;
-        }
-
-        const data = {
-            games: games.map(g => ({
-                id: g.id,
-                title: g.title,
-                image: g.image,
-                url: g.url
-            }))
-        };
-
-        const json = JSON.stringify(data);
-        const base64 = btoa(unescape(encodeURIComponent(json)));
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(base64).then(() => {
-                showStatus(tr("share_export_copied"), "success");
-            }).catch(() => {
-                showStatus(tr("share_export_copy_manual"), "info");
-                alert(base64);
-            });
-        } else {
-            showStatus(tr("share_export_copy_manual"), "info");
-            alert(base64);
-        }
-    }
-
-    function decodeAndImportGames(base64) {
-        const json = decodeURIComponent(escape(atob(base64)));
-        const data = JSON.parse(json);
-
-        if (!data || !Array.isArray(data.games)) {
-            throw new Error("Invalid format (games missing).");
-        }
-
-        games.length = 0;
-        data.games.forEach((g, i) => {
-            games.push({
-                id: typeof g.id === "number" ? g.id : i + 1,
-                title: g.title || "",
-                image: g.image || "",
-                url: g.url || ""
-            });
-        });
-
-        let maxId = 0;
-        games.forEach(g => {
-            if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
-        });
-        nextId = maxId + 1;
-
-        // Ranking & manuell zurücksetzen
-        resetTierResults();
-        manualTiersById = { S: [], A: [], B: [], C: [], D: [] };
-        renderGameList();
-        renderManualUI();
-        saveState();
-
-        showStatus(tr("share_import_success"), "success");
-    }
-
-    function importGamesOnly() {
-        const input = prompt(tr("share_import_prompt"));
-        if (!input) return;
-
-        const trimmed = input.trim();
-
-        // Wenn das wie eine URL aussieht -> als GitHub Gist oder beliebige URL behandeln
-        if (/^https?:\/\//i.test(trimmed)) {
-            let url = trimmed;
-            if (url.includes("gist.github.com") && !/raw=1/.test(url)) {
-                url += (url.includes("?") ? "&" : "?") + "raw=1";
-            }
-            fetch(url)
-                .then(r => {
-                    if (!r.ok) throw new Error("HTTP " + r.status);
-                    return r.text();
-                })
-                .then(text => {
-                    const code = text.trim();
-                    decodeAndImportGames(code);
-                })
-                .catch(err => {
-                    console.error(err);
-                    showStatus(tr("share_import_fail", { error: err.message }), "error");
-                });
-            return;
-        }
-
-        // sonst Base64-Code direkt
-        try {
-            decodeAndImportGames(trimmed);
-        } catch (e) {
-            console.error(e);
-            showStatus(tr("share_import_fail", { error: e.message }), "error");
-        }
-    }
-
-    // ----- Collapsible manuelle Eingabe -----
-    const manualCollapseHeader = document.getElementById("manualCollapseHeader");
-    const manualCollapseArrow = document.getElementById("manualCollapseArrow");
-    const manualCollapseBody = document.getElementById("manualCollapseBody");
-    manualCollapseHeader.addEventListener("click", () => {
-        const open = manualCollapseBody.classList.contains("hidden");
-        if (open) {
-            manualCollapseBody.classList.remove("hidden");
-            manualCollapseArrow.classList.add("open");
-        } else {
-            manualCollapseBody.classList.add("hidden");
-            manualCollapseArrow.classList.remove("open");
-        }
+    games.length = 0;
+    data.games.forEach((g, i) => {
+      games.push({
+        id: typeof g.id === "number" ? g.id : i + 1,
+        title: g.title || "",
+        image: g.image || "",
+        url: g.url || ""
+      });
     });
 
-    // ----- Manuelle Tierlist (Drag & Drop) -----
-    const manualContainer = document.getElementById("manualContainer");
-    const manualPoolEl = document.getElementById("manualPool");
-    const manualTierWrapper = document.getElementById("manualTierWrapper");
-
-    function openManualTierlist() {
-        if (!games.length) {
-            alert(tr("manual_no_games"));
-            return;
-        }
-        mainContainer.classList.add("hidden");
-        overlay.classList.add("hidden");
-        manualContainer.classList.add("visible");
-        renderManualUI();
-    }
-
-    function closeManualTierlist() {
-        manualContainer.classList.remove("visible");
-        mainContainer.classList.remove("hidden");
-        refreshProgressInfoForCurrentState();
-        saveState();
-    }
-
-    function createManualTierRowsIfNeeded() {
-        if (manualTierWrapper.dataset.inited === "1") return;
-        manualTierWrapper.innerHTML = "";
-        TIER_CONFIG.forEach(cfg => {
-            const row = document.createElement("div");
-            row.className = "manual-tier-row";
-
-            const labelCell = document.createElement("div");
-            labelCell.className = "manual-tier-label-cell";
-            labelCell.style.background = cfg.color;
-            labelCell.textContent = cfg.label;
-
-            const itemsCell = document.createElement("div");
-            itemsCell.className = "manual-tier-items-cell";
-
-            const grid = document.createElement("div");
-            grid.className = "manual-tier-grid";
-            grid.id = "manualTierGrid_" + cfg.label;
-            grid.dataset.tierLabel = cfg.label;
-
-            itemsCell.appendChild(grid);
-            row.appendChild(labelCell);
-            row.appendChild(itemsCell);
-            manualTierWrapper.appendChild(row);
-        });
-        manualTierWrapper.dataset.inited = "1";
-        initManualDropZones();
-    }
-
-    function createManualCard(game) {
-        const card = document.createElement("div");
-        card.className = "manual-card";
-        card.draggable = true;
-        card.dataset.gameId = String(game.id);
-
-        const img = document.createElement("img");
-        img.className = "manual-card-thumb";
-        img.crossOrigin = "anonymous";
-        img.src = game.image || "";
-        img.alt = game.title || "";
-
-        const titleDiv = document.createElement("div");
-        titleDiv.className = "manual-card-title";
-        titleDiv.title = game.title || "";
-        titleDiv.textContent = game.title || "(no title)";
-
-        card.appendChild(img);
-        card.appendChild(titleDiv);
-
-        card.addEventListener("dragstart", (e) => {
-            // ID IMMER in dataTransfer schreiben
-            try {
-                e.dataTransfer.setData("text/plain", String(game.id));
-                e.dataTransfer.effectAllowed = "move";
-            } catch (_) {}
-        });
-
-        return card;
-    }
-
-    function getUsedManualIds() {
-        const used = new Set();
-        for (const tier of ["S", "A", "B", "C", "D"]) {
-            for (const id of manualTiersById[tier]) used.add(id);
-        }
-        return used;
-    }
-
-    function renderManualUI() {
-        createManualTierRowsIfNeeded();
-
-        const used = getUsedManualIds();
-
-        // Pool
-        manualPoolEl.innerHTML = "";
-        games.forEach(g => {
-            if (!used.has(g.id)) {
-                const card = createManualCard(g);
-                manualPoolEl.appendChild(card);
-            }
-        });
-
-        // Tiers
-        for (const tier of ["S", "A", "B", "C", "D"]) {
-            const grid = document.getElementById("manualTierGrid_" + tier);
-            if (!grid) continue;
-            grid.innerHTML = "";
-            manualTiersById[tier].forEach(id => {
-                const g = games.find(x => x.id === id);
-                if (!g) return;
-                const card = createManualCard(g);
-                grid.appendChild(card);
-            });
-        }
-    }
-
-    function moveGameToTierOrPool(gameId, tierLabelOrNull) {
-        const idNum = Number(gameId);
-        if (!Number.isFinite(idNum)) return;
-
-        // aus allen Tiers entfernen
-        for (const t of ["S", "A", "B", "C", "D"]) {
-            manualTiersById[t] = manualTiersById[t].filter(id => id !== idNum);
-        }
-        if (tierLabelOrNull) {
-            if (!manualTiersById[tierLabelOrNull].includes(idNum)) {
-                manualTiersById[tierLabelOrNull].push(idNum);
-            }
-        }
-        renderManualUI();
-        saveState();
-    }
-
-    function initManualDropZones() {
-        // Pool als Drop-Zone (zurücklegen)
-        manualPoolEl.addEventListener("dragover", e => {
-            e.preventDefault();
-            if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-            manualPoolEl.classList.add("manual-drop-highlight");
-        });
-        manualPoolEl.addEventListener("dragleave", () => {
-            manualPoolEl.classList.remove("manual-drop-highlight");
-        });
-        manualPoolEl.addEventListener("drop", e => {
-            e.preventDefault();
-            manualPoolEl.classList.remove("manual-drop-highlight");
-
-            let id = null;
-            if (e.dataTransfer) {
-                const txt = e.dataTransfer.getData("text/plain");
-                if (txt) id = parseInt(txt, 10);
-            }
-            if (!id) return;
-
-            moveGameToTierOrPool(id, null);
-        });
-
-        // Jede Tier-Grid als Drop-Zone
-        for (const tier of ["S", "A", "B", "C", "D"]) {
-            const grid = document.getElementById("manualTierGrid_" + tier);
-            if (!grid) continue;
-
-            grid.addEventListener("dragover", e => {
-                e.preventDefault();
-                if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-                grid.classList.add("manual-drop-highlight");
-            });
-            grid.addEventListener("dragleave", () => {
-                grid.classList.remove("manual-drop-highlight");
-            });
-            grid.addEventListener("drop", e => {
-                e.preventDefault();
-                grid.classList.remove("manual-drop-highlight");
-
-                let id = null;
-                if (e.dataTransfer) {
-                    const txt = e.dataTransfer.getData("text/plain");
-                    if (txt) id = parseInt(txt, 10);
-                }
-                if (!id) return;
-
-                moveGameToTierOrPool(id, tier);
-            });
-        }
-    }
-
-    async function downloadManualTierImage() {
-        if (!games.length) {
-            alert(tr("manual_no_games"));
-            return;
-        }
-        const wrapper = document.getElementById("manualTierWrapper");
-        if (!wrapper) return;
-
-        try {
-            const canvas = await html2canvas(wrapper, {
-                backgroundColor: "#020617",
-                scale: 2,
-                useCORS: true
-            });
-
-            const link = document.createElement("a");
-            link.download = "manual_tierlist.png";
-            link.href = canvas.toDataURL("image/png");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error(e);
-            alert(tr("tierlist_save_error"));
-        }
-    }
-
-    // ---------- Events ----------
-    document.getElementById("addButton").addEventListener("click", addGameFromUrl);
-    document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
-    document.getElementById("addManualButton").addEventListener("click", addManualGame);
-    document.getElementById("clearButton").addEventListener("click", clearGames);
-    document.getElementById("startTierButton").addEventListener("click", startTierlist);
-    document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
-    document.getElementById("urlInput").addEventListener("keydown", e => {
-        if (e.key === "Enter") addGameFromUrl();
+    let maxId = 0;
+    games.forEach(g => {
+      if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
     });
+    nextId = maxId + 1;
 
-    document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
-    document.getElementById("fsCardRight").addEventListener("click", chooseRight);
-    document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
+    resetTierResults();
+    manualTiers = {
+      unassigned: [],
+      S: [],
+      A: [],
+      B: [],
+      C: [],
+      D: []
+    };
+    ensureManualTiersConsistency();
+    renderGameList();
+    saveState();
 
-    document.getElementById("btnExportGames")
-        .addEventListener("click", exportGamesOnly);
-    document.getElementById("btnImportGames")
-        .addEventListener("click", importGamesOnly);
+    showStatus(tr("share_import_success"), "success");
+  } catch (e) {
+    console.error(e);
+    showStatus(tr("share_import_fail", { error: e.message }), "error");
+  }
+}
 
-    document.getElementById("btnManualTier")
-        .addEventListener("click", openManualTierlist);
-    document.getElementById("btnBackFromManual")
-        .addEventListener("click", closeManualTierlist);
-    document.getElementById("btnDownloadManualImage")
-        .addEventListener("click", downloadManualTierImage);
+document.getElementById("addButton").addEventListener("click", addGameFromUrl);
+document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
+document.getElementById("addManualButton").addEventListener("click", addManualGame);
+document.getElementById("clearButton").addEventListener("click", clearGames);
+document.getElementById("startTierButton").addEventListener("click", startTierlist);
+document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
+document.getElementById("urlInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") addGameFromUrl();
+});
 
-    window.addEventListener("load", () => {
-        initLanguage();
-        initMode();
-        loadState();
-        refreshProgressInfoForCurrentState();
-        updateGameCount();
-    });
+document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
+document.getElementById("fsCardRight").addEventListener("click", chooseRight);
+document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
+
+document.getElementById("btnExportGames")
+  .addEventListener("click", exportGamesOnly);
+document.getElementById("btnImportGames")
+  .addEventListener("click", importGamesOnly);
+
+document.getElementById("btnManualStart")
+  .addEventListener("click", openManualTierlist);
+document.getElementById("btnManualBack")
+  .addEventListener("click", closeManualTierlist);
+document.getElementById("btnManualDownload")
+  .addEventListener("click", downloadManualTierImage);
+
+window.addEventListener("load", () => {
+  initLanguage();
+  initMode();
+  initManualDnD();
+  loadState();
+  refreshProgressInfoForCurrentState();
+  updateGameCount();
+});
 </script>
 </body>
 </html>
