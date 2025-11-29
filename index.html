@@ -2541,7 +2541,6 @@
 
             itemsCell.appendChild(grid);
             row.appendChild(labelCell);
-            row.appendChild(itemsCell);
             manualTierWrapper.appendChild(row);
         });
         manualTierWrapper.dataset.inited = "1";
@@ -2571,6 +2570,10 @@
         card.addEventListener("dragstart", (e) => {
             manualDragGameId = game.id;
             e.dataTransfer.effectAllowed = "move";
+            // Wichtig: setData, damit Drop-Events in allen Browsern feuern
+            try {
+                e.dataTransfer.setData("text/plain", String(game.id));
+            } catch (_) {}
         });
 
         card.addEventListener("dragend", () => {
@@ -2617,13 +2620,16 @@
     }
 
     function moveGameToTierOrPool(gameId, tierLabelOrNull) {
-        // erst aus allen Tiers entfernen
+        const idNum = Number(gameId);
+        if (!Number.isFinite(idNum)) return;
+
+        // aus allen Tiers entfernen
         for (const t of ["S", "A", "B", "C", "D"]) {
-            manualTiersById[t] = manualTiersById[t].filter(id => id !== gameId);
+            manualTiersById[t] = manualTiersById[t].filter(id => id !== idNum);
         }
         if (tierLabelOrNull) {
-            if (!manualTiersById[tierLabelOrNull].includes(gameId)) {
-                manualTiersById[tierLabelOrNull].push(gameId);
+            if (!manualTiersById[tierLabelOrNull].includes(idNum)) {
+                manualTiersById[tierLabelOrNull].push(idNum);
             }
         }
         renderManualUI();
@@ -2642,8 +2648,15 @@
         manualPoolEl.addEventListener("drop", e => {
             e.preventDefault();
             manualPoolEl.classList.remove("manual-drop-highlight");
-            if (!manualDragGameId) return;
-            moveGameToTierOrPool(manualDragGameId, null);
+
+            let id = manualDragGameId;
+            if (!id && e.dataTransfer) {
+                const txt = e.dataTransfer.getData("text/plain");
+                if (txt) id = Number(txt);
+            }
+            if (!id) return;
+
+            moveGameToTierOrPool(id, null);
             manualDragGameId = null;
         });
 
@@ -2662,8 +2675,15 @@
             grid.addEventListener("drop", e => {
                 e.preventDefault();
                 grid.classList.remove("manual-drop-highlight");
-                if (!manualDragGameId) return;
-                moveGameToTierOrPool(manualDragGameId, tier);
+
+                let id = manualDragGameId;
+                if (!id && e.dataTransfer) {
+                    const txt = e.dataTransfer.getData("text/plain");
+                    if (txt) id = Number(txt);
+                }
+                if (!id) return;
+
+                moveGameToTierOrPool(id, tier);
                 manualDragGameId = null;
             });
         }
