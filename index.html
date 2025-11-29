@@ -380,6 +380,12 @@
             box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
         }
 
+        /* WICHTIG: manuelle Overlay soll scrollbar sein */
+        #manualOverlay .overlay-inner {
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
         .overlay-title {
             margin: 0 0 8px;
             font-size: 2rem;
@@ -508,24 +514,35 @@
             margin-bottom: 8px;
         }
 
+        /* Wichtig: 4 Karten pro Reihe + scrollbar */
         .manual-dropzone {
             min-height: 110px;
             padding: 10px;
             border-radius: 16px;
             border: 1px dashed #1f2937;
             background: #020617;
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 10px;
             align-items: flex-start;
+        }
+
+        @media (max-width: 1100px) {
+            .manual-dropzone {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+            .manual-dropzone {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .manual-dropzone.drag-over {
             border-color: #38bdf8;
             background: #020617;
         }
-
-        /* Karten im manuellen Tierlist */
 
         .manual-card,
         .manual-tier-card {
@@ -539,12 +556,12 @@
             background: #020617;
             cursor: grab;
             user-select: none;
-            width: 150px;
+            width: 100%; /* <-- damit sich die Karte an die Grid-Spalte anpasst */
         }
 
         .manual-card-thumb,
         .manual-tier-card-thumb {
-            width: 140px;
+            width: 100%;
             height: 80px;
             border-radius: 10px;
             object-fit: cover;
@@ -559,11 +576,21 @@
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: center;
-            max-width: 140px;
+            max-width: 100%;
         }
 
         .hidden {
             display: none !important;
+        }
+
+        /* Pfeil im Details-Aufklapper schön links vom Text ausrichten */
+        details > summary {
+            display: flex;
+            align-items: center;
+        }
+
+        details > summary .section-title {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -1189,13 +1216,11 @@
         if (optExact) optExact.textContent = s.mode_exact;
         if (optFast) optFast.textContent = s.mode_fast;
 
-        // Share-Bereich
         document.getElementById("share_title").textContent = s.share_title;
         document.getElementById("share_hint").textContent = s.share_hint;
         document.getElementById("btnExportGames").textContent = s.btn_export_games;
         document.getElementById("btnImportGames").textContent = s.btn_import_games;
 
-        // Manueller Tierlist
         document.getElementById("txt_manual_title").textContent = s.manual_title;
         document.getElementById("txt_manual_subtitle").textContent = s.manual_subtitle;
         document.getElementById("manual_all_games_title").textContent = s.manual_all_games_title;
@@ -1266,7 +1291,6 @@
         });
     }
 
-    /* ---------- Ranking-Zustand ---------- */
     const games = [];
     let nextId = 1;
 
@@ -1291,7 +1315,6 @@
 
     const STORAGE_KEY = "tierlist_tool_state_v2";
 
-    // Manueller Tierlist Zustand
     let manualTiers = {
         unassigned: [],
         S: [],
@@ -1378,7 +1401,6 @@
         const deletedIndex = index;
         games.splice(deletedIndex, 1);
 
-        // Auto-Ranking-Indices anpassen
         sortedIndices = sortedIndices
             .filter(i => i !== deletedIndex)
             .map(i => (i > deletedIndex ? i - 1 : i));
@@ -1402,7 +1424,6 @@
             document.getElementById("progressInfo").textContent = tr("progress_stopped");
         }
 
-        // Manuellen Tierlist anpassen
         ["unassigned","S","A","B","C","D"].forEach(z => {
             manualTiers[z] = manualTiers[z]
                 .filter(i => i !== deletedIndex)
@@ -1484,7 +1505,6 @@
             games[index].url   = url;
 
             renderGameList();
-            // Wenn manueller Tierlist offen ist, neu zeichnen
             if (!document.getElementById("manualOverlay").classList.contains("hidden")) {
                 renderManualTierlist();
             }
@@ -2191,7 +2211,6 @@
                 });
             });
 
-            // Auto-Ranking
             let tmpSorted = Array.isArray(state.sortedIndices)
                 ? state.sortedIndices.filter(i =>
                     Number.isInteger(i) && i >= 0 && i < games.length
@@ -2248,7 +2267,6 @@
                 nextId = maxId + 1;
             }
 
-            // Manueller Tierlist
             if (state.manualTiers && typeof state.manualTiers === "object") {
                 manualTiers = {
                     unassigned: Array.isArray(state.manualTiers.unassigned) ? state.manualTiers.unassigned.slice() : [],
@@ -2322,8 +2340,6 @@
             console.error("Fehler beim Parsen des gespeicherten Zustands", e);
         }
     }
-
-    // --- Manueller Tierlist (Drag & Drop) ---
 
     const MANUAL_ZONES = ["unassigned","S","A","B","C","D"];
     let manualDnDInitialized = false;
@@ -2480,8 +2496,6 @@
         }
     }
 
-    // --- Spiele-Export ohne Ranking (mit GitHub Gist) ---
-
     function exportGamesOnly() {
         if (!games.length) {
             showStatus(tr("share_no_games"), "error");
@@ -2596,7 +2610,6 @@
         }
     }
 
-    // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("addManualButton").addEventListener("click", addManualGame);
