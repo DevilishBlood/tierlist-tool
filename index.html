@@ -2115,62 +2115,81 @@
     }
 
     async function importGamesOnly() {
-        let input = prompt(tr("share_import_prompt"));
-        if (!input) return;
+    let input = prompt(tr("share_import_prompt"));
+    if (!input) return;
 
-        input = input.trim();
-        let base64;
+    input = input.trim();
+    let base64;
 
-        if (/^https?:\/\//i.test(input)) {
-            // GitHub Gist oder raw URL
+    if (/^https?:\/\//i.test(input)) {
+        // URL (z.B. GitHub Gist)
+        let url = input;
+        if (url.includes("gist.github.com")) {
             try {
-                const resp = await fetch(input);
-                if (!resp.ok) throw new Error("HTTP " + resp.status);
-                const text = (await resp.text()).trim();
-                base64 = text;
+                const u = new URL(url);
+                const parts = u.pathname.split("/").filter(Boolean);
+                // /username/gistid[/...]
+                if (parts.length >= 2) {
+                    // Standard-raw-URL für Gists
+                    url = `https://gist.githubusercontent.com/${parts[0]}/${parts[1]}/raw`;
+                }
             } catch (e) {
-                console.error(e);
-                showStatus(tr("share_import_fail", { error: e.message }), "error");
-                return;
+                console.error("Gist URL parse error", e);
             }
-        } else {
-            base64 = input;
         }
 
         try {
-            const json = decodeURIComponent(escape(atob(base64)));
-            const data = JSON.parse(json);
-
-            if (!data || !Array.isArray(data.games)) {
-                throw new Error("Invalid format (games missing).");
-            }
-
-            games.length = 0;
-            data.games.forEach((g, i) => {
-                games.push({
-                    id: typeof g.id === "number" ? g.id : i + 1,
-                    title: g.title || "",
-                    image: g.image || "",
-                    url: g.url || ""
-                });
-            });
-
-            let maxId = 0;
-            games.forEach(g => {
-                if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
-            });
-            nextId = maxId + 1;
-
-            resetTierResults();
-            renderGameList();
-            saveState();
-
-            showStatus(tr("share_import_success"), "success");
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            let text = (await resp.text()).trim();
+            // GANZ WICHTIG: alle Whitespaces/Zeilenumbrüche raus,
+            // damit atob() nicht crasht
+            base64 = text.replace(/\s+/g, "");
         } catch (e) {
             console.error(e);
             showStatus(tr("share_import_fail", { error: e.message }), "error");
+            return;
         }
+    } else {
+        // Direkt Base64 aus der Zwischenablage
+        base64 = input.replace(/\s+/g, "");
     }
+
+    try {
+        const json = decodeURIComponent(escape(atob(base64)));
+        const data = JSON.parse(json);
+
+        if (!data || !Array.isArray(data.games)) {
+            throw new Error("Invalid format (games missing).");
+        }
+
+        games.length = 0;
+        data.games.forEach((g, i) => {
+            games.push({
+                id: typeof g.id === "number" ? g.id : i + 1,
+                title: g.title || "",
+                image: g.image || "",
+                url: g.url || ""
+            });
+        });
+
+        let maxId = 0;
+        games.forEach(g => {
+            if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+        });
+        nextId = maxId + 1;
+
+        resetTierResults();
+        renderGameList();
+        saveState();
+
+        showStatus(tr("share_import_success"), "success");
+    } catch (e) {
+        console.error(e);
+        showStatus(tr("share_import_fail", { error: e.message }), "error");
+    }
+}
+
 
     // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
