@@ -514,7 +514,7 @@
             margin-bottom: 8px;
         }
 
-        /* Wichtig: 4 Karten pro Reihe + scrollbar */
+        /* 4 Karten pro Reihe + scrollbar */
         .manual-dropzone {
             min-height: 110px;
             padding: 10px;
@@ -556,23 +556,25 @@
             background: #020617;
             cursor: grab;
             user-select: none;
-            width: 100%; /* <-- damit sich die Karte an die Grid-Spalte anpasst */
+            width: 100%;
         }
 
+        /* HIER Bilder größer gemacht */
         .manual-card-thumb,
         .manual-tier-card-thumb {
             width: 100%;
-            height: 80px;
+            height: 110px;
             border-radius: 10px;
             object-fit: cover;
             border: 1px solid #1f2937;
             background: #020617;
         }
 
+        /* HIER Titel hart auf eine Zeile mit ... gekürzt */
         .manual-card-name,
         .manual-tier-card-name {
             font-size: 0.9rem;
-            white-space: normal;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: center;
@@ -1191,6 +1193,7 @@
         document.getElementById("addManyButton").textContent = s.btn_add_many;
         document.getElementById("hint_multi").textContent = s.hint_multi;
         document.getElementById("title_collected").textContent = s.section_collected;
+        document.getElementById("gameCountHint").textContent = formatGameCount(games.length);
         document.getElementById("hint_min_games").textContent = s.hint_min_games;
         document.getElementById("title_result").textContent = s.result_title;
         document.getElementById("hint_sorted_list").textContent = s.finished_hint;
@@ -1229,6 +1232,7 @@
         document.getElementById("btnManualDownload").textContent = s.btn_manual_download;
 
         updateClickStatsDisplay();
+        refreshProgressInfoForCurrentState();
     }
 
     function refreshProgressInfoForCurrentState() {
@@ -1265,8 +1269,6 @@
                 localStorage.setItem(LANG_STORAGE_KEY, currentLang);
             } catch (e) {}
             applyLanguageStaticTexts();
-            updateGameCount();
-            refreshProgressInfoForCurrentState();
             document.getElementById("fsProgress").textContent =
                 formatComparisonCount(comparisonsDone || 0);
         });
