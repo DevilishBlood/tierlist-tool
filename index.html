@@ -338,6 +338,7 @@
             font-weight: 800;
             font-size: 1.3rem;
             color: #020617;
+            border-right: 1px solid #111827;
         }
 
         .tier-items-cell {
@@ -488,89 +489,64 @@
             font-size: 0.9rem;
         }
 
-        /* --- Manueller Tierlist Overlay --- */
+        /* --- Manueller Tierlist (Drag & Drop) --- */
 
-        .manual-overlay {
-            position: fixed;
-            inset: 0;
-            background: #020617;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 24px;
-            z-index: 55;
-        }
-
-        .manual-inner {
-            max-width: 1300px;
-            width: 100%;
-            background: #020617;
-            border-radius: 22px;
-            padding: 26px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
+        .manual-layout {
             display: grid;
             grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-            gap: 20px;
+            gap: 24px;
+            align-items: flex-start;
         }
 
-        @media (max-width: 1100px) {
-            .manual-inner {
+        @media (max-width: 900px) {
+            .manual-layout {
                 grid-template-columns: 1fr;
             }
         }
 
-        .manual-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .manual-pool {
-            border-radius: 16px;
-            border: 1px solid #111827;
-            padding: 12px;
-            background: #020617;
-            max-height: 520px;
-            overflow-y: auto;
-        }
-
         .manual-pool-title {
-            font-size: 0.92rem;
-            color: #9ca3af;
             margin-bottom: 8px;
         }
 
-        .manual-pool-list {
+        .manual-dropzone {
+            min-height: 110px;
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px dashed #1f2937;
+            background: #020617;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-start;
         }
 
-        .manual-card, .manual-tier-card {
+        .manual-dropzone.drag-over {
+            border-color: #38bdf8;
+            background: #020617;
+        }
+
+        /* Karten im manuellen Tierlist */
+
+        .manual-card,
+        .manual-tier-card {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             padding: 6px 8px;
             border-radius: 12px;
             border: 1px solid #111827;
             background: #020617;
             cursor: grab;
             user-select: none;
-        }
-
-        .manual-card:active,
-        .manual-tier-card:active {
-            cursor: grabbing;
+            width: 150px;
         }
 
         .manual-card-thumb,
         .manual-tier-card-thumb {
-            width: 60px;
-            height: 34px;
-            border-radius: 8px;
+            width: 140px;
+            height: 80px;
+            border-radius: 10px;
             object-fit: cover;
             border: 1px solid #1f2937;
             background: #020617;
@@ -579,134 +555,11 @@
         .manual-card-name,
         .manual-tier-card-name {
             font-size: 0.9rem;
-            white-space: nowrap;
+            white-space: normal;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 210px;
-        }
-
-        /* Manuelle Tier-Tabelle – wie Auto-Tierlist */
-
-        .manual-tier-wrapper {
-            border-radius: 20px;
-            border: 1px solid #111827;
-            background: #020617;
-            overflow: hidden;
-            padding: 0;
-        }
-
-        .manual-tier-row {
-            display: flex;
-            min-height: 96px;
-            border-bottom: 1px solid #111827;
-        }
-
-        .manual-tier-row:last-child {
-            border-bottom: none;
-        }
-
-        .manual-tier-label {
-            width: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #020617;
-        }
-
-        .manual-tier-dropzone {
-            flex: 1;
-            padding: 10px 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-            min-height: 96px;
-        }
-
-        .manual-tier-dropzone.over {
-            outline: 2px dashed #38bdf8;
-            outline-offset: 2px;
-        }
-
-        /* --- Edit-Dialog für Spiele --- */
-
-        .edit-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 60;
-        }
-
-        .edit-inner {
-            width: 100%;
-            max-width: 480px;
-            background: #020617;
-            border-radius: 18px;
-            border: 1px solid #1f2937;
-            padding: 20px 22px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
-        }
-
-        .edit-inner h2 {
-            margin-top: 0;
-            margin-bottom: 12px;
-            font-size: 1.4rem;
-        }
-
-        .edit-preview {
-            width: 100%;
-            max-height: 180px;
-            border-radius: 12px;
-            object-fit: cover;
-            border: 1px solid #111827;
-            margin-bottom: 12px;
-            background: #020617;
-        }
-
-        .edit-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        /* Collapse-Block für manuellen Eintrag */
-
-        details.manual-details {
-            margin-top: 24px;
-            border-radius: 14px;
-            border: 1px solid #1f2937;
-            background: #020617;
-            padding: 10px 14px 14px;
-        }
-
-        details.manual-details > summary {
-            cursor: pointer;
-            list-style: none;
-            font-size: 1.02rem;
-        }
-
-        details.manual-details > summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .manual-details summary::before {
-            content: "▶ ";
-            font-size: 0.9rem;
-            color: #9ca3af;
-        }
-
-        .manual-details[open] summary::before {
-            content: "▼ ";
-        }
-
-        .manual-details-content {
-            margin-top: 10px;
+            text-align: center;
+            max-width: 140px;
         }
 
         .hidden {
@@ -756,30 +609,24 @@
             </span>
         </div>
 
-        <!-- Manueller Eintrag – einklappbar -->
-        <details class="manual-details" id="manualDetails">
-            <summary id="lbl_manual_section">Своя игра (ручной ввод)</summary>
-            <div class="manual-details-content">
+        <!-- Manueller Eintrag (aufklappbar) -->
+        <details style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+            <summary style="cursor:pointer;">
+                <span class="section-title" style="margin-bottom: 4px;" id="lbl_manual_section">
+                    Своя игра (ручной ввод)
+                </span>
+            </summary>
+            <div style="margin-top: 10px;">
                 <label for="manualTitle" id="lbl_manual_name">Название игры</label>
                 <input id="manualTitle" type="text">
-
-                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">
-                    Картинка: URL (опционально)
-                </label>
-                <input id="manualImageUrl" type="text" placeholder="https://…">
-
-                <label for="manualImage" id="lbl_manual_image_file" style="margin-top: 12px;">
-                    Картинка: файл (опционально)
-                </label>
-                <input id="manualImage" type="file" accept="image/*">
-
+                <label for="manualImageFile" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка, файл)</label>
+                <input id="manualImageFile" type="file" accept="image/*">
+                <label for="manualImageUrl" id="lbl_manual_image_url" style="margin-top: 12px;">Картинка по URL (необязательно)</label>
+                <input id="manualImageUrl" type="text" placeholder="https://... (если заполнено, файл игнорируется)">
                 <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
                     <button id="addManualButton" type="button" class="btn-secondary">
                         Добавить свою игру
                     </button>
-                </div>
-                <div class="small-hint" id="manual_hint">
-                    Если указан и URL, и файл, приоритет у файла.
                 </div>
             </div>
         </details>
@@ -796,9 +643,6 @@
                 <button id="startTierButton" type="button" disabled>
                     Начать тир-лист
                 </button>
-                <button id="startManualTierButton" type="button" class="btn-secondary" disabled>
-                    Ручной тир-лист
-                </button>
                 <span class="small-hint" id="hint_min_games">
                     Нужно минимум 5 игр.
                 </span>
@@ -811,6 +655,11 @@
                 </div>
             </div>
             <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
+            <div style="margin-top: 10px;">
+                <button id="btnManualStart" type="button" class="btn-secondary">
+                    Открыть ручной тир-лист
+                </button>
+            </div>
         </div>
 
         <!-- Share nur Spiele (ohne Ranking) -->
@@ -819,7 +668,7 @@
                 <span id="share_title">Spiele teilen (ohne Ranking)</span>
             </div>
             <span class="small-hint" id="share_hint">
-                Erzeuge einen Code oder nutze einen GitHub Gist. Beim Import werden nur die Spiele übernommen,
+                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen,
                 das Ranking muss die andere Person selbst neu machen.
             </span>
             <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
@@ -827,7 +676,7 @@
                     Spiele-Exportcode erzeugen
                 </button>
                 <button id="btnImportGames" type="button" class="btn-secondary">
-                    Spiele-Exportcode / Gist einfügen
+                    Spiele-Exportcode einfügen
                 </button>
             </div>
         </div>
@@ -888,88 +737,56 @@
     </div>
 </div>
 
-<!-- Manueller Tierlist Overlay -->
-<div id="manualOverlay" class="manual-overlay hidden">
-    <div class="manual-inner">
-        <div>
-            <div class="manual-header">
-                <h1 class="overlay-title" id="manual_title">Ручной тир-лист</h1>
-                <button id="manualBackButton" type="button" class="btn-secondary">
-                    Zurück
+<!-- Vollbild Manuelle Tierlist -->
+<div id="manualOverlay" class="overlay hidden">
+    <div class="overlay-inner">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:12px;">
+            <div>
+                <h1 class="overlay-title" id="txt_manual_title">Ручной тир-лист</h1>
+                <p class="overlay-subtitle" id="txt_manual_subtitle">
+                    Слева — список всех игр. Справа — ряды S–D. Перетаскивай игры мышкой, чтобы собрать свой тир-лист.
+                </p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <button id="btnManualDownload" type="button" class="btn-secondary">
+                    Скачать как картинку
+                </button>
+                <button id="btnManualBack" type="button" class="btn-secondary">
+                    Назад
                 </button>
             </div>
-            <p class="overlay-subtitle" id="manual_subtitle">
-                Перетаскивай игры из списка слева в нужный тир справа. Этот тир-лист независим от автоматического.
-            </p>
-            <div class="manual-pool">
-                <div class="manual-pool-title" id="manual_pool_title">
-                    Все игры (перетащи в тиры справа):
-                </div>
-                <div id="manualPoolList" class="manual-pool-list"></div>
-            </div>
         </div>
-        <div>
-            <div class="manual-header">
-                <span class="small-hint" id="manual_tiers_hint">
-                    Визуальный ручной тир-лист (S / A / B / C / D).
-                </span>
-                <button id="downloadManualTierImageButton" type="button" class="btn-secondary">
-                    Manuelle Tierlist als Bild
-                </button>
+        <div class="manual-layout">
+            <div>
+                <div class="section-title manual-pool-title">
+                    <span id="manual_all_games_title">Все игры</span>
+                </div>
+                <div id="manualZone_unassigned" class="manual-dropzone"></div>
             </div>
-            <div id="manualTierWrapper" class="manual-tier-wrapper">
-                <div class="manual-tier-row">
-                    <div class="manual-tier-label" style="background:#f97316;">S</div>
-                    <div class="manual-tier-dropzone" data-tier="S"></div>
-                </div>
-                <div class="manual-tier-row">
-                    <div class="manual-tier-label" style="background:#facc15;">A</div>
-                    <div class="manual-tier-dropzone" data-tier="A"></div>
-                </div>
-                <div class="manual-tier-row">
-                    <div class="manual-tier-label" style="background:#22c55e;">B</div>
-                    <div class="manual-tier-dropzone" data-tier="B"></div>
-                </div>
-                <div class="manual-tier-row">
-                    <div class="manual-tier-label" style="background:#38bdf8;">C</div>
-                    <div class="manual-tier-dropzone" data-tier="C"></div>
-                </div>
-                <div class="manual-tier-row">
-                    <div class="manual-tier-label" style="background:#a855f7;">D</div>
-                    <div class="manual-tier-dropzone" data-tier="D"></div>
+            <div>
+                <div id="manualTierWrapper" class="tier-table-wrapper">
+                    <div class="tier-row">
+                        <div class="tier-label-cell" style="background:#f97316;">S</div>
+                        <div class="tier-items-cell manual-dropzone" id="manualZone_S"></div>
+                    </div>
+                    <div class="tier-row">
+                        <div class="tier-label-cell" style="background:#facc15;">A</div>
+                        <div class="tier-items-cell manual-dropzone" id="manualZone_A"></div>
+                    </div>
+                    <div class="tier-row">
+                        <div class="tier-label-cell" style="background:#22c55e;">B</div>
+                        <div class="tier-items-cell manual-dropzone" id="manualZone_B"></div>
+                    </div>
+                    <div class="tier-row">
+                        <div class="tier-label-cell" style="background:#38bdf8;">C</div>
+                        <div class="tier-items-cell manual-dropzone" id="manualZone_C"></div>
+                    </div>
+                    <div class="tier-row">
+                        <div class="tier-label-cell" style="background:#a855f7;">D</div>
+                        <div class="tier-items-cell manual-dropzone" id="manualZone_D"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit-Dialog zum Bearbeiten eines Spiels -->
-<div id="editOverlay" class="edit-overlay hidden">
-    <div class="edit-inner">
-        <h2 id="editDialogTitle">Spiel bearbeiten</h2>
-
-        <img id="editPreview" class="edit-preview" src="" alt="">
-
-        <label for="editGameName" id="editLabelName">Name</label>
-        <input id="editGameName" type="text">
-
-        <label for="editImageUrl" id="editLabelImageUrl" style="margin-top:12px;">
-            Bild-URL (optional)
-        </label>
-        <input id="editImageUrl" type="text" placeholder="https://…">
-
-        <label for="editImageFile" id="editLabelImageFile" style="margin-top:12px;">
-            Bild-Datei (optional)
-        </label>
-        <input id="editImageFile" type="file" accept="image/*">
-
-        <div class="edit-actions">
-            <button id="editCancelButton" type="button" class="btn-secondary">
-                Abbrechen
-            </button>
-            <button id="editSaveButton" type="button">
-                Speichern
-            </button>
         </div>
     </div>
 </div>
@@ -1010,17 +827,16 @@
             overlay_cancel: "Отменить",
             manual_section_title: "Своя игра (ручной ввод)",
             manual_label_name: "Название игры",
-            manual_label_image_url: "Картинка: URL (опционально)",
-            manual_label_image_file: "Картинка: файл (опционально)",
-            manual_hint: "Если указан и URL, и файл, приоритет у файла.",
+            manual_label_image: "Картинка (обложка, файл)",
+            manual_label_image_url: "Картинка по URL (опционально)",
             btn_add_manual: "Добавить свою игру",
             mode_label: "Режим ранжирования",
             mode_exact: "Точный (больше кликов)",
             mode_fast: "Быстрый (приблизительный)",
-            click_stats: "Теоретический минимум: {min} кликов. Полный режим ≈ {exact}, быстрый режим ≈ {fast}.",
+            click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
             progress_finished: "Готово! Всего {count}.",
             progress_running: "Идёт сравнение… ({count})",
-            progress_need_n: "Нужно минимум 5 игр.",
+            progress_need_two: "Нужно минимум 5 игр.",
             progress_not_started: "Ещё не запущено",
             progress_stopped: "Сравнение остановлено.",
             progress_cancelled: "Сравнение отменено.",
@@ -1035,10 +851,10 @@
             status_game_added: "Игра добавлена: {title}",
             status_load_error: "Ошибка загрузки: {error}",
             status_manual_need_title: "Введите название игры.",
+            status_manual_need_image: "Выберите картинку (файл или URL).",
             status_manual_loading: "Читаю файл картинки…",
             status_manual_added: "Своя игра добавлена: {title}",
             status_manual_file_error: "Не удалось прочитать файл картинки.",
-            status_manual_need_image_or_url: "Укажите хотя бы URL или выберите файл картинки (или оставьте старую).",
             status_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
             status_loading_multi_progress: "Загружаю {current} из {total}…",
             status_multi_success: "Успешно добавлено игр: {count}",
@@ -1046,33 +862,29 @@
             status_multi_fail: "Не удалось добавить ссылки.",
             tierlist_not_created: "Сначала создай тир-лист.",
             tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
-            // Share / Import
             share_title: "Шеринг списка игр (без ранкинга)",
-            share_hint: "Создай код или используй GitHub Gist. При импорте загружаются только игры.",
+            share_hint: "Создай код и отправь его другу. При импорте загружаются только игры.",
             btn_export_games: "Создать код списка игр",
-            btn_import_games: "Вставить код / Gist списка игр",
+            btn_import_games: "Вставить код / GitHub Gist",
             share_no_games: "Нет игр для экспорта.",
             share_export_copied: "Код успешно скопирован в буфер обмена.",
             share_export_copy_manual: "Скопируйте код вручную из окна.",
-            share_import_prompt: "Вставьте сюда код списка игр или URL Gist:",
+            share_import_prompt: "Вставьте сюда код списка игр или ссылку на GitHub Gist:",
             share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
             share_import_fail: "Импорт не удался: {error}",
-            // Manueller Tierlist
+            // Manual tier
             manual_title: "Ручной тир-лист",
-            manual_subtitle: "Перетаскивай игры из списка слева в нужный тир справа. Этот тир-лист независим от автоматического.",
-            manual_pool_title: "Все игры (перетащи в тиры справа):",
-            manual_tiers_hint: "Визуальный ручной тир-лист (S / A / B / C / D).",
-            manual_back: "Назад",
-            manual_download_btn: "Скачать ручной тир-лист",
-            manual_save_error: "Не удалось сохранить ручной тир-лист.",
+            manual_subtitle: "Слева — список всех игр. Справа — ряды S–D. Перетаскивай игры мышкой, чтобы собрать свой тир-лист.",
+            manual_all_games_title: "Все игры",
+            btn_manual_open: "Открыть ручной тир-лист",
+            btn_manual_back: "Назад",
+            btn_manual_download: "Скачать ручной тир-лист как картинку",
+            manual_tier_save_error: "Не удалось сохранить картинку ручного тир-листа.",
             // Edit
-            edit_title: "Редактировать игру",
-            edit_label_name: "Название",
-            edit_label_image_url: "URL картинки (опционально)",
-            edit_label_image_file: "Файл картинки (опционально)",
-            edit_cancel: "Отмена",
-            edit_save: "Сохранить",
-            status_edit_saved: "Игра обновлена."
+            edit_button_title: "Редактировать игру",
+            edit_prompt_title: "Новое название игры (оставь пустым, чтобы не менять):",
+            edit_prompt_image: "Новый URL обложки (оставь пустым, чтобы не менять):",
+            edit_saved: "Игра обновлена: {title}"
         },
         en: {
             page_title: "Tierlist by Game Links",
@@ -1105,9 +917,8 @@
             overlay_cancel: "Cancel",
             manual_section_title: "Custom game (manual input)",
             manual_label_name: "Game title",
-            manual_label_image_url: "Image URL (optional)",
-            manual_label_image_file: "Image file (optional)",
-            manual_hint: "If both URL and file are set, the file has priority.",
+            manual_label_image: "Cover image file",
+            manual_label_image_url: "Cover image URL (optional)",
             btn_add_manual: "Add custom game",
             mode_label: "Ranking mode",
             mode_exact: "Exact (more clicks)",
@@ -1115,7 +926,7 @@
             click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
             progress_finished: "Done! Total {count}.",
             progress_running: "Comparison running… ({count})",
-            progress_need_n: "At least 5 games are required.",
+            progress_need_two: "At least 5 games are required.",
             progress_not_started: "Not started yet",
             progress_stopped: "Comparison stopped.",
             progress_cancelled: "Comparison cancelled.",
@@ -1130,10 +941,10 @@
             status_game_added: "Game added: {title}",
             status_load_error: "Load error: {error}",
             status_manual_need_title: "Please enter a game title.",
+            status_manual_need_image: "Please choose a cover image (file or URL).",
             status_manual_loading: "Reading image file…",
             status_manual_added: "Custom game added: {title}",
             status_manual_file_error: "Could not read image file.",
-            status_manual_need_image_or_url: "Set at least an image URL or choose a file (or leave the old one).",
             status_no_links: "No links to add. Enter at least one line.",
             status_loading_multi_progress: "Loading {current} of {total}…",
             status_multi_success: "Successfully added games: {count}",
@@ -1141,33 +952,27 @@
             status_multi_fail: "Could not add links.",
             tierlist_not_created: "Create the tierlist first.",
             tierlist_save_error: "Could not save the tierlist image.",
-            // Share / Import
             share_title: "Share games (without ranking)",
-            share_hint: "Generate a code or use a GitHub Gist. On import only the games are loaded, the other person creates their own ranking.",
+            share_hint: "Generate a code and send it to someone. On import only the games are loaded.",
             btn_export_games: "Create games export code",
-            btn_import_games: "Paste games export code / Gist",
+            btn_import_games: "Paste export code / GitHub Gist URL",
             share_no_games: "There are no games to export.",
             share_export_copied: "Export code copied to clipboard.",
             share_export_copy_manual: "Copy the export code manually from the window.",
-            share_import_prompt: "Paste the games export code or a Gist URL here:",
+            share_import_prompt: "Paste the games export code or a GitHub Gist URL here:",
             share_import_success: "Games imported successfully. Ranking has been reset.",
             share_import_fail: "Import failed: {error}",
-            // Manual tierlist
             manual_title: "Manual tierlist",
-            manual_subtitle: "Drag games from the list on the left into the tiers on the right. This tierlist is independent from the automatic one.",
-            manual_pool_title: "All games (drag into tiers on the right):",
-            manual_tiers_hint: "Visual manual tierlist (S / A / B / C / D).",
-            manual_back: "Back",
-            manual_download_btn: "Download manual tierlist",
-            manual_save_error: "Could not save manual tierlist image.",
-            // Edit
-            edit_title: "Edit game",
-            edit_label_name: "Name",
-            edit_label_image_url: "Image URL (optional)",
-            edit_label_image_file: "Image file (optional)",
-            edit_cancel: "Cancel",
-            edit_save: "Save",
-            status_edit_saved: "Game updated."
+            manual_subtitle: "Left: all games. Right: S–D rows. Drag games with the mouse to build your own tierlist.",
+            manual_all_games_title: "All games",
+            btn_manual_open: "Open manual tierlist",
+            btn_manual_back: "Back",
+            btn_manual_download: "Download manual tierlist as image",
+            manual_tier_save_error: "Could not save the manual tierlist image.",
+            edit_button_title: "Edit game",
+            edit_prompt_title: "New game title (leave empty to keep):",
+            edit_prompt_image: "New cover image URL (leave empty to keep):",
+            edit_saved: "Game updated: {title}"
         },
         de: {
             page_title: "Tierlist aus Spiele-Links",
@@ -1200,9 +1005,8 @@
             overlay_cancel: "Abbrechen",
             manual_section_title: "Eigenes Spiel (manuell)",
             manual_label_name: "Spielname",
-            manual_label_image_url: "Bild-URL (optional)",
-            manual_label_image_file: "Bild-Datei (optional)",
-            manual_hint: "Wenn URL und Datei angegeben sind, hat die Datei Priorität.",
+            manual_label_image: "Cover-Bild (Datei)",
+            manual_label_image_url: "Cover-Bild-URL (optional)",
             btn_add_manual: "Eigenes Spiel hinzufügen",
             mode_label: "Ranking-Modus",
             mode_exact: "Genau (mehr Klicks)",
@@ -1210,7 +1014,7 @@
             click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
             progress_finished: "Fertig! Insgesamt {count}.",
             progress_running: "Vergleich läuft… ({count})",
-            progress_need_n: "Mindestens 5 Spiele werden benötigt.",
+            progress_need_two: "Mindestens 5 Spiele werden benötigt.",
             progress_not_started: "Noch nicht gestartet",
             progress_stopped: "Vergleich gestoppt.",
             progress_cancelled: "Vergleich abgebrochen.",
@@ -1225,10 +1029,10 @@
             status_game_added: "Spiel hinzugefügt: {title}",
             status_load_error: "Fehler beim Laden: {error}",
             status_manual_need_title: "Bitte einen Spielnamen eingeben.",
+            status_manual_need_image: "Bitte ein Cover-Bild auswählen (Datei oder URL).",
             status_manual_loading: "Lese Bilddatei…",
             status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
             status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
-            status_manual_need_image_or_url: "Gib mindestens eine Bild-URL an oder wähle eine Datei (oder lass das alte Bild).",
             status_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
             status_loading_multi_progress: "Lade {current} von {total}…",
             status_multi_success: "{count} Spiele erfolgreich hinzugefügt.",
@@ -1236,33 +1040,27 @@
             status_multi_fail: "Links konnten nicht hinzugefügt werden.",
             tierlist_not_created: "Erstelle zuerst eine Tierlist.",
             tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
-            // Share / Import
             share_title: "Spiele teilen (ohne Ranking)",
-            share_hint: "Erzeuge einen Code oder nutze einen GitHub Gist. Beim Import werden nur die Spiele übernommen, das Ranking muss die andere Person selbst neu machen.",
+            share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.",
             btn_export_games: "Spiele-Exportcode erzeugen",
-            btn_import_games: "Spiele-Exportcode / Gist einfügen",
+            btn_import_games: "Exportcode / GitHub-Gist-URL einfügen",
             share_no_games: "Es gibt keine Spiele zum Exportieren.",
             share_export_copied: "Exportcode in die Zwischenablage kopiert.",
             share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
-            share_import_prompt: "Füge hier den Spiele-Exportcode oder eine Gist-URL ein:",
+            share_import_prompt: "Füge hier den Spiele-Exportcode oder eine GitHub-Gist-URL ein:",
             share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
             share_import_fail: "Import fehlgeschlagen: {error}",
-            // Manueller Tierlist
             manual_title: "Manuelle Tierlist",
-            manual_subtitle: "Zieh Spiele aus der Liste links in die Tiers rechts. Diese Tierlist ist unabhängig von der automatischen.",
-            manual_pool_title: "Alle Spiele (ziehe in die Tiers rechts):",
-            manual_tiers_hint: "Visuelle manuelle Tierlist (S / A / B / C / D).",
-            manual_back: "Zurück",
-            manual_download_btn: "Manuelle Tierlist als Bild",
-            manual_save_error: "Manuelle Tierlist konnte nicht gespeichert werden.",
-            // Edit
-            edit_title: "Spiel bearbeiten",
-            edit_label_name: "Name",
-            edit_label_image_url: "Bild-URL (optional)",
-            edit_label_image_file: "Bild-Datei (optional)",
-            edit_cancel: "Abbrechen",
-            edit_save: "Speichern",
-            status_edit_saved: "Spiel aktualisiert."
+            manual_subtitle: "Links: alle Spiele. Rechts: S–D-Reihen. Ziehe Spiele mit der Maus in die gewünschten Reihen.",
+            manual_all_games_title: "Alle Spiele",
+            btn_manual_open: "Manuelle Tierlist öffnen",
+            btn_manual_back: "Zurück",
+            btn_manual_download: "Manuelle Tierlist als Bild herunterladen",
+            manual_tier_save_error: "Manuelle Tierlist konnte nicht als Bild gespeichert werden.",
+            edit_button_title: "Spiel bearbeiten",
+            edit_prompt_title: "Neuer Spielname (leer lassen zum Behalten):",
+            edit_prompt_image: "Neue Cover-Bild-URL (leer lassen zum Behalten):",
+            edit_saved: "Spiel aktualisiert: {title}"
         }
     };
 
@@ -1379,9 +1177,8 @@
 
         document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
         document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
+        document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
         document.getElementById("lbl_manual_image_url").textContent = s.manual_label_image_url;
-        document.getElementById("lbl_manual_image_file").textContent = s.manual_label_image_file;
-        document.getElementById("manual_hint").textContent = s.manual_hint;
         document.getElementById("addManualButton").textContent = s.btn_add_manual;
 
         document.getElementById("modeLabel").textContent = s.mode_label;
@@ -1399,20 +1196,12 @@
         document.getElementById("btnImportGames").textContent = s.btn_import_games;
 
         // Manueller Tierlist
-        document.getElementById("manual_title").textContent = s.manual_title;
-        document.getElementById("manual_subtitle").textContent = s.manual_subtitle;
-        document.getElementById("manual_pool_title").textContent = s.manual_pool_title;
-        document.getElementById("manual_tiers_hint").textContent = s.manual_tiers_hint;
-        document.getElementById("manualBackButton").textContent = s.manual_back;
-        document.getElementById("downloadManualTierImageButton").textContent = s.manual_download_btn;
-
-        // Edit-Dialog
-        document.getElementById("editDialogTitle").textContent = s.edit_title;
-        document.getElementById("editLabelName").textContent = s.edit_label_name;
-        document.getElementById("editLabelImageUrl").textContent = s.edit_label_image_url;
-        document.getElementById("editLabelImageFile").textContent = s.edit_label_image_file;
-        document.getElementById("editCancelButton").textContent = s.edit_cancel;
-        document.getElementById("editSaveButton").textContent = s.edit_save;
+        document.getElementById("txt_manual_title").textContent = s.manual_title;
+        document.getElementById("txt_manual_subtitle").textContent = s.manual_subtitle;
+        document.getElementById("manual_all_games_title").textContent = s.manual_all_games_title;
+        document.getElementById("btnManualStart").textContent = s.btn_manual_open;
+        document.getElementById("btnManualBack").textContent = s.btn_manual_back;
+        document.getElementById("btnManualDownload").textContent = s.btn_manual_download;
 
         updateClickStatsDisplay();
     }
@@ -1428,7 +1217,7 @@
                 count: formatComparisonCount(comparisonsDone || 0)
             });
         } else if (games.length < 5) {
-            progressInfo.textContent = tr("progress_need_n");
+            progressInfo.textContent = tr("progress_need_two");
         } else {
             progressInfo.textContent = tr("progress_not_started");
         }
@@ -1502,6 +1291,16 @@
 
     const STORAGE_KEY = "tierlist_tool_state_v2";
 
+    // Manueller Tierlist Zustand
+    let manualTiers = {
+        unassigned: [],
+        S: [],
+        A: [],
+        B: [],
+        C: [],
+        D: []
+    };
+
     function cleanTitle(rawTitle, url) {
         let t = (rawTitle || "").trim();
         if (!t) return t;
@@ -1527,11 +1326,7 @@
     function updateGameCount() {
         const count = games.length;
         document.getElementById("gameCountHint").textContent = formatGameCount(count);
-        const startBtn = document.getElementById("startTierButton");
-        const manualBtn = document.getElementById("startManualTierButton");
-        const disabled = count < 5;
-        startBtn.disabled = disabled;
-        manualBtn.disabled = disabled;
+        document.getElementById("startTierButton").disabled = count < 5;
         updateClickStatsDisplay();
     }
 
@@ -1552,7 +1347,30 @@
         document.getElementById("progressInfo").textContent = tr("progress_not_started");
     }
 
-    /* ---------- Löschen & Reload ---------- */
+    function ensureManualTiersConsistency() {
+        const zones = ["unassigned","S","A","B","C","D"];
+        const present = new Set();
+
+        zones.forEach(z => {
+            let arr = manualTiers[z];
+            if (!Array.isArray(arr)) arr = [];
+            arr = arr.filter(i =>
+                Number.isInteger(i) &&
+                i >= 0 &&
+                i < games.length &&
+                !present.has(i)
+            );
+            arr.forEach(i => present.add(i));
+            manualTiers[z] = arr;
+        });
+
+        for (let i = 0; i < games.length; i++) {
+            if (!present.has(i)) {
+                manualTiers.unassigned.push(i);
+                present.add(i);
+            }
+        }
+    }
 
     function deleteGame(index) {
         if (index < 0 || index >= games.length) return;
@@ -1560,6 +1378,7 @@
         const deletedIndex = index;
         games.splice(deletedIndex, 1);
 
+        // Auto-Ranking-Indices anpassen
         sortedIndices = sortedIndices
             .filter(i => i !== deletedIndex)
             .map(i => (i > deletedIndex ? i - 1 : i));
@@ -1583,7 +1402,26 @@
             document.getElementById("progressInfo").textContent = tr("progress_stopped");
         }
 
+        // Manuellen Tierlist anpassen
+        ["unassigned","S","A","B","C","D"].forEach(z => {
+            manualTiers[z] = manualTiers[z]
+                .filter(i => i !== deletedIndex)
+                .map(i => (i > deletedIndex ? i - 1 : i));
+        });
+
+        if (games.length === 0) {
+            manualTiers = {
+                unassigned: [],
+                S: [],
+                A: [],
+                B: [],
+                C: [],
+                D: []
+            };
+        }
+
         renderGameList();
+        ensureManualTiersConsistency();
 
         const finishedPanel = document.getElementById("finishedPanel");
         const tierTableSection = document.getElementById("tierTableSection");
@@ -1604,7 +1442,7 @@
             pendingNewIndices = [];
             currentNewIndex = null;
             progressInfo.textContent =
-                games.length >= 5 ? tr("progress_not_started") : tr("progress_need_n");
+                games.length >= 5 ? tr("progress_not_started") : tr("progress_need_two");
         }
 
         updateGameCount();
@@ -1646,6 +1484,11 @@
             games[index].url   = url;
 
             renderGameList();
+            // Wenn manueller Tierlist offen ist, neu zeichnen
+            if (!document.getElementById("manualOverlay").classList.contains("hidden")) {
+                renderManualTierlist();
+            }
+
             showStatus(tr("status_update_game_ok", { title }), "success");
             saveState();
         } catch (err) {
@@ -1660,90 +1503,28 @@
         }
     }
 
-    /* ---------- Bearbeiten-Dialog ---------- */
-
-    let editIndex = null;
-
-    function openEditGame(index) {
+    function editGame(index) {
         const g = games[index];
         if (!g) return;
 
-        editIndex = index;
+        const newTitleRaw = prompt(tr("edit_prompt_title"), g.title || "");
+        if (newTitleRaw === null) return;
+        const newTitle = newTitleRaw.trim() || g.title;
 
-        const nameInput = document.getElementById("editGameName");
-        const urlInput  = document.getElementById("editImageUrl");
-        const fileInput = document.getElementById("editImageFile");
-        const preview   = document.getElementById("editPreview");
-
-        nameInput.value = g.title || "";
-        if (g.image && g.image.startsWith("data:")) {
-            urlInput.value = "";
-        } else {
-            urlInput.value = g.image || "";
-        }
-        fileInput.value = "";
-        preview.src = g.image || "";
-        preview.alt = g.title || "";
-
-        document.getElementById("editOverlay").classList.remove("hidden");
-    }
-
-    function closeEditDialog() {
-        editIndex = null;
-        document.getElementById("editOverlay").classList.add("hidden");
-    }
-
-    function saveEditGame() {
-        if (editIndex === null) return;
-        const g = games[editIndex];
-        if (!g) {
-            closeEditDialog();
-            return;
-        }
-
-        const nameInput = document.getElementById("editGameName");
-        const urlInput  = document.getElementById("editImageUrl");
-        const fileInput = document.getElementById("editImageFile");
-
-        const newTitle = nameInput.value.trim();
-        const imgUrl   = urlInput.value.trim();
-        const file     = fileInput.files[0];
-
-        if (!newTitle) {
-            showStatus(tr("status_manual_need_title"), "error");
-            return;
-        }
+        const newImageRaw = prompt(tr("edit_prompt_image"), g.image || "");
+        if (newImageRaw === null) return;
+        const newImage = newImageRaw.trim() || g.image;
 
         g.title = newTitle;
+        g.image = newImage;
 
-        const finish = () => {
-            renderGameList();
-            saveState();
-            showStatus(tr("status_edit_saved"), "success");
-            closeEditDialog();
-        };
-
-        if (file) {
-            showStatus(tr("status_manual_loading"), "info");
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                g.image = e.target.result;
-                finish();
-            };
-            reader.onerror = (e) => {
-                console.error(e);
-                showStatus(tr("status_manual_file_error"), "error");
-            };
-            reader.readAsDataURL(file);
-        } else {
-            if (imgUrl) {
-                g.image = imgUrl;
-            }
-            finish();
+        renderGameList();
+        if (!document.getElementById("manualOverlay").classList.contains("hidden")) {
+            renderManualTierlist();
         }
+        showStatus(tr("edit_saved", { title: newTitle }), "success");
+        saveState();
     }
-
-    /* ---------- Game-Liste rendern ---------- */
 
     function renderGameList() {
         const listEl = document.getElementById("gameList");
@@ -1781,8 +1562,8 @@
             editBtn.type = "button";
             editBtn.className = "btn-icon";
             editBtn.textContent = "✎";
-            editBtn.title = "Edit";
-            editBtn.addEventListener("click", () => openEditGame(index));
+            editBtn.title = tr("edit_button_title");
+            editBtn.addEventListener("click", () => editGame(index));
 
             const reloadBtn = document.createElement("button");
             reloadBtn.type = "button";
@@ -1811,8 +1592,6 @@
         updateGameCount();
     }
 
-    /* ---------- Spiele hinzufügen ---------- */
-
     async function fetchAndAddGame(rawUrl) {
         let finalUrl = (rawUrl || "").trim();
         if (!finalUrl) {
@@ -1838,6 +1617,7 @@
             const image = data.image || "";
 
             games.push({ id: nextId++, title, image, url });
+            ensureManualTiersConsistency();
             renderGameList();
             saveState();
 
@@ -1879,11 +1659,12 @@
 
     function addManualGame() {
         const titleInput = document.getElementById("manualTitle");
-        const urlInput   = document.getElementById("manualImageUrl");
-        const fileInput  = document.getElementById("manualImage");
-        const rawTitle   = (titleInput.value || "").trim();
-        const imgUrl     = (urlInput.value || "").trim();
-        const file       = fileInput.files[0];
+        const fileInput = document.getElementById("manualImageFile");
+        const urlInput = document.getElementById("manualImageUrl");
+
+        const rawTitle = (titleInput.value || "").trim();
+        const file = fileInput.files[0];
+        const imageUrl = (urlInput.value || "").trim();
 
         const addBtn = document.getElementById("addButton");
         const addManyBtn = document.getElementById("addManyButton");
@@ -1893,10 +1674,9 @@
             showStatus(tr("status_manual_need_title"), "error");
             return;
         }
-        if (!imgUrl && !file) {
-            // ist nicht zwingend, aber Hinweis:
-            showStatus(tr("status_manual_need_image_or_url"), "info");
-            // trotzdem erlauben, aber dann ohne Bild
+        if (!file && !imageUrl) {
+            showStatus(tr("status_manual_need_image"), "error");
+            return;
         }
 
         hideStatus();
@@ -1904,19 +1684,20 @@
         if (addManyBtn) addManyBtn.disabled = true;
         addManualBtn.disabled = true;
 
-        const finishAdd = (imageDataUrl) => {
+        const finishAdd = (imgValue) => {
             games.push({
                 id: nextId++,
                 title: rawTitle,
-                image: imageDataUrl || imgUrl || "",
+                image: imgValue,
                 url: ""
             });
 
+            ensureManualTiersConsistency();
             renderGameList();
             showStatus(tr("status_manual_added", { title: rawTitle }), "success");
             titleInput.value = "";
-            urlInput.value = "";
             fileInput.value = "";
+            urlInput.value = "";
             saveState();
 
             addBtn.disabled = false;
@@ -1924,23 +1705,26 @@
             addManualBtn.disabled = false;
         };
 
-        if (file) {
-            showStatus(tr("status_manual_loading"), "info");
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                finishAdd(e.target.result);
-            };
-            reader.onerror = (e) => {
-                console.error("FileReader error", e);
-                showStatus(tr("status_manual_file_error"), "error");
-                addBtn.disabled = false;
-                if (addManyBtn) addManyBtn.disabled = false;
-                addManualBtn.disabled = false;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            finishAdd("");
+        if (imageUrl) {
+            finishAdd(imageUrl);
+            return;
         }
+
+        showStatus(tr("status_manual_loading"), "info");
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            finishAdd(dataUrl);
+        };
+        reader.onerror = (e) => {
+            console.error("FileReader error", e);
+            showStatus(tr("status_manual_file_error"), "error");
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+            addManualBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
     }
 
     async function addGamesFromMultiInput() {
@@ -2004,10 +1788,9 @@
         saveState();
     }
 
-    /* ---------- Auto-Tierlist (Vergleich) ---------- */
-
     const mainContainer = document.getElementById("mainContainer");
     const overlay = document.getElementById("compareOverlay");
+    const manualOverlay = document.getElementById("manualOverlay");
     const fsStatus = document.getElementById("fsStatus");
     const fsProgress = document.getElementById("fsProgress");
     const fsImgLeft = document.getElementById("fsImgLeft");
@@ -2045,7 +1828,7 @@
 
     function startTierlist() {
         if (games.length < 5) {
-            showStatus(tr("progress_need_n"), "error");
+            showStatus(tr("progress_need_two"), "error");
             return;
         }
 
@@ -2091,6 +1874,7 @@
         });
 
         mainContainer.classList.add("hidden");
+        manualOverlay.classList.add("hidden");
         overlay.classList.remove("hidden");
         fsStatus.textContent = isFirstSort
             ? tr("overlay_status_start")
@@ -2339,6 +2123,14 @@
         games.length = 0;
         nextId = 1;
         resetTierResults();
+        manualTiers = {
+            unassigned: [],
+            S: [],
+            A: [],
+            B: [],
+            C: [],
+            D: []
+        };
         renderGameList();
         hideStatus();
         try {
@@ -2347,8 +2139,6 @@
             console.error("Error clearing localStorage", e);
         }
     }
-
-    /* ---------- Speichern / Laden ---------- */
 
     function saveState() {
         try {
@@ -2367,7 +2157,8 @@
                 high: high,
                 mid: mid,
                 nextId: nextId,
-                finished: !finishedPanelHidden
+                finished: !finishedPanelHidden,
+                manualTiers: manualTiers
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {
@@ -2400,6 +2191,7 @@
                 });
             });
 
+            // Auto-Ranking
             let tmpSorted = Array.isArray(state.sortedIndices)
                 ? state.sortedIndices.filter(i =>
                     Number.isInteger(i) && i >= 0 && i < games.length
@@ -2456,6 +2248,28 @@
                 nextId = maxId + 1;
             }
 
+            // Manueller Tierlist
+            if (state.manualTiers && typeof state.manualTiers === "object") {
+                manualTiers = {
+                    unassigned: Array.isArray(state.manualTiers.unassigned) ? state.manualTiers.unassigned.slice() : [],
+                    S: Array.isArray(state.manualTiers.S) ? state.manualTiers.S.slice() : [],
+                    A: Array.isArray(state.manualTiers.A) ? state.manualTiers.A.slice() : [],
+                    B: Array.isArray(state.manualTiers.B) ? state.manualTiers.B.slice() : [],
+                    C: Array.isArray(state.manualTiers.C) ? state.manualTiers.C.slice() : [],
+                    D: Array.isArray(state.manualTiers.D) ? state.manualTiers.D.slice() : []
+                };
+            } else {
+                manualTiers = {
+                    unassigned: [],
+                    S: [],
+                    A: [],
+                    B: [],
+                    C: [],
+                    D: []
+                };
+            }
+            ensureManualTiersConsistency();
+
             renderGameList();
 
             const finished = !!state.finished;
@@ -2473,12 +2287,14 @@
                 });
                 mainContainer.classList.remove("hidden");
                 overlay.classList.add("hidden");
+                manualOverlay.classList.add("hidden");
             } else if (
                 compareActive &&
                 sortedIndices.length > 0 &&
                 (currentNewIndex !== null || pendingNewIndices.length > 0)
             ) {
                 mainContainer.classList.add("hidden");
+                manualOverlay.classList.add("hidden");
                 overlay.classList.remove("hidden");
                 fsStatus.textContent = tr("overlay_status_continue");
                 fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
@@ -2495,18 +2311,176 @@
                 compareActive = false;
                 finishedPanel.classList.add("hidden");
                 tierTableSection.classList.add("hidden");
-                progressInfo.textContent = games.length < 5
-                    ? tr("progress_need_n")
-                    : tr("progress_not_started");
+                progressInfo.textContent = games.length >= 5
+                    ? tr("progress_not_started")
+                    : tr("progress_need_two");
                 mainContainer.classList.remove("hidden");
                 overlay.classList.add("hidden");
+                manualOverlay.classList.add("hidden");
             }
         } catch (e) {
             console.error("Fehler beim Parsen des gespeicherten Zustands", e);
         }
     }
 
-    /* ---------- Spiele-Export ohne Ranking + GitHub Gist ---------- */
+    // --- Manueller Tierlist (Drag & Drop) ---
+
+    const MANUAL_ZONES = ["unassigned","S","A","B","C","D"];
+    let manualDnDInitialized = false;
+    let manualDragGameIndex = null;
+
+    function initManualDnD() {
+        if (manualDnDInitialized) return;
+        MANUAL_ZONES.forEach(name => {
+            const el = document.getElementById("manualZone_" + name);
+            if (!el) return;
+            el.dataset.zone = name;
+            el.addEventListener("dragover", manualOnDragOver);
+            el.addEventListener("dragleave", manualOnDragLeave);
+            el.addEventListener("drop", manualOnDrop);
+        });
+        manualDnDInitialized = true;
+    }
+
+    function createManualCard(gameIndex) {
+        const g = games[gameIndex];
+        const card = document.createElement("div");
+        card.className = "manual-card";
+        card.draggable = true;
+        card.dataset.gameIndex = String(gameIndex);
+
+        const img = document.createElement("img");
+        img.className = "manual-card-thumb";
+        img.crossOrigin = "anonymous";
+        img.src = g.image || "";
+        img.alt = g.title || "";
+
+        const name = document.createElement("div");
+        name.className = "manual-card-name";
+        name.textContent = g.title || "(no title)";
+
+        card.appendChild(img);
+        card.appendChild(name);
+
+        card.addEventListener("dragstart", manualOnDragStart);
+        card.addEventListener("dragend", manualOnDragEnd);
+
+        return card;
+    }
+
+    function renderManualTierlist() {
+        ensureManualTiersConsistency();
+        const zoneEls = {};
+        MANUAL_ZONES.forEach(name => {
+            zoneEls[name] = document.getElementById("manualZone_" + name);
+            if (zoneEls[name]) zoneEls[name].innerHTML = "";
+        });
+
+        MANUAL_ZONES.forEach(name => {
+            const zoneArr = manualTiers[name] || [];
+            const root = zoneEls[name];
+            if (!root) return;
+            zoneArr.forEach(idx => {
+                if (idx >= 0 && idx < games.length) {
+                    root.appendChild(createManualCard(idx));
+                }
+            });
+        });
+    }
+
+    function manualOnDragStart(e) {
+        const idx = parseInt(e.currentTarget.dataset.gameIndex, 10);
+        manualDragGameIndex = Number.isInteger(idx) ? idx : null;
+        e.dataTransfer.effectAllowed = "move";
+    }
+
+    function manualOnDragEnd() {
+        manualDragGameIndex = null;
+        document.querySelectorAll(".manual-dropzone.drag-over").forEach(z => {
+            z.classList.remove("drag-over");
+        });
+    }
+
+    function manualOnDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        e.currentTarget.classList.add("drag-over");
+    }
+
+    function manualOnDragLeave(e) {
+        e.currentTarget.classList.remove("drag-over");
+    }
+
+    function moveGameToManualZone(idx, zoneName) {
+        if (!Number.isInteger(idx) || idx < 0 || idx >= games.length) return;
+        if (!MANUAL_ZONES.includes(zoneName)) return;
+
+        MANUAL_ZONES.forEach(z => {
+            manualTiers[z] = manualTiers[z].filter(i => i !== idx);
+        });
+        manualTiers[zoneName].push(idx);
+        renderManualTierlist();
+        saveState();
+    }
+
+    function manualOnDrop(e) {
+        e.preventDefault();
+        const zoneName = e.currentTarget.dataset.zone;
+        e.currentTarget.classList.remove("drag-over");
+
+        let idx = manualDragGameIndex;
+        if (!Number.isInteger(idx)) {
+            const data = e.dataTransfer.getData("text/plain");
+            idx = parseInt(data, 10);
+        }
+        moveGameToManualZone(idx, zoneName);
+    }
+
+    function openManualTierlist() {
+        if (games.length < 5) {
+            showStatus(tr("progress_need_two"), "error");
+            return;
+        }
+        hideStatus();
+        ensureManualTiersConsistency();
+        renderManualTierlist();
+        mainContainer.classList.add("hidden");
+        overlay.classList.add("hidden");
+        manualOverlay.classList.remove("hidden");
+        saveState();
+    }
+
+    function closeManualTierlist() {
+        manualOverlay.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+        saveState();
+    }
+
+    async function downloadManualTierImage() {
+        const wrapper = document.getElementById("manualTierWrapper");
+        if (!wrapper || !wrapper.children.length) {
+            alert(tr("tierlist_not_created"));
+            return;
+        }
+        try {
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: "#020617",
+                scale: 2,
+                useCORS: true
+            });
+            const link = document.createElement("a");
+            link.download = "tierlist_manual.png";
+            link.href = canvas.toDataURL("image/png");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error(e);
+            alert(tr("manual_tier_save_error"));
+        }
+    }
+
+    // --- Spiele-Export ohne Ranking (mit GitHub Gist) ---
 
     function exportGamesOnly() {
         if (!games.length) {
@@ -2539,35 +2513,47 @@
         }
     }
 
-    function isGistUrl(str) {
-        return /https?:\/\/gist\.github\.com\//i.test(str);
-    }
-
-    function gistToRaw(url) {
-        const m = url.match(/https?:\/\/gist\.github\.com\/([^\/]+)\/([a-f0-9]+)/i);
-        if (!m) return null;
-        return "https://gist.githubusercontent.com/" + m[1] + "/" + m[2] + "/raw";
-    }
-
-    async function importGamesOnly() {
+    function importGamesOnly() {
         const input = prompt(tr("share_import_prompt"));
         if (!input) return;
         const trimmed = input.trim();
 
-        let base64Text = null;
+        if (/^https?:\/\//i.test(trimmed)) {
+            importGamesFromUrl(trimmed);
+        } else {
+            importGamesFromBase64(trimmed);
+        }
+    }
 
-        try {
-            if (isGistUrl(trimmed)) {
-                const rawUrl = gistToRaw(trimmed);
-                if (!rawUrl) throw new Error("Invalid Gist URL.");
-                const resp = await fetch(rawUrl);
-                if (!resp.ok) throw new Error("HTTP " + resp.status);
-                base64Text = (await resp.text()).trim();
-            } else {
-                base64Text = trimmed;
+    async function fetchTextFromUrl(anyUrl) {
+        let targetUrl = anyUrl;
+        if (targetUrl.includes("gist.github.com")) {
+            const m = targetUrl.match(/gist\.github\.com\/([^\/]+)\/([a-f0-9]+)/i);
+            if (m) {
+                targetUrl = "https://gist.githubusercontent.com/" + m[1] + "/" + m[2] + "/raw";
             }
+        }
+        const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+        const resp = await fetch(proxyUrl);
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        return await resp.text();
+    }
 
-            const json = decodeURIComponent(escape(atob(base64Text)));
+    async function importGamesFromUrl(url) {
+        try {
+            hideStatus();
+            showStatus(tr("status_loading_meta"), "info");
+            const text = await fetchTextFromUrl(url);
+            importGamesFromBase64(text.trim());
+        } catch (e) {
+            console.error(e);
+            showStatus(tr("share_import_fail", { error: e.message }), "error");
+        }
+    }
+
+    function importGamesFromBase64(base64) {
+        try {
+            const json = decodeURIComponent(escape(atob(base64)));
             const data = JSON.parse(json);
 
             if (!data || !Array.isArray(data.games)) {
@@ -2591,6 +2577,15 @@
             nextId = maxId + 1;
 
             resetTierResults();
+            manualTiers = {
+                unassigned: [],
+                S: [],
+                A: [],
+                B: [],
+                C: [],
+                D: []
+            };
+            ensureManualTiersConsistency();
             renderGameList();
             saveState();
 
@@ -2601,158 +2596,7 @@
         }
     }
 
-    /* ---------- Manueller Tierlist (Drag & Drop) ---------- */
-
-    const manualOverlay = document.getElementById("manualOverlay");
-    const manualPoolList = document.getElementById("manualPoolList");
-
-    let currentDragCard = null;
-
-    function startManualTierlist() {
-        if (games.length < 5) {
-            showStatus(tr("progress_need_n"), "error");
-            return;
-        }
-
-        hideStatus();
-
-        manualPoolList.innerHTML = "";
-        document.querySelectorAll(".manual-tier-dropzone").forEach(z => {
-            z.innerHTML = "";
-        });
-
-        games.forEach((g, index) => {
-            const card = document.createElement("div");
-            card.className = "manual-card";
-            card.draggable = true;
-            card.dataset.index = String(index);
-
-            const img = document.createElement("img");
-            img.className = "manual-card-thumb";
-            img.src = g.image || "";
-            img.alt = g.title || "";
-
-            const name = document.createElement("div");
-            name.className = "manual-card-name";
-            const full = g.title || "(no title)";
-            const short = full.length > 26 ? full.slice(0, 23) + "…" : full;
-            name.textContent = short;
-            name.title = full;
-
-            card.appendChild(img);
-            card.appendChild(name);
-
-            addManualCardDragHandlers(card);
-
-            manualPoolList.appendChild(card);
-        });
-
-        mainContainer.classList.add("hidden");
-        manualOverlay.classList.remove("hidden");
-    }
-
-    function addManualCardDragHandlers(card) {
-        card.addEventListener("dragstart", (e) => {
-            currentDragCard = card;
-            e.dataTransfer.effectAllowed = "move";
-        });
-        card.addEventListener("dragend", () => {
-            currentDragCard = null;
-            document.querySelectorAll(".manual-tier-dropzone, #manualPoolList")
-                .forEach(z => z.classList.remove("over"));
-        });
-    }
-
-    function setupManualDropzones() {
-        const zones = document.querySelectorAll(".manual-tier-dropzone");
-        zones.forEach(zone => {
-            zone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                if (!currentDragCard) return;
-                e.dataTransfer.dropEffect = "move";
-                zone.classList.add("over");
-            });
-            zone.addEventListener("dragleave", () => {
-                zone.classList.remove("over");
-            });
-            zone.addEventListener("drop", (e) => {
-                e.preventDefault();
-                zone.classList.remove("over");
-                if (!currentDragCard) return;
-
-                if (!zone.contains(currentDragCard)) {
-                    currentDragCard.className = "manual-tier-card";
-                    const name = currentDragCard.querySelector(".manual-card-name, .manual-tier-card-name");
-                    if (name) {
-                        name.className = "manual-tier-card-name";
-                    }
-                    const img = currentDragCard.querySelector("img");
-                    if (img) {
-                        img.className = "manual-tier-card-thumb";
-                    }
-                    zone.appendChild(currentDragCard);
-                }
-            });
-        });
-
-        const pool = document.getElementById("manualPoolList");
-        pool.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            if (!currentDragCard) return;
-            e.dataTransfer.dropEffect = "move";
-            pool.classList.add("over");
-        });
-        pool.addEventListener("dragleave", () => {
-            pool.classList.remove("over");
-        });
-        pool.addEventListener("drop", (e) => {
-            e.preventDefault();
-            pool.classList.remove("over");
-            if (!currentDragCard) return;
-            if (!pool.contains(currentDragCard)) {
-                currentDragCard.className = "manual-card";
-                const name = currentDragCard.querySelector(".manual-card-name, .manual-tier-card-name");
-                if (name) {
-                    name.className = "manual-card-name";
-                }
-                const img = currentDragCard.querySelector("img");
-                if (img) {
-                    img.className = "manual-card-thumb";
-                }
-                pool.appendChild(currentDragCard);
-            }
-        });
-    }
-
-    async function downloadManualTierImage() {
-        const wrapper = document.getElementById("manualTierWrapper");
-        if (!wrapper) return;
-
-        try {
-            const canvas = await html2canvas(wrapper, {
-                backgroundColor: "#020617",
-                scale: 2,
-                useCORS: true
-            });
-
-            const link = document.createElement("a");
-            link.download = "tierlist_manual.png";
-            link.href = canvas.toDataURL("image/png");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error(e);
-            alert(tr("manual_save_error"));
-        }
-    }
-
-    function closeManualOverlay() {
-        manualOverlay.classList.add("hidden");
-        mainContainer.classList.remove("hidden");
-    }
-
-    /* ---------- Events ---------- */
+    // ---------- Events ----------
     document.getElementById("addButton").addEventListener("click", addGameFromUrl);
     document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
     document.getElementById("addManualButton").addEventListener("click", addManualGame);
@@ -2772,31 +2616,20 @@
     document.getElementById("btnImportGames")
         .addEventListener("click", importGamesOnly);
 
-    document.getElementById("editSaveButton")
-        .addEventListener("click", saveEditGame);
-    document.getElementById("editCancelButton")
-        .addEventListener("click", closeEditDialog);
-    document.getElementById("editOverlay")
-        .addEventListener("click", (e) => {
-            if (e.target.id === "editOverlay") {
-                closeEditDialog();
-            }
-        });
-
-    document.getElementById("startManualTierButton")
-        .addEventListener("click", startManualTierlist);
-    document.getElementById("manualBackButton")
-        .addEventListener("click", closeManualOverlay);
-    document.getElementById("downloadManualTierImageButton")
+    document.getElementById("btnManualStart")
+        .addEventListener("click", openManualTierlist);
+    document.getElementById("btnManualBack")
+        .addEventListener("click", closeManualTierlist);
+    document.getElementById("btnManualDownload")
         .addEventListener("click", downloadManualTierImage);
 
     window.addEventListener("load", () => {
         initLanguage();
         initMode();
+        initManualDnD();
         loadState();
         refreshProgressInfoForCurrentState();
         updateGameCount();
-        setupManualDropzones();
     });
 </script>
 </body>
