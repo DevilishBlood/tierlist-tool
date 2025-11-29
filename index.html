@@ -651,7 +651,7 @@
         .manual-card-thumb,
         .manual-tier-card-thumb {
             width: 100%;
-            height: 150px; /* höher UND über grid breiter */
+            height: 150px; /* höher UND breiter im Grid */
             border-radius: 10px;
             object-fit: cover;
             border: 1px solid #1f2937;
@@ -2499,8 +2499,6 @@
     const manualPoolEl = document.getElementById("manualPool");
     const manualTierWrapper = document.getElementById("manualTierWrapper");
 
-    let manualDragGameId = null;
-
     function openManualTierlist() {
         if (!games.length) {
             alert(tr("manual_no_games"));
@@ -2541,6 +2539,7 @@
 
             itemsCell.appendChild(grid);
             row.appendChild(labelCell);
+            row.appendChild(itemsCell);
             manualTierWrapper.appendChild(row);
         });
         manualTierWrapper.dataset.inited = "1";
@@ -2568,16 +2567,11 @@
         card.appendChild(titleDiv);
 
         card.addEventListener("dragstart", (e) => {
-            manualDragGameId = game.id;
-            e.dataTransfer.effectAllowed = "move";
-            // Wichtig: setData, damit Drop-Events in allen Browsern feuern
+            // ID IMMER in dataTransfer schreiben
             try {
                 e.dataTransfer.setData("text/plain", String(game.id));
+                e.dataTransfer.effectAllowed = "move";
             } catch (_) {}
-        });
-
-        card.addEventListener("dragend", () => {
-            manualDragGameId = null;
         });
 
         return card;
@@ -2640,6 +2634,7 @@
         // Pool als Drop-Zone (zurücklegen)
         manualPoolEl.addEventListener("dragover", e => {
             e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
             manualPoolEl.classList.add("manual-drop-highlight");
         });
         manualPoolEl.addEventListener("dragleave", () => {
@@ -2649,15 +2644,14 @@
             e.preventDefault();
             manualPoolEl.classList.remove("manual-drop-highlight");
 
-            let id = manualDragGameId;
-            if (!id && e.dataTransfer) {
+            let id = null;
+            if (e.dataTransfer) {
                 const txt = e.dataTransfer.getData("text/plain");
-                if (txt) id = Number(txt);
+                if (txt) id = parseInt(txt, 10);
             }
             if (!id) return;
 
             moveGameToTierOrPool(id, null);
-            manualDragGameId = null;
         });
 
         // Jede Tier-Grid als Drop-Zone
@@ -2667,6 +2661,7 @@
 
             grid.addEventListener("dragover", e => {
                 e.preventDefault();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
                 grid.classList.add("manual-drop-highlight");
             });
             grid.addEventListener("dragleave", () => {
@@ -2676,15 +2671,14 @@
                 e.preventDefault();
                 grid.classList.remove("manual-drop-highlight");
 
-                let id = manualDragGameId;
-                if (!id && e.dataTransfer) {
+                let id = null;
+                if (e.dataTransfer) {
                     const txt = e.dataTransfer.getData("text/plain");
-                    if (txt) id = Number(txt);
+                    if (txt) id = parseInt(txt, 10);
                 }
                 if (!id) return;
 
                 moveGameToTierOrPool(id, tier);
-                manualDragGameId = null;
             });
         }
     }
