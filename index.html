@@ -558,47 +558,51 @@
             max-width: 160px;
         }
 
-        .manual-tier-wrapper {
-            border-radius: 20px;
-            border: 1px solid #111827;
-            background: #020617;
-            padding: 10px 0;
-        }
+        /* --- Manueller Tierlist: Optik wie Auto-Tierlist --- */
 
-        .manual-tier-row {
-            display: flex;
-            border-bottom: 1px solid #111827;
-            min-height: 104px;
-        }
+.manual-tier-wrapper {
+    border-radius: 20px;
+    border: 1px solid #111827;
+    background: #020617;
+    overflow: hidden;          /* wichtig: Ecken werden mitgerundet */
+    padding: 0;                /* wie bei tier-table-wrapper */
+}
 
-        .manual-tier-row:last-child {
-            border-bottom: none;
-        }
+.manual-tier-row {
+    display: flex;
+    min-height: 96px;          /* wie .tier-row */
+    border-bottom: 1px solid #111827;
+}
 
-        .manual-tier-label {
-            width: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #020617;
-        }
+.manual-tier-row:last-child {
+    border-bottom: none;
+}
 
-        .manual-tier-dropzone {
-            flex: 1;
-            padding: 8px 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-            min-height: 100px;
-        }
+.manual-tier-label {
+    width: 100px;              /* wie .tier-label-cell */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: #020617;
+}
 
-        .manual-tier-dropzone.over {
-            outline: 2px dashed #38bdf8;
-            outline-offset: 2px;
-        }
+.manual-tier-dropzone {
+    flex: 1;
+    padding: 10px 12px;        /* wie .tier-items-cell */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    min-height: 96px;
+}
+
+.manual-tier-dropzone.over {
+    outline: 2px dashed #38bdf8;
+    outline-offset: 2px;
+}
+
 
         .manual-tier-card {
             display: flex;
