@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тир-лист по ссылкам на игры</title>
+    <title>Tierlist by Game Links</title>
     <style>
         * { box-sizing: border-box; }
 
@@ -15,13 +15,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            font-size: 20px;
-        }
-
-        .page-wrap {
-            width: 100%;
-            display: flex;
-            justify-content: center;
+            font-size: 20px; /* ~150% */
         }
 
         .container {
@@ -36,7 +30,6 @@
             display: grid;
             grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
             gap: 40px;
-            position: relative;
         }
 
         @media (max-width: 900px) {
@@ -48,18 +41,16 @@
         }
 
         h1 {
-            margin-top: 0;
-            margin-bottom: 14px;
+            margin: 0;
             font-size: 2.1rem;
         }
 
         .subtitle {
-            margin-top: 0;
+            margin-top: 8px;
             margin-bottom: 22px;
             font-size: 1.02rem;
             color: #9ca3af;
             line-height: 1.7;
-            white-space: pre-line;
         }
 
         label {
@@ -166,23 +157,20 @@
             box-shadow: none;
         }
 
-        .btn-icon + .btn-icon { margin-left: 6px; }
+        .btn-icon + .btn-icon {
+            margin-left: 6px;
+        }
 
         .btn-icon:hover {
             background: #1f2937;
             border-color: #9ca3af;
-            box-shadow: 0;
+            box-shadow: 0 0 0 0;
             transform: translateY(0);
         }
 
         .btn-icon.danger:hover {
             background: #b91c1c;
             border-color: #ef4444;
-        }
-
-        .btn-small {
-            padding: 9px 18px;
-            font-size: 0.9rem;
         }
 
         .status {
@@ -466,104 +454,100 @@
             color: #6b7280;
         }
 
-        .hidden { display: none !important; }
-
-        .lang-switch {
-            position: absolute;
-            top: 14px;
-            right: 14px;
+        .lang-select-wrapper {
             display: flex;
-            gap: 6px;
-        }
-
-        .lang-btn {
-            border-radius: 999px;
-            padding: 3px 10px;
-            border: 1px solid #4b5563;
-            background: #020617;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
             color: #9ca3af;
-            font-size: 0.85rem;
-            cursor: pointer;
         }
 
-        .lang-btn.active {
-            background: #38bdf8;
-            color: #020617;
-            border-color: #38bdf8;
-        }
-
-        .manual-panel {
-            margin-top: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            border: 1px dashed #4b5563;
+        #langSelect {
             background: #020617;
+            color: #e5e7eb;
+            border-radius: 999px;
+            border: 1px solid #4b5563;
+            padding: 6px 10px;
+            font-size: 0.9rem;
         }
 
-        .manual-panel label {
-            margin-top: 6px;
+        .mode-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        #modeSelect {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 999px;
+            border: 1px solid #4b5563;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-<div class="page-wrap">
 <div class="container" id="mainContainer">
-    <div class="lang-switch">
-        <button class="lang-btn" data-lang="ru">RU</button>
-        <button class="lang-btn" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="de">DE</button>
-    </div>
-
     <!-- Linke Seite -->
     <div>
-        <h1 id="title">Тир-лист по ссылкам на игры</h1>
-        <p class="subtitle" id="subtitle">
-            1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).
-            2. Загружай метаданные и добавляй игры в список.
-            3. Нажми «Начать тир-лист» – появится режим сравнения с двумя играми.
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:6px;">
+            <h1 id="txt_title">Тир-лист по ссылкам на игры</h1>
+            <div class="lang-select-wrapper">
+                <span id="lbl_lang">Язык</span>
+                <select id="langSelect">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </div>
+        </div>
+        <p class="subtitle" id="txt_subtitle">
+            1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>
+            2. Загружай метаданные и добавляй игры в список.<br>
+            3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.
         </p>
 
-        <label id="labelUrl" for="urlInput">URL игры</label>
+        <label for="urlInput" id="lbl_url">URL игры</label>
         <input id="urlInput"
                type="text"
                placeholder="Например: https://store.steampowered.com/app/570/Dota_2/">
-
         <div style="margin-top: 12px; display:flex; gap:14px; flex-wrap:wrap;">
             <button id="addButton" type="button">Загрузить и добавить игру</button>
             <button id="clearButton" type="button" class="btn-secondary">Очистить список</button>
         </div>
 
-        <label id="labelMulti" for="multiInput" style="margin-top: 22px;">
-            Несколько URL (по одному в строке)
-        </label>
+        <label for="multiInput" id="lbl_multi" style="margin-top: 22px;">Несколько URL (по одному в строке)</label>
         <textarea id="multiInput"
                   placeholder="Каждый URL на новой строке&#10;Например:&#10;https://store.steampowered.com/app/570/Dota_2/&#10;https://store.steampowered.com/app/730/CounterStrike_2/"></textarea>
         <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <button id="addManyButton" type="button" class="btn-secondary">
                 Загрузить все ссылки
             </button>
-            <span class="small-hint" id="multiHint">
+            <span class="small-hint" id="hint_multi">
                 Пустые строки будут пропущены.
             </span>
         </div>
 
-        <!-- Manuell hinzufügen -->
-        <div style="margin-top: 16px;">
-            <button id="toggleManualButton" type="button" class="btn-secondary btn-small">
-                Добавить игру вручную
-            </button>
-            <div id="manualPanel" class="manual-panel hidden">
-                <label id="manualNameLabel" for="manualTitle">Название игры</label>
-                <input id="manualTitle" type="text" placeholder="Например: Hades">
-                <label id="manualImgLabel" for="manualImage">URL изображения (необязательно)</label>
-                <input id="manualImage" type="text" placeholder="https://...">
-                <label id="manualFileLabel" for="manualFile">Файл изображения (необязательно)</label>
-                <input id="manualFile" type="file" accept="image/*">
-                <div style="margin-top: 10px;">
-                    <button id="manualAddButton" type="button" class="btn-secondary btn-small">
-                        Добавить вручную
-                    </button>
-                </div>
+        <!-- Manueller Eintrag -->
+        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+            <div class="section-title" style="margin-bottom: 4px;">
+                <span id="lbl_manual_section">Своя игра (ручной ввод)</span>
+            </div>
+            <label for="manualTitle" id="lbl_manual_name">Название игры</label>
+            <input id="manualTitle" type="text">
+            <label for="manualImage" id="lbl_manual_image" style="margin-top: 12px;">Картинка (обложка)</label>
+            <input id="manualImage" type="file" accept="image/*">
+            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                <button id="addManualButton" type="button" class="btn-secondary">
+                    Добавить свою игру
+                </button>
             </div>
         </div>
 
@@ -571,29 +555,42 @@
 
         <div style="margin-top: 28px;">
             <div class="section-title">
-                <span id="collectedTitle">Собранные игры</span>
+                <span id="title_collected">Собранные игры</span>
                 <span class="small-hint" id="gameCountHint">0 игр</span>
             </div>
             <div class="list" id="gameList"></div>
-
             <div class="tier-controls">
-                <button id="startTierExact" type="button" disabled>
-                    Начать (точный ранкинг)
+                <button id="startTierButton" type="button" disabled>
+                    Начать тир-лист
                 </button>
-                <button id="startTierRough" type="button" class="btn-secondary" disabled>
-                    Начать (быстрый, примерный)
-                </button>
-                <span class="small-hint" id="clickEstimate">
+                <span class="small-hint" id="hint_min_games">
                     Нужно минимум 2 игры.
                 </span>
+                <div class="mode-select-wrapper">
+                    <span id="modeLabel">Режим ранжирования</span>
+                    <select id="modeSelect">
+                        <option value="exact">Точный (больше кликов)</option>
+                        <option value="fast">Быстрый (приблизительный)</option>
+                    </select>
+                </div>
             </div>
+            <div class="small-hint" id="clickStats" style="margin-top:4px;"></div>
+        </div>
 
-            <div class="tier-controls" style="margin-top: 10px;">
-                <button id="exportGamesButton" type="button" class="btn-secondary btn-small">
-                    Экспорт списка игр
+        <!-- Share nur Spiele (ohne Ranking) -->
+        <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #1f2937;">
+            <div class="section-title">
+                <span id="share_title">Spiele teilen (ohne Ranking)</span>
+            </div>
+            <span class="small-hint" id="share_hint">
+                Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.
+            </span>
+            <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
+                <button id="btnExportGames" type="button" class="btn-secondary">
+                    Spiele-Exportcode erzeugen
                 </button>
-                <button id="importGamesButton" type="button" class="btn-secondary btn-small">
-                    Импорт списка игр
+                <button id="btnImportGames" type="button" class="btn-secondary">
+                    Spiele-Exportcode einfügen
                 </button>
             </div>
         </div>
@@ -602,12 +599,12 @@
     <!-- Rechte Seite -->
     <div>
         <div class="section-title">
-            <span id="resultTitle">Результат тир-листа</span>
+            <span id="title_result">Результат тир-листа</span>
             <span class="small-hint" id="progressInfo">Ещё не запущено</span>
         </div>
 
         <div id="finishedPanel" class="finished-list hidden">
-            <div class="small-hint" style="margin-bottom:8px;" id="rankListHint">
+            <div class="small-hint" style="margin-bottom:8px;" id="hint_sorted_list">
                 Отсортированный список (1 = любимая игра):
             </div>
             <div id="rankList"></div>
@@ -615,10 +612,10 @@
 
         <div id="tierTableSection" class="tier-table hidden">
             <div class="tier-table-header">
-                <span class="small-hint" id="tierVisualHint">
+                <span class="small-hint" id="hint_visual">
                     Визуальный тир-лист (S / A / B / C / D).
                 </span>
-                <button id="downloadTierImageButton" type="button" class="btn-secondary btn-small">
+                <button id="downloadTierImageButton" type="button" class="btn-secondary">
                     Скачать таблицу как картинку
                 </button>
             </div>
@@ -626,1155 +623,1512 @@
         </div>
     </div>
 </div>
-</div>
 
-<!-- Overlay -->
+<!-- Vollbild-Vergleich -->
 <div id="compareOverlay" class="overlay hidden">
     <div class="overlay-inner">
-        <h1 class="overlay-title" id="overlayTitle">Сравнение игр</h1>
-        <p class="overlay-subtitle" id="overlaySubtitle">
+        <h1 class="overlay-title" id="txt_overlay_title">Сравнение игр</h1>
+        <p class="overlay-subtitle" id="txt_overlay_subtitle">
             Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.
         </p>
         <div id="fsStatus" class="overlay-status"></div>
         <div class="compare-grid">
             <div class="compare-card" id="fsCardLeft">
-                <div class="compare-label" id="overlayLeftLabel">Левый выбор</div>
+                <div class="compare-label" id="lbl_left_choice">Левый выбор</div>
                 <img id="fsImgLeft" src="" alt="">
                 <div class="compare-name" id="fsNameLeft">—</div>
             </div>
             <div class="compare-card" id="fsCardRight">
-                <div class="compare-label" id="overlayRightLabel">Правый выбор</div>
+                <div class="compare-label" id="lbl_right_choice">Правый выбор</div>
                 <img id="fsImgRight" src="" alt="">
                 <div class="compare-name" id="fsNameRight">—</div>
             </div>
         </div>
         <div class="overlay-footer">
             <span id="fsProgress">0 сравнений</span>
-            <button id="fsCancel" type="button" class="btn-secondary btn-small">Отменить</button>
+            <button id="fsCancel" type="button" class="btn-secondary">Отменить</button>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <script>
-/* ---------- i18n ---------- */
-const I18N = {
-    ru: {
-        app_title: "Тир-лист по ссылкам на игры",
-        subtitle:
-"1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).\n" +
-"2. Загружай метаданные и добавляй игры в список.\n" +
-"3. Нажми «Начать тир-лист» – появится режим сравнения с двумя играми.",
-        label_url: "URL игры",
-        input_url_placeholder: "Например: https://store.steampowered.com/app/570/Dota_2/",
-        label_multi: "Несколько URL (по одному в строке)",
-        multi_placeholder:
-"Каждый URL на новой строке\nНапример:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-        multi_hint: "Пустые строки будут пропущены.",
-        btn_add: "Загрузить и добавить игру",
-        btn_clear: "Очистить список",
-        btn_add_many: "Загрузить все ссылки",
-        manual_toggle: "Добавить игру вручную",
-        manual_name_label: "Название игры",
-        manual_name_placeholder: "Например: Hades",
-        manual_img_label: "URL изображения (необязательно)",
-        manual_img_placeholder: "https://...",
-        manual_file_label: "Файл изображения (необязательно)",
-        manual_add_btn: "Добавить вручную",
-        collected_title: "Собранные игры",
-        start_hint_min2: "Нужно минимум 2 игры.",
-        start_hint_estimate: "Игр: {count}. Точный режим ≈ {exact} сравнений, быстрый режим ≈ {rough}.",
-        btn_start_exact: "Начать (точный ранкинг)",
-        btn_start_rough: "Начать (быстрый, примерный)",
-        result_title: "Результат тир-листа",
-        result_not_started: "Ещё не запущено",
-        result_done: "Готово! Всего {count} сравнений.",
-        result_cancelled: "Сравнение отменено.",
-        rank_list_hint: "Отсортированный список (1 = любимая игра):",
-        tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
-        btn_download_table: "Скачать таблицу как картинку",
-        overlay_title: "Сравнение игр",
-        overlay_subtitle: "Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.",
-        overlay_left_label: "Левый выбор",
-        overlay_right_label: "Правый выбор",
-        overlay_status_start: "Начинаем сравнение…",
-        overlay_status_question: "Какую игру ты любишь больше? (новая слева против уже отсортированной справа)",
-        overlay_progress: "{count} сравнений",
-        overlay_cancel: "Отменить",
-        status_need_url: "Пожалуйста, введите URL.",
-        status_loading_one: "Загружаю метаданные…",
-        status_loading_many: "Загружаю {current} из {total}…",
-        status_add_ok_one: "Игра добавлена: {title}",
-        status_add_ok_many: "Успешно добавлено игр: {count}",
-        status_add_mix: "Добавлено {ok} игр, ошибок: {fail}.",
-        status_add_fail: "Ошибка загрузки: {error}",
-        status_reload_one: "Обновляю игру: {title}",
-        status_reload_ok: "Игра обновлена: {title}",
-        status_reload_fail: "Не удалось обновить игру: {error}",
-        multi_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
-        share_export_btn: "Экспорт списка игр",
-        share_import_btn: "Импорт списка игр",
-        share_export_prompt: "Скопируй этот длинный код (Base64). Можно сохранить его в файл или GitHub Gist:",
-        share_export_done: "Код для обмена сгенерирован.",
-        share_export_empty: "Нет игр для экспорта.",
-        share_import_prompt: "Вставь этот код ИЛИ URL GitHub Gist (raw):",
-        share_import_ok: "Список игр импортирован: {count}",
-        share_import_fail: "Импорт не удался: {error}",
-        import_invalid: "Невалидный код для импорта."
-    },
-    en: {
-        app_title: "Game tier list from links",
-        subtitle:
-"1. Paste URLs to game pages (Steam, itch.io, Epic, GOG, etc.).\n" +
-"2. Fetch metadata and add games to the list.\n" +
-"3. Click \"Start tier list\" – a compare view with two games will appear.",
-        label_url: "Game URL",
-        input_url_placeholder: "Example: https://store.steampowered.com/app/570/Dota_2/",
-        label_multi: "Multiple URLs (one per line)",
-        multi_placeholder:
-"Each URL on a new line\nExample:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-        multi_hint: "Empty lines will be skipped.",
-        btn_add: "Fetch & add game",
-        btn_clear: "Clear list",
-        btn_add_many: "Load all URLs",
-        manual_toggle: "Add game manually",
-        manual_name_label: "Game title",
-        manual_name_placeholder: "Example: Hades",
-        manual_img_label: "Image URL (optional)",
-        manual_img_placeholder: "https://...",
-        manual_file_label: "Image file (optional)",
-        manual_add_btn: "Add manually",
-        collected_title: "Collected games",
-        start_hint_min2: "You need at least 2 games.",
-        start_hint_estimate: "Games: {count}. Precise ≈ {exact} comparisons, quick ≈ {rough}.",
-        btn_start_exact: "Start (precise ranking)",
-        btn_start_rough: "Start (quick approximate)",
-        result_title: "Tier list result",
-        result_not_started: "Not started yet",
-        result_done: "Done! {count} comparisons total.",
-        result_cancelled: "Comparison cancelled.",
-        rank_list_hint: "Sorted list (1 = favourite game):",
-        tier_visual_hint: "Visual tier table (S / A / B / C / D).",
-        btn_download_table: "Download table as image",
-        overlay_title: "Compare games",
-        overlay_subtitle: "Click the game you prefer more. After finishing, the result appears in the main window.",
-        overlay_left_label: "Left choice",
-        overlay_right_label: "Right choice",
-        overlay_status_start: "Starting comparisons…",
-        overlay_status_question: "Which game do you like more? (new on the left vs sorted on the right)",
-        overlay_progress: "{count} comparisons",
-        overlay_cancel: "Cancel",
-        status_need_url: "Please enter a URL.",
-        status_loading_one: "Loading metadata…",
-        status_loading_many: "Loading {current} of {total}…",
-        status_add_ok_one: "Game added: {title}",
-        status_add_ok_many: "{count} games added successfully.",
-        status_add_mix: "{ok} games added, {fail} failed.",
-        status_add_fail: "Failed to load: {error}",
-        status_reload_one: "Refreshing game: {title}",
-        status_reload_ok: "Game updated: {title}",
-        status_reload_fail: "Could not update game: {error}",
-        multi_no_links: "No links to add. Enter at least one line.",
-        share_export_btn: "Export game list",
-        share_import_btn: "Import game list",
-        share_export_prompt: "Copy this long code (Base64). You can also save it as file or GitHub Gist:",
-        share_export_done: "Share code generated.",
-        share_export_empty: "No games to export.",
-        share_import_prompt: "Paste this code OR GitHub Gist URL (raw):",
-        share_import_ok: "Games imported: {count}",
-        share_import_fail: "Import failed: {error}",
-        import_invalid: "Invalid import code."
-    },
-    de: {
-        app_title: "Tierliste aus Spiele-Links",
-        subtitle:
-"1. Gib URLs zu Spieleseiten ein (Steam, itch.io, Epic, GOG usw.).\n" +
-"2. Lade Metadaten und füge die Spiele zur Liste hinzu.\n" +
-"3. Klicke auf „Tierlist starten“ – es erscheint ein Vergleichsmodus mit zwei Spielen.",
-        label_url: "URL des Spiels",
-        input_url_placeholder: "Zum Beispiel: https://store.steampowered.com/app/570/Dota_2/",
-        label_multi: "Mehrere URLs (jeweils eine pro Zeile)",
-        multi_placeholder:
-"Jede URL in eine neue Zeile\nZum Beispiel:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
-        multi_hint: "Leere Zeilen werden übersprungen.",
-        btn_add: "Laden & Spiel hinzufügen",
-        btn_clear: "Liste leeren",
-        btn_add_many: "Alle Links laden",
-        manual_toggle: "Spiel manuell hinzufügen",
-        manual_name_label: "Spielname",
-        manual_name_placeholder: "Zum Beispiel: Hades",
-        manual_img_label: "Bild-URL (optional)",
-        manual_img_placeholder: "https://...",
-        manual_file_label: "Bilddatei (optional)",
-        manual_add_btn: "Manuell hinzufügen",
-        collected_title: "Gesammelte Spiele",
-        start_hint_min2: "Mindestens 2 Spiele nötig.",
-        start_hint_estimate: "Spiele: {count}. Genau ≈ {exact} Entscheidungen, schnell ≈ {rough}.",
-        btn_start_exact: "Start (genaues Ranking)",
-        btn_start_rough: "Start (schnell, ungefähr)",
-        result_title: "Ergebnis der Tierlist",
-        result_not_started: "Noch nicht gestartet",
-        result_done: "Fertig! Insgesamt {count} Entscheidungen.",
-        result_cancelled: "Vergleich abgebrochen.",
-        rank_list_hint: "Sortierte Liste (1 = Lieblingsspiel):",
-        tier_visual_hint: "Visuelle Tier-Tabelle (S / A / B / C / D).",
-        btn_download_table: "Tabelle als Bild herunterladen",
-        overlay_title: "Spiele vergleichen",
-        overlay_subtitle: "Klicke auf das Spiel, das du mehr magst. Danach erscheint das Ergebnis im Hauptfenster.",
-        overlay_left_label: "Linke Wahl",
-        overlay_right_label: "Rechte Wahl",
-        overlay_status_start: "Vergleich wird gestartet…",
-        overlay_status_question: "Welches Spiel magst du mehr? (neu links vs. sortiert rechts)",
-        overlay_progress: "{count} Entscheidungen",
-        overlay_cancel: "Abbrechen",
-        status_need_url: "Bitte eine URL eingeben.",
-        status_loading_one: "Metadaten werden geladen…",
-        status_loading_many: "Lade {current} von {total}…",
-        status_add_ok_one: "Spiel hinzugefügt: {title}",
-        status_add_ok_many: "{count} Spiele erfolgreich hinzugefügt.",
-        status_add_mix: "{ok} Spiele hinzugefügt, {fail} Fehler.",
-        status_add_fail: "Laden fehlgeschlagen: {error}",
-        status_reload_one: "Spiel aktualisieren: {title}",
-        status_reload_ok: "Spiel aktualisiert: {title}",
-        status_reload_fail: "Spiel konnte nicht aktualisiert werden: {error}",
-        multi_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
-        share_export_btn: "Spiele-Liste exportieren",
-        share_import_btn: "Spiele-Liste importieren",
-        share_export_prompt: "Diesen langen Code (Base64) kopieren. Du kannst ihn z.B. als Datei oder GitHub Gist speichern:",
-        share_export_done: "Code zum Teilen wurde erzeugt.",
-        share_export_empty: "Keine Spiele zum Exportieren.",
-        share_import_prompt: "Diesen Code ODER GitHub-Gist-URL (raw) einfügen:",
-        share_import_ok: "Spiele importiert: {count}",
-        share_import_fail: "Import fehlgeschlagen: {error}",
-        import_invalid: "Ungültiger Import-Code."
-    }
-};
-
-let currentLang = "ru";
-
-function tr(key, vars) {
-    const dict = I18N[currentLang] || I18N.ru;
-    let text = dict[key] || I18N.ru[key] || key;
-    if (vars) {
-        for (const k in vars) {
-            text = text.replace(new RegExp("\\{" + k + "\\}", "g"), String(vars[k]));
+    /* ---------- I18N ---------- */
+    const I18N = {
+        ru: {
+            page_title: "Тир-лист по ссылкам на игры",
+            main_title: "Тир-лист по ссылкам на игры",
+            lang_label: "Язык",
+            subtitle_html:
+                "1. Вводи URL страниц игр (Steam, itch.io, Epic, GOG и т.д.).<br>" +
+                "2. Загружай метаданные и добавляй игры в список.<br>" +
+                "3. Нажми «Начать тир-лист» – появится полноэкранный режим с двумя играми.",
+            label_url: "URL игры",
+            placeholder_url: "Например: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Несколько URL (по одному в строке)",
+            placeholder_multi:
+                "Каждый URL на новой строке\nНапример:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Загрузить и добавить игру",
+            btn_clear_list: "Очистить список",
+            btn_add_many: "Загрузить все ссылки",
+            hint_multi: "Пустые строки будут пропущены.",
+            section_collected: "Собранные игры",
+            hint_min_games: "Нужно минимум 2 игры.",
+            result_title: "Результат тир-листа",
+            finished_hint: "Отсортированный список (1 = любимая игра):",
+            tier_visual_hint: "Визуальный тир-лист (S / A / B / C / D).",
+            btn_download_image: "Скачать таблицу как картинку",
+            overlay_title: "Сравнение игр",
+            overlay_subtitle:
+                "Нажимай на игру, которую ты любишь больше. После окончания результат появится в основном окне.",
+            overlay_left_label: "Левый выбор",
+            overlay_right_label: "Правый выбор",
+            overlay_cancel: "Отменить",
+            manual_section_title: "Своя игра (ручной ввод)",
+            manual_label_name: "Название игры",
+            manual_label_image: "Картинка (обложка)",
+            btn_add_manual: "Добавить свою игру",
+            mode_label: "Режим ранжирования",
+            mode_exact: "Точный (больше кликов)",
+            mode_fast: "Быстрый (приблизительный)",
+            click_stats: "Теоретический минимум: {min} кликов. Полный (точный) режим ≈ {exact}, быстрый режим ≈ {fast}.",
+            progress_finished: "Готово! Всего {count}.",
+            progress_running: "Идёт сравнение… ({count})",
+            progress_need_two: "Нужно минимум 2 игры.",
+            progress_not_started: "Ещё не запущено",
+            progress_stopped: "Сравнение остановлено.",
+            progress_cancelled: "Сравнение отменено.",
+            overlay_status_start: "Начинаем сравнение…",
+            overlay_status_incremental: "Сравнение новых игр с уже отсортированными…",
+            overlay_status_continue: "Продолжаем сравнение…",
+            status_update_game: "Обновляю игру: {title}",
+            status_update_game_ok: "Игра обновлена: {title}",
+            status_update_game_fail: "Не удалось обновить игру: {error}",
+            status_enter_url: "Пожалуйста, введите URL.",
+            status_loading_meta: "Загружаю метаданные…",
+            status_game_added: "Игра добавлена: {title}",
+            status_load_error: "Ошибка загрузки: {error}",
+            status_manual_need_title: "Введите название игры.",
+            status_manual_need_image: "Выберите картинку (обложку) для игры.",
+            status_manual_loading: "Читаю файл картинки…",
+            status_manual_added: "Своя игра добавлена: {title}",
+            status_manual_file_error: "Не удалось прочитать файл картинки.",
+            status_no_links: "Нет ссылок для добавления. Введите хотя бы одну строку.",
+            status_loading_multi_progress: "Загружаю {current} из {total}…",
+            status_multi_success: "Успешно добавлено игр: {count}",
+            status_multi_partial: "Добавлено {success} игр, ошибок: {fail}.",
+            status_multi_fail: "Не удалось добавить ссылки.",
+            tierlist_not_created: "Сначала создай тир-лист.",
+            tierlist_save_error: "Не удалось сохранить картинку тир-листа.",
+            // Share / Import (nur Spiele)
+            share_title: "Шеринг списка игр (без ранкинга)",
+            share_hint: "Создай код и отправь его другу. При импорте загружаются только игры.",
+            btn_export_games: "Создать код списка игр",
+            btn_import_games: "Вставить код или ссылку GitHub",
+            share_no_games: "Нет игр для экспорта.",
+            share_export_copied: "Код успешно скопирован в буфер обмена.",
+            share_export_copy_manual: "Скопируйте код вручную из окна.",
+            share_import_prompt: "Вставьте сюда код списка игр или ссылку на GitHub Gist/raw:",
+            share_import_success: "Игры успешно импортированы. Рейтинг был сброшен.",
+            share_import_fail: "Импорт не удался: {error}"
+        },
+        en: {
+            page_title: "Tierlist by Game Links",
+            main_title: "Tierlist by Game Links",
+            lang_label: "Language",
+            subtitle_html:
+                "1. Paste URLs of game pages (Steam, itch.io, Epic, GOG, etc.).<br>" +
+                "2. Load metadata and add the games to the list.<br>" +
+                "3. Click “Start tierlist” – a full screen with two games will appear.",
+            label_url: "Game URL",
+            placeholder_url: "Example: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Multiple URLs (one per line)",
+            placeholder_multi:
+                "One URL per line\nExample:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Load and add game",
+            btn_clear_list: "Clear list",
+            btn_add_many: "Load all links",
+            hint_multi: "Empty lines will be skipped.",
+            section_collected: "Collected games",
+            hint_min_games: "At least 2 games are required.",
+            result_title: "Tierlist result",
+            finished_hint: "Sorted list (1 = favorite game):",
+            tier_visual_hint: "Visual tierlist (S / A / B / C / D).",
+            btn_download_image: "Download table as image",
+            overlay_title: "Game comparison",
+            overlay_subtitle:
+                "Click on the game you like more. When it’s done, the result appears in the main window.",
+            overlay_left_label: "Left choice",
+            overlay_right_label: "Right choice",
+            overlay_cancel: "Cancel",
+            manual_section_title: "Custom game (manual input)",
+            manual_label_name: "Game title",
+            manual_label_image: "Cover image",
+            btn_add_manual: "Add custom game",
+            mode_label: "Ranking mode",
+            mode_exact: "Exact (more clicks)",
+            mode_fast: "Fast (approximate)",
+            click_stats: "Theoretical minimum: {min} clicks. Exact mode ≈ {exact}, fast mode ≈ {fast}.",
+            progress_finished: "Done! Total {count}.",
+            progress_running: "Comparison running… ({count})",
+            progress_need_two: "At least 2 games are required.",
+            progress_not_started: "Not started yet",
+            progress_stopped: "Comparison stopped.",
+            progress_cancelled: "Comparison cancelled.",
+            overlay_status_start: "Starting comparison…",
+            overlay_status_incremental: "Comparing new games with the existing order…",
+            overlay_status_continue: "Continuing comparison…",
+            status_update_game: "Updating game: {title}",
+            status_update_game_ok: "Game updated: {title}",
+            status_update_game_fail: "Could not update game: {error}",
+            status_enter_url: "Please enter a URL.",
+            status_loading_meta: "Loading metadata…",
+            status_game_added: "Game added: {title}",
+            status_load_error: "Load error: {error}",
+            status_manual_need_title: "Please enter a game title.",
+            status_manual_need_image: "Please choose a cover image.",
+            status_manual_loading: "Reading image file…",
+            status_manual_added: "Custom game added: {title}",
+            status_manual_file_error: "Could not read image file.",
+            status_no_links: "No links to add. Enter at least one line.",
+            status_loading_multi_progress: "Loading {current} of {total}…",
+            status_multi_success: "Successfully added games: {count}",
+            status_multi_partial: "Added {success} games, errors: {fail}.",
+            status_multi_fail: "Could not add links.",
+            tierlist_not_created: "Create the tierlist first.",
+            tierlist_save_error: "Could not save the tierlist image.",
+            // Share / Import
+            share_title: "Share games (without ranking)",
+            share_hint: "Generate a code and send it to someone. On import only the games are loaded.",
+            btn_export_games: "Create games export code",
+            btn_import_games: "Paste export code or GitHub URL",
+            share_no_games: "There are no games to export.",
+            share_export_copied: "Export code copied to clipboard.",
+            share_export_copy_manual: "Copy the export code manually from the window.",
+            share_import_prompt: "Paste the games export code or a GitHub Gist/raw URL here:",
+            share_import_success: "Games imported successfully. Ranking has been reset.",
+            share_import_fail: "Import failed: {error}"
+        },
+        de: {
+            page_title: "Tierlist aus Spiele-Links",
+            main_title: "Tierlist aus Spiele-Links",
+            lang_label: "Sprache",
+            subtitle_html:
+                "1. Füge URLs von Spieleseiten ein (Steam, itch.io, Epic, GOG usw.).<br>" +
+                "2. Lade Metadaten und füge die Spiele zur Liste hinzu.<br>" +
+                "3. Klicke auf „Tierlist starten“ – es erscheint ein Vollbild mit zwei Spielen.",
+            label_url: "Spiel-URL",
+            placeholder_url: "Beispiel: https://store.steampowered.com/app/570/Dota_2/",
+            label_multi: "Mehrere URLs (eine pro Zeile)",
+            placeholder_multi:
+                "Eine URL pro Zeile\nBeispiel:\nhttps://store.steampowered.com/app/570/Dota_2/\nhttps://store.steampowered.com/app/730/CounterStrike_2/",
+            btn_add_game: "Spiel laden und hinzufügen",
+            btn_clear_list: "Liste löschen",
+            btn_add_many: "Alle Links laden",
+            hint_multi: "Leere Zeilen werden übersprungen.",
+            section_collected: "Gesammelte Spiele",
+            hint_min_games: "Mindestens 2 Spiele werden benötigt.",
+            result_title: "Tierlist-Ergebnis",
+            finished_hint: "Sortierte Liste (1 = Lieblingsspiel):",
+            tier_visual_hint: "Visuelle Tierlist (S / A / B / C / D).",
+            btn_download_image: "Tabelle als Bild herunterladen",
+            overlay_title: "Spielvergleich",
+            overlay_subtitle:
+                "Klicke auf das Spiel, das du lieber magst. Danach erscheint das Ergebnis im Hauptfenster.",
+            overlay_left_label: "Linke Auswahl",
+            overlay_right_label: "Rechte Auswahl",
+            overlay_cancel: "Abbrechen",
+            manual_section_title: "Eigenes Spiel (manuell)",
+            manual_label_name: "Spielname",
+            manual_label_image: "Cover-Bild",
+            btn_add_manual: "Eigenes Spiel hinzufügen",
+            mode_label: "Ranking-Modus",
+            mode_exact: "Genau (mehr Klicks)",
+            mode_fast: "Schnell (ungefähr)",
+            click_stats: "Theoretisches Minimum: {min} Klicks. Exakter Modus ≈ {exact}, schneller Modus ≈ {fast}.",
+            progress_finished: "Fertig! Insgesamt {count}.",
+            progress_running: "Vergleich läuft… ({count})",
+            progress_need_two: "Mindestens 2 Spiele werden benötigt.",
+            progress_not_started: "Noch nicht gestartet",
+            progress_stopped: "Vergleich gestoppt.",
+            progress_cancelled: "Vergleich abgebrochen.",
+            overlay_status_start: "Starte Vergleich…",
+            overlay_status_incremental: "Vergleiche neue Spiele mit der vorhandenen Reihenfolge…",
+            overlay_status_continue: "Vergleich wird fortgesetzt…",
+            status_update_game: "Aktualisiere Spiel: {title}",
+            status_update_game_ok: "Spiel aktualisiert: {title}",
+            status_update_game_fail: "Spiel konnte nicht aktualisiert werden: {error}",
+            status_enter_url: "Bitte eine URL eingeben.",
+            status_loading_meta: "Lade Metadaten…",
+            status_game_added: "Spiel hinzugefügt: {title}",
+            status_load_error: "Fehler beim Laden: {error}",
+            status_manual_need_title: "Bitte einen Spielnamen eingeben.",
+            status_manual_need_image: "Bitte ein Cover-Bild auswählen.",
+            status_manual_loading: "Lese Bilddatei…",
+            status_manual_added: "Eigenes Spiel hinzugefügt: {title}",
+            status_manual_file_error: "Bilddatei konnte nicht gelesen werden.",
+            status_no_links: "Keine Links zum Hinzufügen. Bitte mindestens eine Zeile eingeben.",
+            status_loading_multi_progress: "Lade {current} von {total}…",
+            status_multi_success: "{count} Spiele erfolgreich hinzugefügt.",
+            status_multi_partial: "{success} Spiele hinzugefügt, Fehler: {fail}.",
+            status_multi_fail: "Links konnten nicht hinzugefügt werden.",
+            tierlist_not_created: "Erstelle zuerst eine Tierlist.",
+            tierlist_save_error: "Tierlist-Bild konnte nicht gespeichert werden.",
+            // Share / Import
+            share_title: "Spiele teilen (ohne Ranking)",
+            share_hint: "Erzeuge einen Code und schicke ihn jemandem. Beim Import werden nur die Spiele übernommen.",
+            btn_export_games: "Spiele-Exportcode erzeugen",
+            btn_import_games: "Exportcode oder GitHub-URL einfügen",
+            share_no_games: "Es gibt keine Spiele zum Exportieren.",
+            share_export_copied: "Exportcode in die Zwischenablage kopiert.",
+            share_export_copy_manual: "Kopiere den Exportcode manuell aus dem Fenster.",
+            share_import_prompt: "Füge hier den Spiele-Exportcode oder eine GitHub-Gist/raw-URL ein:",
+            share_import_success: "Spiele erfolgreich importiert. Ranking wurde zurückgesetzt.",
+            share_import_fail: "Import fehlgeschlagen: {error}"
         }
-    }
-    return text;
-}
-
-function russianGameWord(count) {
-    const mod10 = count % 10;
-    const mod100 = count % 100;
-    if (mod10 === 1 && mod100 !== 11) return "игра";
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "игры";
-    return "игр";
-}
-
-function formatGameCount(count) {
-    if (currentLang === "ru") {
-        return count + " " + russianGameWord(count);
-    } else if (currentLang === "de") {
-        return count + " " + (count === 1 ? "Spiel" : "Spiele");
-    } else {
-        return count + " " + (count === 1 ? "game" : "games");
-    }
-}
-
-/* ---------- Base64 Helper ---------- */
-
-function toBase64(str) {
-    // Unicode-sicher: UTF-8 → btoa
-    return btoa(unescape(encodeURIComponent(str)));
-}
-
-function fromBase64(b64) {
-    const clean = b64.replace(/[\r\n\s]+/g, "");
-    return decodeURIComponent(escape(atob(clean)));
-}
-
-/* ---------- Zustand ---------- */
-
-const games = [];
-let nextId = 1;
-
-let sortedIndices = [];
-let currentNewIndex = null;
-let low = 0, high = 0, mid = 0;
-let compareActive = false;
-let comparisonsDone = 0;
-let roughMode = false;
-let stepsCurrentItem = 0;
-const ROUGH_MAX_STEPS = 3;
-
-const TIER_CONFIG = [
-    { label: "S", color: "#f97316" },
-    { label: "A", color: "#facc15" },
-    { label: "B", color: "#22c55e" },
-    { label: "C", color: "#38bdf8" },
-    { label: "D", color: "#a855f7" }
-];
-
-const STORAGE_KEY = "tierlist_tool_state_v3";
-const LANG_KEY = "tierlist_lang";
-
-/* ---------- UI Helpers ---------- */
-
-function showStatus(msg, type) {
-    const el = document.getElementById("status");
-    el.textContent = msg;
-    el.className = "status " + type;
-    el.classList.remove("hidden");
-}
-
-function hideStatus() {
-    document.getElementById("status").classList.add("hidden");
-}
-
-function updateGameCount() {
-    const count = games.length;
-    document.getElementById("gameCountHint").textContent = formatGameCount(count);
-    document.getElementById("startTierExact").disabled = count < 2;
-    document.getElementById("startTierRough").disabled = count < 2;
-    updateClickEstimate();
-}
-
-function updateClickEstimate() {
-    const n = games.length;
-    const el = document.getElementById("clickEstimate");
-    if (n < 2) {
-        el.textContent = tr("start_hint_min2");
-    } else {
-        const exact = Math.max(1, Math.round(n * Math.log2(Math.max(n, 2))));
-        const rough = n * ROUGH_MAX_STEPS;
-        el.textContent = tr("start_hint_estimate", { count: n, exact, rough });
-    }
-}
-
-function resetTierResults() {
-    sortedIndices = [];
-    currentNewIndex = null;
-    comparisonsDone = 0;
-    compareActive = false;
-
-    document.getElementById("finishedPanel").classList.add("hidden");
-    document.getElementById("tierTableSection").classList.add("hidden");
-    document.getElementById("rankList").innerHTML = "";
-    document.getElementById("tierTableWrapper").innerHTML = "";
-    document.getElementById("progressInfo").textContent = tr("result_not_started");
-}
-
-/* ---------- Spiele-Liste ---------- */
-
-function renderGameList() {
-    const listEl = document.getElementById("gameList");
-    listEl.innerHTML = "";
-    games.forEach((g, index) => {
-        const row = document.createElement("div");
-        row.className = "game-item";
-
-        const img = document.createElement("img");
-        img.className = "game-thumb";
-        img.crossOrigin = "anonymous";
-        img.src = g.image || "";
-        img.alt = g.title || "Image";
-
-        const info = document.createElement("div");
-        info.className = "game-info";
-
-        const title = document.createElement("div");
-        title.className = "game-title";
-        title.textContent = g.title || "(no title)";
-
-        const url = document.createElement("div");
-        url.className = "game-url";
-        url.textContent = g.url;
-
-        info.appendChild(title);
-        info.appendChild(url);
-
-        const badge = document.createElement("div");
-        badge.className = "rank-badge";
-        badge.textContent = "#" + (index + 1);
-
-        const reloadBtn = document.createElement("button");
-        reloadBtn.type = "button";
-        reloadBtn.className = "btn-icon";
-        reloadBtn.textContent = "⟳";
-        reloadBtn.title = "Reload";
-        reloadBtn.addEventListener("click", () => reloadGame(index));
-
-        const delBtn = document.createElement("button");
-        delBtn.type = "button";
-        delBtn.className = "btn-icon danger";
-        delBtn.textContent = "×";
-        delBtn.title = "Delete";
-        delBtn.addEventListener("click", () => deleteGame(index));
-
-        row.appendChild(img);
-        row.appendChild(info);
-        row.appendChild(badge);
-        row.appendChild(reloadBtn);
-        row.appendChild(delBtn);
-
-        listEl.appendChild(row);
-    });
-
-    updateGameCount();
-}
-
-async function fetchOgMeta(rawUrl) {
-    let finalUrl = (rawUrl || "").trim();
-    if (!finalUrl) throw new Error(tr("status_need_url"));
-    if (!/^https?:\/\//i.test(finalUrl)) {
-        finalUrl = "https://" + finalUrl;
-    }
-    const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
-    const data = await resp.json();
-    if (!data.success) throw new Error(data.error || "Unknown error");
-
-    const url = data.url || finalUrl;
-    let title = (data.title || "(no title)").trim();
-    if (url.includes("store.steampowered.com")) {
-        title = title.replace(/ on Steam$/i, "")
-                     .replace(/^Save \d+% on /i, "")
-                     .replace(/^Buy /i, "").trim();
-    }
-    const image = data.image || "";
-    return { title, image, url };
-}
-
-async function fetchAndAddGame(rawUrl) {
-    try {
-        const meta = await fetchOgMeta(rawUrl);
-        games.push({ id: nextId++, title: meta.title, image: meta.image, url: meta.url });
-        renderGameList();
-        saveState();
-        return { success: true, title: meta.title };
-    } catch (e) {
-        console.error(e);
-        return { success: false, error: e.message };
-    }
-}
-
-async function addGameFromUrl() {
-    const inputEl = document.getElementById("urlInput");
-    const rawUrl = inputEl.value.trim();
-    const addBtn = document.getElementById("addButton");
-    const manyBtn = document.getElementById("addManyButton");
-
-    if (!rawUrl) {
-        showStatus(tr("status_need_url"), "error");
-        return;
-    }
-
-    hideStatus();
-    showStatus(tr("status_loading_one"), "info");
-    addBtn.disabled = true;
-    manyBtn.disabled = true;
-
-    const result = await fetchAndAddGame(rawUrl);
-
-    if (result.success) {
-        showStatus(tr("status_add_ok_one", { title: result.title }), "success");
-        inputEl.value = "";
-    } else {
-        showStatus(tr("status_add_fail", { error: result.error }), "error");
-    }
-
-    addBtn.disabled = false;
-    manyBtn.disabled = false;
-}
-
-async function addGamesFromMultiInput() {
-    const multiEl = document.getElementById("multiInput");
-    const text = multiEl.value;
-    const lines = text
-        .split(/\r?\n/)
-        .map(l => l.trim())
-        .filter(l => l.length > 0);
-
-    if (!lines.length) {
-        showStatus(tr("multi_no_links"), "error");
-        return;
-    }
-
-    const addBtn = document.getElementById("addButton");
-    const manyBtn = document.getElementById("addManyButton");
-
-    addBtn.disabled = true;
-    manyBtn.disabled = true;
-    hideStatus();
-
-    let ok = 0, fail = 0;
-    for (let i = 0; i < lines.length; i++) {
-        showStatus(tr("status_loading_many", { current: i + 1, total: lines.length }), "info");
-        const res = await fetchAndAddGame(lines[i]);
-        if (res.success) ok++; else fail++;
-    }
-
-    if (ok > 0 && fail === 0) {
-        showStatus(tr("status_add_ok_many", { count: ok }), "success");
-    } else if (ok > 0) {
-        showStatus(tr("status_add_mix", { ok, fail }), "success");
-    } else {
-        showStatus(tr("status_add_fail", { error: "all failed" }), "error");
-    }
-
-    addBtn.disabled = false;
-    manyBtn.disabled = false;
-    saveState();
-}
-
-function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(r.result);
-        r.onerror = reject;
-        r.readAsDataURL(file);
-    });
-}
-
-async function addManualGame() {
-    const titleEl = document.getElementById("manualTitle");
-    const imgEl = document.getElementById("manualImage");
-    const fileEl = document.getElementById("manualFile");
-
-    const title = titleEl.value.trim();
-    const imgUrl = imgEl.value.trim();
-    const file = fileEl.files[0];
-
-    if (!title) {
-        showStatus(tr("status_need_url"), "error");
-        return;
-    }
-
-    let image = "";
-    try {
-        if (file) {
-            image = await readFileAsDataURL(file);
-        } else if (imgUrl) {
-            image = imgUrl;
-        }
-    } catch (e) {
-        console.error(e);
-    }
-
-    games.push({
-        id: nextId++,
-        title: title,
-        image: image,
-        url: ""
-    });
-
-    titleEl.value = "";
-    imgEl.value = "";
-    fileEl.value = "";
-    renderGameList();
-    saveState();
-    showStatus(tr("status_add_ok_one", { title }), "success");
-}
-
-function deleteGame(index) {
-    if (index < 0 || index >= games.length) return;
-
-    games.splice(index, 1);
-
-    sortedIndices = sortedIndices
-        .filter(i => i !== index)
-        .map(i => (i > index ? i - 1 : i));
-
-    renderGameList();
-
-    if (sortedIndices.length > 0) {
-        document.getElementById("finishedPanel").classList.remove("hidden");
-        document.getElementById("tierTableSection").classList.remove("hidden");
-        renderRankList();
-        renderTierTable();
-    } else {
-        resetTierResults();
-    }
-
-    saveState();
-}
-
-async function reloadGame(index) {
-    const g = games[index];
-    if (!g || !g.url) return;
-
-    const addBtn = document.getElementById("addButton");
-    const manyBtn = document.getElementById("addManyButton");
-
-    hideStatus();
-    showStatus(tr("status_reload_one", { title: g.title || g.url }), "info");
-    addBtn.disabled = true;
-    manyBtn.disabled = true;
-
-    try {
-        const meta = await fetchOgMeta(g.url || "");
-        g.title = meta.title;
-        g.image = meta.image;
-        g.url = meta.url;
-        renderGameList();
-        renderRankList();
-        renderTierTable();
-        showStatus(tr("status_reload_ok", { title: meta.title }), "success");
-        saveState();
-    } catch (e) {
-        console.error(e);
-        showStatus(tr("status_reload_fail", { error: e.message }), "error");
-    } finally {
-        addBtn.disabled = false;
-        manyBtn.disabled = false;
-    }
-}
-
-function clearGames() {
-    games.length = 0;
-    nextId = 1;
-    resetTierResults();
-    renderGameList();
-    hideStatus();
-    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-}
-
-/* ---------- Tierlist ---------- */
-
-const overlay = document.getElementById("compareOverlay");
-
-function prepareNextComparison() {
-    if (currentNewIndex >= games.length) {
-        finishTierlist();
-        return;
-    }
-    low = 0;
-    high = sortedIndices.length;
-    stepsCurrentItem = 0;
-    showNextComparisonStep();
-}
-
-function insertCurrentAndNext() {
-    sortedIndices.splice(low, 0, currentNewIndex);
-    currentNewIndex++;
-    saveState();
-    prepareNextComparison();
-}
-
-function showNextComparisonStep() {
-    if (!compareActive) return;
-
-    if (low >= high) {
-        insertCurrentAndNext();
-        return;
-    }
-
-    mid = Math.floor((low + high) / 2);
-    const existingIndex = sortedIndices[mid];
-
-    const newGame = games[currentNewIndex];
-    const existingGame = games[existingIndex];
-
-    const fsImgLeft = document.getElementById("fsImgLeft");
-    const fsImgRight = document.getElementById("fsImgRight");
-    const fsNameLeft = document.getElementById("fsNameLeft");
-    const fsNameRight = document.getElementById("fsNameRight");
-    const fsStatus = document.getElementById("fsStatus");
-    const fsProgress = document.getElementById("fsProgress");
-
-    fsImgLeft.crossOrigin = "anonymous";
-    fsImgRight.crossOrigin = "anonymous";
-
-    fsImgLeft.src = newGame.image || "";
-    fsImgLeft.alt = newGame.title || "";
-    fsNameLeft.textContent = newGame.title || "(no title)";
-
-    fsImgRight.src = existingGame.image || "";
-    fsImgRight.alt = existingGame.title || "";
-    fsNameRight.textContent = existingGame.title || "(no title)";
-
-    fsStatus.textContent = tr("overlay_status_question");
-    fsProgress.textContent = tr("overlay_progress", { count: comparisonsDone });
-}
-
-function afterChoice(goLeft) {
-    if (!compareActive) return;
-    comparisonsDone++;
-    stepsCurrentItem++;
-
-    if (goLeft) {
-        high = mid;
-    } else {
-        low = mid + 1;
-    }
-
-    if (roughMode && stepsCurrentItem >= ROUGH_MAX_STEPS) {
-        insertCurrentAndNext();
-    } else {
-        showNextComparisonStep();
-    }
-}
-
-function chooseLeft() { afterChoice(true); }
-function chooseRight() { afterChoice(false); }
-
-function startTierlist(mode) {
-    if (games.length < 2) {
-        showStatus(tr("start_hint_min2"), "error");
-        return;
-    }
-
-    roughMode = (mode === "rough");
-    hideStatus();
-
-    if (!sortedIndices || sortedIndices.length === 0) {
-        sortedIndices = [0];
-        currentNewIndex = 1;
-        comparisonsDone = 0;
-    } else if (sortedIndices.length < games.length) {
-        currentNewIndex = sortedIndices.length;
-    } else {
-        sortedIndices = [0];
-        currentNewIndex = 1;
-        comparisonsDone = 0;
-    }
-
-    compareActive = true;
-
-    document.getElementById("finishedPanel").classList.add("hidden");
-    document.getElementById("tierTableSection").classList.add("hidden");
-    document.getElementById("progressInfo").textContent =
-        tr("overlay_progress", { count: comparisonsDone });
-
-    document.getElementById("mainContainer").classList.add("hidden");
-    overlay.classList.remove("hidden");
-
-    document.getElementById("fsStatus").textContent = tr("overlay_status_start");
-    document.getElementById("fsProgress").textContent =
-        tr("overlay_progress", { count: comparisonsDone });
-
-    saveState();
-    prepareNextComparison();
-}
-
-function finishTierlist() {
-    compareActive = false;
-    overlay.classList.add("hidden");
-    document.getElementById("mainContainer").classList.remove("hidden");
-
-    document.getElementById("progressInfo").textContent =
-        tr("result_done", { count: comparisonsDone });
-
-    document.getElementById("finishedPanel").classList.remove("hidden");
-    document.getElementById("tierTableSection").classList.remove("hidden");
-
-    renderRankList();
-    renderTierTable();
-    saveState();
-}
-
-function cancelTierlist() {
-    compareActive = false;
-    overlay.classList.add("hidden");
-    document.getElementById("mainContainer").classList.remove("hidden");
-    resetTierResults();
-    saveState();
-}
-
-function getTierLabelByIndex(index, total) {
-    if (total <= 1) return "S";
-    const ratio = index / (total - 1);
-    if (ratio <= 0.2) return "S";
-    if (ratio <= 0.4) return "A";
-    if (ratio <= 0.6) return "B";
-    if (ratio <= 0.8) return "C";
-    return "D";
-}
-
-function renderRankList() {
-    const list = document.getElementById("rankList");
-    list.innerHTML = "";
-    const total = sortedIndices.length;
-
-    sortedIndices.forEach((gameIndex, i) => {
-        const g = games[gameIndex];
-        const row = document.createElement("div");
-        row.className = "rank-row";
-
-        const n = document.createElement("div");
-        n.className = "rank-number";
-        n.textContent = (i + 1) + ".";
-
-        const t = document.createElement("div");
-        t.className = "rank-title";
-        t.textContent = g.title;
-
-        const badge = document.createElement("div");
-        badge.className = "rank-badge";
-        badge.textContent = getTierLabelByIndex(i, total) + "-tier";
-
-        row.appendChild(n);
-        row.appendChild(t);
-        row.appendChild(badge);
-        list.appendChild(row);
-    });
-}
-
-function renderTierTable() {
-    const section = document.getElementById("tierTableSection");
-    const wrapper = document.getElementById("tierTableWrapper");
-    wrapper.innerHTML = "";
-    const total = sortedIndices.length;
-    if (!total) {
-        section.classList.add("hidden");
-        return;
-    }
-
-    const tiers = { S: [], A: [], B: [], C: [], D: [] };
-    sortedIndices.forEach((gameIndex, i) => {
-        const g = games[gameIndex];
-        const tierLabel = getTierLabelByIndex(i, total);
-        tiers[tierLabel].push(g);
-    });
-
-    TIER_CONFIG.forEach(cfg => {
-        const row = document.createElement("div");
-        row.className = "tier-row";
-
-        const labelCell = document.createElement("div");
-        labelCell.className = "tier-label-cell";
-        labelCell.style.background = cfg.color;
-        labelCell.textContent = cfg.label;
-
-        const itemsCell = document.createElement("div");
-        itemsCell.className = "tier-items-cell";
-
-        const list = tiers[cfg.label] || [];
-        if (!list.length) {
-            const emptyText = document.createElement("span");
-            emptyText.className = "small-hint";
-            emptyText.textContent = "—";
-            itemsCell.appendChild(emptyText);
-        } else {
-            list.forEach(g => {
-                const img = document.createElement("img");
-                img.className = "tier-item-img";
-                img.crossOrigin = "anonymous";
-                img.src = g.image || "";
-                img.alt = g.title;
-                itemsCell.appendChild(img);
-            });
-        }
-
-        row.appendChild(labelCell);
-        row.appendChild(itemsCell);
-        wrapper.appendChild(row);
-    });
-}
-
-async function downloadTierImage() {
-    const wrapper = document.getElementById("tierTableWrapper");
-    if (!wrapper || !wrapper.children.length) {
-        alert("No tier table yet.");
-        return;
-    }
-
-    try {
-        const canvas = await html2canvas(wrapper, {
-            backgroundColor: "#020617",
-            scale: 2,
-            useCORS: true
-        });
-        const link = document.createElement("a");
-        link.download = "tierlist.png";
-        link.href = canvas.toDataURL("image/png");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (e) {
-        console.error(e);
-        alert("Could not save image.");
-    }
-}
-
-/* ---------- Export / Import: langer Base64-Code + Gist-URL ---------- */
-
-function exportGamesOnly() {
-    if (!games.length) {
-        showStatus(tr("share_export_empty"), "error");
-        return;
-    }
-    const data = {
-        games: games.map(g => ({ title: g.title, image: g.image, url: g.url }))
     };
-    const json = JSON.stringify(data);
-    const code = toBase64(json);     // langer Base64, nicht verkürzt
-    window.prompt(tr("share_export_prompt"), code);
-    showStatus(tr("share_export_done"), "success");
-}
 
-async function importGamesOnly() {
-    const input = window.prompt(tr("share_import_prompt"), "");
-    if (!input) return;
+    const LANG_STORAGE_KEY = "tierlist_tool_lang";
+    const MODE_STORAGE_KEY = "tierlist_tool_mode";
 
-    const trimmed = input.trim();
-    try {
-        let codeText;
+    let currentLang = "ru";
+    let rankingMode = "exact";
 
-        if (/^https?:\/\//i.test(trimmed)) {
-            // URL – ggf. normale Gist-URL in RAW-URL umwandeln
-            let url = trimmed;
-            const gistMatch = url.match(/^https?:\/\/gist\.github\.com\/([^\/]+)\/([0-9a-fA-F]+)(?:\/.*)?$/);
-            if (gistMatch) {
-                const user = gistMatch[1];
-                const id = gistMatch[2];
-                url = `https://gist.githubusercontent.com/${user}/${id}/raw`;
-            }
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error("HTTP " + resp.status);
-            codeText = await resp.text();
-        } else {
-            codeText = trimmed;
-        }
-
-        let jsonStr;
-        try {
-            jsonStr = fromBase64(codeText);
-        } catch (e) {
-            // Fallback: vielleicht direkt JSON (sehr unwahrscheinlich, aber sicherheitshalber)
-            if (codeText[0] === "{" || codeText[0] === "[") {
-                jsonStr = codeText;
-            } else {
-                throw new Error(tr("import_invalid"));
+    function tr(key, params) {
+        const dict = I18N[currentLang] || I18N.ru;
+        let s = dict[key] || (I18N.en && I18N.en[key]) || key;
+        if (params) {
+            for (const p in params) {
+                s = s.replace(new RegExp("\\{" + p + "\\}", "g"), params[p]);
             }
         }
-
-        const data = JSON.parse(jsonStr);
-        if (!data || !Array.isArray(data.games) || !data.games.length) {
-            throw new Error(tr("import_invalid"));
-        }
-
-        games.length = 0;
-        data.games.forEach((g, i) => {
-            games.push({
-                id: i + 1,
-                title: g.title || "",
-                image: g.image || "",
-                url: g.url || ""
-            });
-        });
-        nextId = games.length + 1;
-
-        resetTierResults();
-        renderGameList();
-        saveState();
-        showStatus(tr("share_import_ok", { count: games.length }), "success");
-    } catch (e) {
-        console.error(e);
-        showStatus(tr("share_import_fail", { error: e.message }), "error");
+        return s;
     }
-}
 
-/* ---------- Speichern / Laden ---------- */
-
-function saveState() {
-    try {
-        const finishedPanelHidden =
-            document.getElementById("finishedPanel").classList.contains("hidden");
-
-        const state = {
-            games,
-            sortedIndices,
-            comparisonsDone,
-            compareActive,
-            currentNewIndex,
-            low,
-            high,
-            mid,
-            nextId,
-            finished: !finishedPanelHidden
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-        console.error("saveState", e);
-    }
-}
-
-function loadState() {
-    let raw;
-    try {
-        raw = localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
-        console.error("loadState read", e);
-        return;
-    }
-    if (!raw) return;
-
-    try {
-        const state = JSON.parse(raw);
-        if (!state || !Array.isArray(state.games)) return;
-
-        games.length = 0;
-        state.games.forEach((g, i) => {
-            games.push({
-                id: typeof g.id === "number" ? g.id : i + 1,
-                title: g.title || "",
-                image: g.image || "",
-                url: g.url || ""
-            });
-        });
-
-        sortedIndices = Array.isArray(state.sortedIndices)
-            ? state.sortedIndices.filter(i =>
-                Number.isInteger(i) && i >= 0 && i < games.length)
-            : [];
-
-        comparisonsDone = typeof state.comparisonsDone === "number"
-            ? state.comparisonsDone : 0;
-        compareActive = !!state.compareActive;
-        currentNewIndex = typeof state.currentNewIndex === "number"
-            ? state.currentNewIndex : null;
-        low = typeof state.low === "number" ? state.low : 0;
-        high = typeof state.high === "number" ? state.high : 0;
-        mid = typeof state.mid === "number" ? state.mid : 0;
-
-        if (typeof state.nextId === "number") {
-            nextId = state.nextId;
+    function formatGameCount(count) {
+        if (currentLang === "ru") {
+            const mod10 = count % 10;
+            const mod100 = count % 100;
+            let word;
+            if (mod10 === 1 && mod100 !== 11) word = "игра";
+            else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "игры";
+            else word = "игр";
+            return count + " " + word;
+        } else if (currentLang === "de") {
+            return count + " " + (count === 1 ? "Spiel" : "Spiele");
         } else {
-            let maxId = 0;
-            games.forEach(g => { if (g.id > maxId) maxId = g.id; });
-            nextId = maxId + 1;
+            return count + " " + (count === 1 ? "game" : "games");
+        }
+    }
+
+    function formatComparisonCount(n) {
+        if (currentLang === "ru") {
+            const mod10 = n % 10;
+            const mod100 = n % 100;
+            let word;
+            if (mod10 === 1 && mod100 !== 11) word = "сравнение";
+            else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "сравнения";
+            else word = "сравнений";
+            return n + " " + word;
+        } else if (currentLang === "de") {
+            return n + " " + (n === 1 ? "Vergleich" : "Vergleiche");
+        } else {
+            return n + " " + (n === 1 ? "comparison" : "comparisons");
+        }
+    }
+
+    function factorialLog2(n) {
+        let sum = 0;
+        for (let k = 2; k <= n; k++) sum += Math.log2(k);
+        return sum;
+    }
+
+    function exactComparisonsEstimate(n) {
+        let res = 0;
+        for (let len = 1; len <= n - 1; len++) {
+            res += Math.ceil(Math.log2(len + 1));
+        }
+        return res;
+    }
+
+    function updateClickStatsDisplay() {
+        const n = games.length;
+        const el = document.getElementById("clickStats");
+        if (!el) return;
+
+        if (n <= 1) {
+            el.textContent = "";
+            return;
         }
 
-        renderGameList();
+        const min = Math.ceil(factorialLog2(n));
+        const exactEst = exactComparisonsEstimate(n);
+        const fastEst = Math.max(1, Math.round(exactEst * 0.5));
 
+        el.textContent = tr("click_stats", {
+            min,
+            exact: exactEst,
+            fast: fastEst
+        });
+    }
+
+    function applyLanguageStaticTexts() {
+        const s = I18N[currentLang] || I18N.ru;
+
+        document.title = s.page_title;
+        document.getElementById("txt_title").textContent = s.main_title;
+        document.getElementById("lbl_lang").textContent = s.lang_label;
+        document.getElementById("txt_subtitle").innerHTML = s.subtitle_html;
+        document.getElementById("lbl_url").textContent = s.label_url;
+        document.getElementById("urlInput").placeholder = s.placeholder_url;
+        document.getElementById("lbl_multi").textContent = s.label_multi;
+        document.getElementById("multiInput").placeholder = s.placeholder_multi;
+        document.getElementById("addButton").textContent = s.btn_add_game;
+        document.getElementById("clearButton").textContent = s.btn_clear_list;
+        document.getElementById("addManyButton").textContent = s.btn_add_many;
+        document.getElementById("hint_multi").textContent = s.hint_multi;
+        document.getElementById("title_collected").textContent = s.section_collected;
+        document.getElementById("hint_min_games").textContent = s.hint_min_games;
+        document.getElementById("title_result").textContent = s.result_title;
+        document.getElementById("hint_sorted_list").textContent = s.finished_hint;
+        document.getElementById("hint_visual").textContent = s.tier_visual_hint;
+        document.getElementById("downloadTierImageButton").textContent = s.btn_download_image;
+        document.getElementById("txt_overlay_title").textContent = s.overlay_title;
+        document.getElementById("txt_overlay_subtitle").textContent = s.overlay_subtitle;
+        document.getElementById("lbl_left_choice").textContent = s.overlay_left_label;
+        document.getElementById("lbl_right_choice").textContent = s.overlay_right_label;
+        document.getElementById("fsCancel").textContent = s.overlay_cancel;
+        document.getElementById("lbl_manual_section").textContent = s.manual_section_title;
+        document.getElementById("lbl_manual_name").textContent = s.manual_label_name;
+        document.getElementById("lbl_manual_image").textContent = s.manual_label_image;
+        document.getElementById("addManualButton").textContent = s.btn_add_manual;
+        document.getElementById("modeLabel").textContent = s.mode_label;
+
+        const modeSelect = document.getElementById("modeSelect");
+        const optExact = modeSelect.querySelector('option[value="exact"]');
+        const optFast = modeSelect.querySelector('option[value="fast"]');
+        if (optExact) optExact.textContent = s.mode_exact;
+        if (optFast) optFast.textContent = s.mode_fast;
+
+        // Share-Bereich
+        document.getElementById("share_title").textContent = s.share_title;
+        document.getElementById("share_hint").textContent = s.share_hint;
+        document.getElementById("btnExportGames").textContent = s.btn_export_games;
+        document.getElementById("btnImportGames").textContent = s.btn_import_games;
+
+        updateClickStatsDisplay();
+    }
+
+    function refreshProgressInfoForCurrentState() {
         const progressInfo = document.getElementById("progressInfo");
+        if (sortedIndices.length > 0 && !compareActive) {
+            progressInfo.textContent = tr("progress_finished", {
+                count: formatComparisonCount(comparisonsDone || 0)
+            });
+        } else if (compareActive) {
+            progressInfo.textContent = tr("progress_running", {
+                count: formatComparisonCount(comparisonsDone || 0)
+            });
+        } else if (games.length < 2) {
+            progressInfo.textContent = tr("progress_need_two");
+        } else {
+            progressInfo.textContent = tr("progress_not_started");
+        }
+    }
+
+    function initLanguage() {
+        const select = document.getElementById("langSelect");
+        let stored = "ru";
+        try {
+            const tmp = localStorage.getItem(LANG_STORAGE_KEY);
+            if (tmp && ["ru", "en", "de"].includes(tmp)) stored = tmp;
+        } catch (e) {}
+        currentLang = stored;
+        select.value = stored;
+
+        applyLanguageStaticTexts();
+        select.addEventListener("change", () => {
+            currentLang = select.value;
+            try {
+                localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+            } catch (e) {}
+            applyLanguageStaticTexts();
+            updateGameCount();
+            refreshProgressInfoForCurrentState();
+            document.getElementById("fsProgress").textContent =
+                formatComparisonCount(comparisonsDone || 0);
+        });
+    }
+
+    function initMode() {
+        const sel = document.getElementById("modeSelect");
+        let stored = "exact";
+        try {
+            const tmp = localStorage.getItem(MODE_STORAGE_KEY);
+            if (tmp === "exact" || tmp === "fast") stored = tmp;
+        } catch (e) {}
+        rankingMode = stored;
+        sel.value = stored;
+
+        sel.addEventListener("change", () => {
+            rankingMode = sel.value;
+            try {
+                localStorage.setItem(MODE_STORAGE_KEY, rankingMode);
+            } catch (e) {}
+            updateClickStatsDisplay();
+        });
+    }
+
+    /* ---------- Ranking-Zustand ---------- */
+    const games = [];
+    let nextId = 1;
+
+    let sortedIndices = [];
+    let pendingNewIndices = [];
+    let currentNewIndex = null;
+    let low = 0, high = 0, mid = 0;
+    let compareActive = false;
+    let comparisonsDone = 0;
+
+    let comparisonsRunLimit = Infinity;
+    let plannedRunComparisonsExact = 0;
+    let plannedRunComparisonsFast = 0;
+
+    const TIER_CONFIG = [
+        { label: "S", color: "#f97316" },
+        { label: "A", color: "#facc15" },
+        { label: "B", color: "#22c55e" },
+        { label: "C", color: "#38bdf8" },
+        { label: "D", color: "#a855f7" }
+    ];
+
+    const STORAGE_KEY = "tierlist_tool_state_v2";
+
+    function cleanTitle(rawTitle, url) {
+        let t = (rawTitle || "").trim();
+        if (!t) return t;
+        if (url && url.includes("store.steampowered.com")) {
+            t = t.replace(/ on Steam$/i, "");
+            t = t.replace(/^Save \d+% on /i, "");
+            t = t.replace(/^Buy /i, "");
+        }
+        return t.trim();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById("status");
+        el.textContent = msg;
+        el.className = "status " + type;
+        el.classList.remove("hidden");
+    }
+
+    function hideStatus() {
+        document.getElementById("status").classList.add("hidden");
+    }
+
+    function updateGameCount() {
+        const count = games.length;
+        document.getElementById("gameCountHint").textContent = formatGameCount(count);
+        document.getElementById("startTierButton").disabled = count < 2;
+        updateClickStatsDisplay();
+    }
+
+    function resetTierResults() {
+        sortedIndices = [];
+        pendingNewIndices = [];
+        currentNewIndex = null;
+        comparisonsDone = 0;
+        compareActive = false;
+        comparisonsRunLimit = Infinity;
+        plannedRunComparisonsExact = 0;
+        plannedRunComparisonsFast = 0;
+
+        document.getElementById("finishedPanel").classList.add("hidden");
+        document.getElementById("tierTableSection").classList.add("hidden");
+        document.getElementById("rankList").innerHTML = "";
+        document.getElementById("tierTableWrapper").innerHTML = "";
+        document.getElementById("progressInfo").textContent = tr("progress_not_started");
+    }
+
+    function deleteGame(index) {
+        if (index < 0 || index >= games.length) return;
+
+        const deletedIndex = index;
+        games.splice(deletedIndex, 1);
+
+        sortedIndices = sortedIndices
+            .filter(i => i !== deletedIndex)
+            .map(i => (i > deletedIndex ? i - 1 : i));
+
+        pendingNewIndices = pendingNewIndices
+            .filter(i => i !== deletedIndex)
+            .map(i => (i > deletedIndex ? i - 1 : i));
+
+        if (currentNewIndex !== null) {
+            if (currentNewIndex === deletedIndex) {
+                currentNewIndex = null;
+            } else if (currentNewIndex > deletedIndex) {
+                currentNewIndex--;
+            }
+        }
+
+        if (compareActive) {
+            compareActive = false;
+            document.getElementById("compareOverlay").classList.add("hidden");
+            document.getElementById("mainContainer").classList.remove("hidden");
+            document.getElementById("progressInfo").textContent = tr("progress_stopped");
+        }
+
+        renderGameList();
+
         const finishedPanel = document.getElementById("finishedPanel");
         const tierTableSection = document.getElementById("tierTableSection");
+        const progressInfo = document.getElementById("progressInfo");
 
-        if (state.finished && sortedIndices.length > 0) {
+        if (sortedIndices.length > 0 && games.length >= 1) {
             finishedPanel.classList.remove("hidden");
             tierTableSection.classList.remove("hidden");
             renderRankList();
             renderTierTable();
-            progressInfo.textContent =
-                tr("result_done", { count: comparisonsDone || 0 });
-            document.getElementById("mainContainer").classList.remove("hidden");
-            overlay.classList.add("hidden");
+            progressInfo.textContent = tr("progress_finished", {
+                count: formatComparisonCount(comparisonsDone || 0)
+            });
         } else {
-            compareActive = false;
             finishedPanel.classList.add("hidden");
             tierTableSection.classList.add("hidden");
-            progressInfo.textContent = tr("result_not_started");
-            document.getElementById("mainContainer").classList.remove("hidden");
-            overlay.classList.add("hidden");
+            sortedIndices = [];
+            pendingNewIndices = [];
+            currentNewIndex = null;
+            progressInfo.textContent =
+                games.length >= 2 ? tr("progress_not_started") : tr("progress_need_two");
         }
-    } catch (e) {
-        console.error("loadState parse", e);
+
+        updateGameCount();
+        saveState();
     }
-}
 
-/* ---------- Sprache ---------- */
+    async function reloadGame(index) {
+        const g = games[index];
+        if (!g || !g.url) return;
 
-function updateTexts() {
-    document.getElementById("title").textContent = tr("app_title");
-    document.getElementById("subtitle").textContent = tr("subtitle");
-    document.getElementById("labelUrl").textContent = tr("label_url");
-    document.getElementById("urlInput").placeholder = tr("input_url_placeholder");
-    document.getElementById("labelMulti").textContent = tr("label_multi");
-    document.getElementById("multiInput").placeholder = tr("multi_placeholder");
-    document.getElementById("multiHint").textContent = tr("multi_hint");
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
 
-    document.getElementById("addButton").textContent = tr("btn_add");
-    document.getElementById("clearButton").textContent = tr("btn_clear");
-    document.getElementById("addManyButton").textContent = tr("btn_add_many");
+        hideStatus();
+        showStatus(tr("status_update_game", { title: g.title || g.url }), "info");
 
-    document.getElementById("toggleManualButton").textContent = tr("manual_toggle");
-    document.getElementById("manualNameLabel").textContent = tr("manual_name_label");
-    document.getElementById("manualTitle").placeholder = tr("manual_name_placeholder");
-    document.getElementById("manualImgLabel").textContent = tr("manual_img_label");
-    document.getElementById("manualImage").placeholder = tr("manual_img_placeholder");
-    document.getElementById("manualFileLabel").textContent = tr("manual_file_label");
-    document.getElementById("manualAddButton").textContent = tr("manual_add_btn");
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
 
-    document.getElementById("collectedTitle").textContent = tr("collected_title");
-    document.getElementById("startTierExact").textContent = tr("btn_start_exact");
-    document.getElementById("startTierRough").textContent = tr("btn_start_rough");
-    document.getElementById("resultTitle").textContent = tr("result_title");
-    document.getElementById("rankListHint").textContent = tr("rank_list_hint");
-    document.getElementById("tierVisualHint").textContent = tr("tier_visual_hint");
-    document.getElementById("downloadTierImageButton").textContent = tr("btn_download_table");
+        let finalUrl = g.url || "";
+        if (!/^https?:\/\//i.test(finalUrl)) finalUrl = "https://" + finalUrl;
 
-    document.getElementById("exportGamesButton").textContent = tr("share_export_btn");
-    document.getElementById("importGamesButton").textContent = tr("share_import_btn");
+        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
 
-    document.getElementById("overlayTitle").textContent = tr("overlay_title");
-    document.getElementById("overlaySubtitle").textContent = tr("overlay_subtitle");
-    document.getElementById("overlayLeftLabel").textContent = tr("overlay_left_label");
-    document.getElementById("overlayRightLabel").textContent = tr("overlay_right_label");
-    document.getElementById("fsCancel").textContent = tr("overlay_cancel");
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("HTTP " + response.status);
 
-    updateGameCount();
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error || "Unknown error");
 
-    document.querySelectorAll(".lang-btn").forEach(btn => {
-        const lang = btn.getAttribute("data-lang");
-        btn.classList.toggle("active", lang === currentLang);
-    });
-}
+            const rawTitle = data.title || "(no title)";
+            const url = data.url || finalUrl;
+            const title = cleanTitle(rawTitle, url);
+            const image = data.image || "";
 
-function initLanguage() {
-    const saved = localStorage.getItem(LANG_KEY);
-    if (saved && I18N[saved]) currentLang = saved;
+            games[index].title = title;
+            games[index].image = image;
+            games[index].url   = url;
 
-    document.querySelectorAll(".lang-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const lang = btn.getAttribute("data-lang");
-            if (!I18N[lang]) return;
-            currentLang = lang;
-            localStorage.setItem(LANG_KEY, lang);
-            updateTexts();
+            renderGameList();
+            showStatus(tr("status_update_game_ok", { title }), "success");
             saveState();
+        } catch (err) {
+            console.error(err);
+            showStatus(
+                tr("status_update_game_fail", { error: err.message }),
+                "error"
+            );
+        } finally {
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+        }
+    }
+
+    function renderGameList() {
+        const listEl = document.getElementById("gameList");
+        listEl.innerHTML = "";
+
+        games.forEach((g, index) => {
+            const row = document.createElement("div");
+            row.className = "game-item";
+
+            const img = document.createElement("img");
+            img.className = "game-thumb";
+            img.crossOrigin = "anonymous";
+            img.src = g.image || "";
+            img.alt = g.title || "Image";
+
+            const info = document.createElement("div");
+            info.className = "game-info";
+
+            const title = document.createElement("div");
+            title.className = "game-title";
+            title.textContent = g.title || "(no title)";
+
+            const url = document.createElement("div");
+            url.className = "game-url";
+            url.textContent = g.url;
+
+            info.appendChild(title);
+            info.appendChild(url);
+
+            const badge = document.createElement("div");
+            badge.className = "rank-badge";
+            badge.textContent = "#" + (index + 1);
+
+            const reloadBtn = document.createElement("button");
+            reloadBtn.type = "button";
+            reloadBtn.className = "btn-icon";
+            reloadBtn.textContent = "⟳";
+            reloadBtn.title = "Reload";
+            reloadBtn.addEventListener("click", () => reloadGame(index));
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "btn-icon danger";
+            delBtn.textContent = "×";
+            delBtn.title = "Delete";
+            delBtn.addEventListener("click", () => deleteGame(index));
+
+            row.appendChild(img);
+            row.appendChild(info);
+            row.appendChild(badge);
+            row.appendChild(reloadBtn);
+            row.appendChild(delBtn);
+
+            listEl.appendChild(row);
         });
+
+        updateGameCount();
+    }
+
+    async function fetchAndAddGame(rawUrl) {
+        let finalUrl = (rawUrl || "").trim();
+        if (!finalUrl) {
+            return { success: false, skipped: true, error: "empty" };
+        }
+
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = "https://" + finalUrl;
+        }
+
+        const apiUrl = "/api/og?url=" + encodeURIComponent(finalUrl);
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("HTTP " + response.status);
+
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error || "Unknown error");
+
+            const rawTitle = data.title || "(no title)";
+            const url = data.url || finalUrl;
+            const title = cleanTitle(rawTitle, url);
+            const image = data.image || "";
+
+            games.push({ id: nextId++, title, image, url });
+            renderGameList();
+            saveState();
+
+            return { success: true, title };
+        } catch (err) {
+            console.error(err);
+            return { success: false, skipped: false, error: err.message };
+        }
+    }
+
+    async function addGameFromUrl() {
+        const inputEl = document.getElementById("urlInput");
+        const rawUrl = inputEl.value.trim();
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+
+        if (!rawUrl) {
+            showStatus(tr("status_enter_url"), "error");
+            return;
+        }
+
+        hideStatus();
+        showStatus(tr("status_loading_meta"), "info");
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
+
+        const result = await fetchAndAddGame(rawUrl);
+
+        if (result.success) {
+            showStatus(tr("status_game_added", { title: result.title }), "success");
+            inputEl.value = "";
+        } else if (!result.skipped) {
+            showStatus(tr("status_load_error", { error: result.error }), "error");
+        }
+
+        addBtn.disabled = false;
+        if (addManyBtn) addManyBtn.disabled = false;
+    }
+
+    function addManualGame() {
+        const titleInput = document.getElementById("manualTitle");
+        const fileInput = document.getElementById("manualImage");
+        const rawTitle = (titleInput.value || "").trim();
+        const file = fileInput.files[0];
+
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+        const addManualBtn = document.getElementById("addManualButton");
+
+        if (!rawTitle) {
+            showStatus(tr("status_manual_need_title"), "error");
+            return;
+        }
+        if (!file) {
+            showStatus(tr("status_manual_need_image"), "error");
+            return;
+        }
+
+        hideStatus();
+        showStatus(tr("status_manual_loading"), "info");
+
+        addBtn.disabled = true;
+        if (addManyBtn) addManyBtn.disabled = true;
+        addManualBtn.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+
+            games.push({
+                id: nextId++,
+                title: rawTitle,
+                image: dataUrl,
+                url: ""
+            });
+
+            renderGameList();
+            showStatus(tr("status_manual_added", { title: rawTitle }), "success");
+            titleInput.value = "";
+            fileInput.value = "";
+            saveState();
+
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+            addManualBtn.disabled = false;
+        };
+        reader.onerror = (e) => {
+            console.error("FileReader error", e);
+            showStatus(tr("status_manual_file_error"), "error");
+            addBtn.disabled = false;
+            if (addManyBtn) addManyBtn.disabled = false;
+            addManualBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function addGamesFromMultiInput() {
+        const multiEl = document.getElementById("multiInput");
+        const text = multiEl.value;
+        const addBtn = document.getElementById("addButton");
+        const addManyBtn = document.getElementById("addManyButton");
+
+        const lines = text
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+        if (!lines.length) {
+            showStatus(tr("status_no_links"), "error");
+            return;
+        }
+
+        hideStatus();
+        let successCount = 0;
+        let failCount = 0;
+
+        addBtn.disabled = true;
+        addManyBtn.disabled = true;
+
+        for (let i = 0; i < lines.length; i++) {
+            showStatus(
+                tr("status_loading_multi_progress", {
+                    current: i + 1,
+                    total: lines.length
+                }),
+                "info"
+            );
+            const res = await fetchAndAddGame(lines[i]);
+            if (res.success) {
+                successCount++;
+            } else if (!res.skipped) {
+                failCount++;
+            }
+        }
+
+        if (successCount > 0 && failCount === 0) {
+            showStatus(
+                tr("status_multi_success", { count: successCount }),
+                "success"
+            );
+        } else if (successCount > 0) {
+            showStatus(
+                tr("status_multi_partial", {
+                    success: successCount,
+                    fail: failCount
+                }),
+                "success"
+            );
+        } else {
+            showStatus(tr("status_multi_fail"), "error");
+        }
+
+        addBtn.disabled = false;
+        addManyBtn.disabled = false;
+        saveState();
+    }
+
+    const mainContainer = document.getElementById("mainContainer");
+    const overlay = document.getElementById("compareOverlay");
+    const fsStatus = document.getElementById("fsStatus");
+    const fsProgress = document.getElementById("fsProgress");
+    const fsImgLeft = document.getElementById("fsImgLeft");
+    const fsImgRight = document.getElementById("fsImgRight");
+    const fsNameLeft = document.getElementById("fsNameLeft");
+    const fsNameRight = document.getElementById("fsNameRight");
+
+    function buildPendingNewIndicesForFullSort() {
+        pendingNewIndices = [];
+        if (games.length <= 1) return;
+        for (let i = 1; i < games.length; i++) {
+            pendingNewIndices.push(i);
+        }
+    }
+
+    function buildPendingNewIndicesIncremental() {
+        pendingNewIndices = [];
+        const present = new Set(sortedIndices);
+        for (let i = 0; i < games.length; i++) {
+            if (!present.has(i)) pendingNewIndices.push(i);
+        }
+    }
+
+    function moveToNextNewGame() {
+        if (!pendingNewIndices.length) {
+            currentNewIndex = null;
+            finishTierlist();
+            return;
+        }
+        currentNewIndex = pendingNewIndices.shift();
+        low = 0;
+        high = sortedIndices.length;
+        showNextComparisonStep();
+    }
+
+    function startTierlist() {
+        if (games.length < 2) {
+            showStatus(tr("progress_need_two"), "error");
+            return;
+        }
+
+        hideStatus();
+
+        const isFirstSort = sortedIndices.length === 0;
+
+        if (isFirstSort) {
+            sortedIndices = [0];
+            buildPendingNewIndicesForFullSort();
+            comparisonsDone = 0;
+        } else {
+            buildPendingNewIndicesIncremental();
+            if (!pendingNewIndices.length) {
+                showStatus(tr("status_multi_fail"), "info");
+                return;
+            }
+        }
+
+        const existingLen = sortedIndices.length;
+        const newCount = pendingNewIndices.length;
+        let simLen = existingLen;
+        let runExact = 0;
+        for (let i = 0; i < newCount; i++) {
+            runExact += Math.ceil(Math.log2(Math.max(2, simLen + 1)));
+            simLen++;
+        }
+        plannedRunComparisonsExact = runExact;
+        plannedRunComparisonsFast = Math.max(1, Math.ceil(runExact * 0.5));
+
+        if (rankingMode === "exact") {
+            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsExact;
+        } else {
+            comparisonsRunLimit = comparisonsDone + plannedRunComparisonsFast;
+        }
+
+        compareActive = true;
+
+        document.getElementById("finishedPanel").classList.add("hidden");
+        document.getElementById("tierTableSection").classList.add("hidden");
+        document.getElementById("progressInfo").textContent = tr("progress_running", {
+            count: formatComparisonCount(comparisonsDone || 0)
+        });
+
+        mainContainer.classList.add("hidden");
+        overlay.classList.remove("hidden");
+        fsStatus.textContent = isFirstSort
+            ? tr("overlay_status_start")
+            : tr("overlay_status_incremental");
+        fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+
+        saveState();
+        moveToNextNewGame();
+    }
+
+    function showNextComparisonStep() {
+        if (!compareActive || currentNewIndex === null) return;
+
+        if (sortedIndices.includes(currentNewIndex)) {
+            moveToNextNewGame();
+            return;
+        }
+
+        if (low >= high) {
+            sortedIndices.splice(low, 0, currentNewIndex);
+            saveState();
+            moveToNextNewGame();
+            return;
+        }
+
+        mid = Math.floor((low + high) / 2);
+        const existingIndex = sortedIndices[mid];
+
+        const newGame = games[currentNewIndex];
+        const existingGame = games[existingIndex];
+
+        fsImgLeft.crossOrigin = "anonymous";
+        fsImgRight.crossOrigin = "anonymous";
+
+        fsImgLeft.src = newGame.image || "";
+        fsImgLeft.alt = newGame.title || "";
+        fsNameLeft.textContent = newGame.title || "(no title)";
+
+        fsImgRight.src = existingGame.image || "";
+        fsImgRight.alt = existingGame.title || "";
+        fsNameRight.textContent = existingGame.title || "(no title)";
+
+        fsStatus.textContent = tr("overlay_status_start");
+        fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+    }
+
+    function fastFinishTierlistPartial() {
+        const extra = [];
+        if (currentNewIndex !== null && !sortedIndices.includes(currentNewIndex)) {
+            extra.push(currentNewIndex);
+        }
+        pendingNewIndices.forEach(i => {
+            if (!sortedIndices.includes(i) && i !== currentNewIndex) extra.push(i);
+        });
+        const uniqueExtra = [...new Set(extra)];
+        sortedIndices = sortedIndices.concat(uniqueExtra);
+        pendingNewIndices = [];
+        currentNewIndex = null;
+        finishTierlist();
+    }
+
+    function chooseLeft() {
+        if (!compareActive || currentNewIndex === null) return;
+        comparisonsDone++;
+        high = mid;
+        fsProgress.textContent = formatComparisonCount(comparisonsDone);
+        saveState();
+
+        if (
+            rankingMode === "fast" &&
+            comparisonsDone >= comparisonsRunLimit &&
+            (pendingNewIndices.length > 0 || currentNewIndex !== null)
+        ) {
+            fastFinishTierlistPartial();
+            return;
+        }
+
+        showNextComparisonStep();
+    }
+
+    function chooseRight() {
+        if (!compareActive || currentNewIndex === null) return;
+        comparisonsDone++;
+        low = mid + 1;
+        fsProgress.textContent = formatComparisonCount(comparisonsDone);
+        saveState();
+
+        if (
+            rankingMode === "fast" &&
+            comparisonsDone >= comparisonsRunLimit &&
+            (pendingNewIndices.length > 0 || currentNewIndex !== null)
+        ) {
+            fastFinishTierlistPartial();
+            return;
+        }
+
+        showNextComparisonStep();
+    }
+
+    function finishTierlist() {
+        compareActive = false;
+        overlay.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+
+        document.getElementById("progressInfo").textContent = tr("progress_finished", {
+            count: formatComparisonCount(comparisonsDone || 0)
+        });
+
+        document.getElementById("finishedPanel").classList.remove("hidden");
+        document.getElementById("tierTableSection").classList.remove("hidden");
+
+        renderRankList();
+        renderTierTable();
+        saveState();
+    }
+
+    function cancelTierlist() {
+        compareActive = false;
+        overlay.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+        document.getElementById("progressInfo").textContent = tr("progress_cancelled");
+        saveState();
+    }
+
+    function renderRankList() {
+        const list = document.getElementById("rankList");
+        list.innerHTML = "";
+
+        const total = sortedIndices.length;
+
+        sortedIndices.forEach((gameIndex, i) => {
+            const g = games[gameIndex];
+            const row = document.createElement("div");
+            row.className = "rank-row";
+
+            const n = document.createElement("div");
+            n.className = "rank-number";
+            n.textContent = (i + 1) + ".";
+
+            const t = document.createElement("div");
+            t.className = "rank-title";
+            t.textContent = g.title;
+
+            const badge = document.createElement("div");
+            badge.className = "rank-badge";
+            badge.textContent = getTierLabelByIndex(i, total) + "-tier";
+
+            row.appendChild(n);
+            row.appendChild(t);
+            row.appendChild(badge);
+            list.appendChild(row);
+        });
+    }
+
+    function getTierLabelByIndex(index, total) {
+        if (total <= 1) return "S";
+        const ratio = index / (total - 1);
+        if (ratio <= 0.2) return "S";
+        if (ratio <= 0.4) return "A";
+        if (ratio <= 0.6) return "B";
+        if (ratio <= 0.8) return "C";
+        return "D";
+    }
+
+    function renderTierTable() {
+        const section = document.getElementById("tierTableSection");
+        const wrapper = document.getElementById("tierTableWrapper");
+        wrapper.innerHTML = "";
+
+        const total = sortedIndices.length;
+        if (!total) {
+            section.classList.add("hidden");
+            return;
+        }
+
+        const tiers = { S: [], A: [], B: [], C: [], D: [] };
+
+        sortedIndices.forEach((gameIndex, i) => {
+            const g = games[gameIndex];
+            const tierLabel = getTierLabelByIndex(i, total);
+            tiers[tierLabel].push(g);
+        });
+
+        TIER_CONFIG.forEach(cfg => {
+            const row = document.createElement("div");
+            row.className = "tier-row";
+
+            const labelCell = document.createElement("div");
+            labelCell.className = "tier-label-cell";
+            labelCell.style.background = cfg.color;
+            labelCell.textContent = cfg.label;
+
+            const itemsCell = document.createElement("div");
+            itemsCell.className = "tier-items-cell";
+
+            const list = tiers[cfg.label] || [];
+            if (!list.length) {
+                const emptyText = document.createElement("span");
+                emptyText.className = "small-hint";
+                emptyText.textContent = "—";
+                itemsCell.appendChild(emptyText);
+            } else {
+                list.forEach(g => {
+                    const img = document.createElement("img");
+                    img.className = "tier-item-img";
+                    img.crossOrigin = "anonymous";
+                    img.src = g.image || "";
+                    img.alt = g.title;
+                    itemsCell.appendChild(img);
+                });
+            }
+
+            row.appendChild(labelCell);
+            row.appendChild(itemsCell);
+            wrapper.appendChild(row);
+        });
+    }
+
+    async function downloadTierImage() {
+        const wrapper = document.getElementById("tierTableWrapper");
+        if (!wrapper || !wrapper.children.length) {
+            alert(tr("tierlist_not_created"));
+            return;
+        }
+
+        try {
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: "#020617",
+                scale: 2,
+                useCORS: true
+            });
+
+            const link = document.createElement("a");
+            link.download = "tierlist.png";
+            link.href = canvas.toDataURL("image/png");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error(e);
+            alert(tr("tierlist_save_error"));
+        }
+    }
+
+    function clearGames() {
+        games.length = 0;
+        nextId = 1;
+        resetTierResults();
+        renderGameList();
+        hideStatus();
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            console.error("Error clearing localStorage", e);
+        }
+    }
+
+    function saveState() {
+        try {
+            const finishedPanelHidden = document
+                .getElementById("finishedPanel")
+                .classList.contains("hidden");
+
+            const state = {
+                games: games,
+                sortedIndices: sortedIndices,
+                pendingNewIndices: pendingNewIndices,
+                comparisonsDone: comparisonsDone,
+                compareActive: compareActive,
+                currentNewIndex: currentNewIndex,
+                low: low,
+                high: high,
+                mid: mid,
+                nextId: nextId,
+                finished: !finishedPanelHidden
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error("Fehler beim Speichern", e);
+        }
+    }
+
+    function loadState() {
+        let raw;
+        try {
+            raw = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+            console.error("Fehler beim Lesen aus localStorage", e);
+            return;
+        }
+        if (!raw) return;
+
+        try {
+            const state = JSON.parse(raw);
+            if (!state || !Array.isArray(state.games)) return;
+
+            games.length = 0;
+            state.games.forEach((g, i) => {
+                if (typeof g.id !== "number") g.id = i + 1;
+                games.push({
+                    id: g.id,
+                    title: g.title || "",
+                    image: g.image || "",
+                    url: g.url || ""
+                });
+            });
+
+            let tmpSorted = Array.isArray(state.sortedIndices)
+                ? state.sortedIndices.filter(i =>
+                    Number.isInteger(i) && i >= 0 && i < games.length
+                )
+                : [];
+            {
+                const seen = new Set();
+                sortedIndices = tmpSorted.filter(i => {
+                    if (seen.has(i)) return false;
+                    seen.add(i);
+                    return true;
+                });
+            }
+
+            let tmpPending = Array.isArray(state.pendingNewIndices)
+                ? state.pendingNewIndices.filter(i =>
+                    Number.isInteger(i) && i >= 0 && i < games.length
+                )
+                : [];
+            {
+                const seenP = new Set();
+                pendingNewIndices = tmpPending.filter(i => {
+                    if (seenP.has(i)) return false;
+                    seenP.add(i);
+                    return true;
+                });
+            }
+
+            comparisonsDone = typeof state.comparisonsDone === "number"
+                ? state.comparisonsDone
+                : 0;
+
+            compareActive = !!state.compareActive;
+            currentNewIndex =
+                typeof state.currentNewIndex === "number"
+                    ? state.currentNewIndex
+                    : null;
+            if (currentNewIndex !== null &&
+                (currentNewIndex < 0 || currentNewIndex >= games.length)) {
+                currentNewIndex = null;
+            }
+
+            low = typeof state.low === "number" ? state.low : 0;
+            high = typeof state.high === "number" ? state.high : 0;
+            mid = typeof state.mid === "number" ? state.mid : 0;
+
+            if (typeof state.nextId === "number") {
+                nextId = state.nextId;
+            } else {
+                let maxId = 0;
+                games.forEach(g => {
+                    if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+                });
+                nextId = maxId + 1;
+            }
+
+            renderGameList();
+
+            const finished = !!state.finished;
+            const finishedPanel = document.getElementById("finishedPanel");
+            const tierTableSection = document.getElementById("tierTableSection");
+            const progressInfo = document.getElementById("progressInfo");
+
+            if (finished && sortedIndices.length > 0) {
+                finishedPanel.classList.remove("hidden");
+                tierTableSection.classList.remove("hidden");
+                renderRankList();
+                renderTierTable();
+                progressInfo.textContent = tr("progress_finished", {
+                    count: formatComparisonCount(comparisonsDone || 0)
+                });
+                mainContainer.classList.remove("hidden");
+                overlay.classList.add("hidden");
+            } else if (
+                compareActive &&
+                sortedIndices.length > 0 &&
+                (currentNewIndex !== null || pendingNewIndices.length > 0)
+            ) {
+                mainContainer.classList.add("hidden");
+                overlay.classList.remove("hidden");
+                fsStatus.textContent = tr("overlay_status_continue");
+                fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
+                progressInfo.textContent = tr("progress_running", {
+                    count: formatComparisonCount(comparisonsDone || 0)
+                });
+
+                if (currentNewIndex === null && pendingNewIndices.length > 0) {
+                    moveToNextNewGame();
+                } else {
+                    showNextComparisonStep();
+                }
+            } else {
+                compareActive = false;
+                finishedPanel.classList.add("hidden");
+                tierTableSection.classList.add("hidden");
+                progressInfo.textContent = tr("progress_not_started");
+                mainContainer.classList.remove("hidden");
+                overlay.classList.add("hidden");
+            }
+        } catch (e) {
+            console.error("Fehler beim Parsen des gespeicherten Zustands", e);
+        }
+    }
+
+    // --- Spiele-Export ohne Ranking (Base64 wie früher) ---
+    function exportGamesOnly() {
+        if (!games.length) {
+            showStatus(tr("share_no_games"), "error");
+            return;
+        }
+
+        const data = {
+            games: games.map(g => ({
+                id: g.id,
+                title: g.title,
+                image: g.image,
+                url: g.url
+            }))
+        };
+
+        const json = JSON.stringify(data);
+        const base64 = btoa(unescape(encodeURIComponent(json)));
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(base64).then(() => {
+                showStatus(tr("share_export_copied"), "success");
+            }).catch(() => {
+                showStatus(tr("share_export_copy_manual"), "info");
+                alert(base64);
+            });
+        } else {
+            showStatus(tr("share_export_copy_manual"), "info");
+            alert(base64);
+        }
+    }
+
+    // Hilfsfunktion: aus Base64 oder direktem JSON Spiele-Daten parsen
+    function parseGamesDataFromString(str) {
+        let text = str.trim();
+        if (!text) throw new Error("empty data");
+
+        // 1) Versuche Base64 -> JSON
+        try {
+            const jsonText = decodeURIComponent(escape(atob(text)));
+            const data = JSON.parse(jsonText);
+            return data;
+        } catch (e) {
+            // ignorieren, wir versuchen Plain JSON
+        }
+
+        // 2) Plain JSON
+        try {
+            const data = JSON.parse(text);
+            return data;
+        } catch (e2) {
+            throw new Error("Data is neither valid Base64 nor JSON.");
+        }
+    }
+
+    // Import: kann Base64-Code ODER GitHub/Gist-URL sein
+    async function importGamesOnly() {
+        const input = prompt(tr("share_import_prompt"));
+        if (!input) return;
+
+        const trimmed = input.trim();
+
+        try {
+            let rawText;
+
+            if (/^https?:\/\//i.test(trimmed)) {
+                // GitHub / Gist URL -> Text holen
+                const resp = await fetch(trimmed);
+                if (!resp.ok) {
+                    throw new Error("HTTP " + resp.status);
+                }
+                rawText = (await resp.text()).trim();
+            } else {
+                // Direkt eingegebener Code
+                rawText = trimmed;
+            }
+
+            const data = parseGamesDataFromString(rawText);
+
+            if (!data || !Array.isArray(data.games)) {
+                throw new Error("Invalid format (games missing).");
+            }
+
+            games.length = 0;
+            data.games.forEach((g, i) => {
+                games.push({
+                    id: typeof g.id === "number" ? g.id : i + 1,
+                    title: g.title || "",
+                    image: g.image || "",
+                    url: g.url || ""
+                });
+            });
+
+            let maxId = 0;
+            games.forEach(g => {
+                if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+            });
+            nextId = maxId + 1;
+
+            resetTierResults();
+            renderGameList();
+            saveState();
+
+            showStatus(tr("share_import_success"), "success");
+        } catch (e) {
+            console.error(e);
+            showStatus(tr("share_import_fail", { error: e.message }), "error");
+        }
+    }
+
+    document.getElementById("addButton").addEventListener("click", addGameFromUrl);
+    document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
+    document.getElementById("addManualButton").addEventListener("click", addManualGame);
+    document.getElementById("clearButton").addEventListener("click", clearGames);
+    document.getElementById("startTierButton").addEventListener("click", startTierlist);
+    document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
+    document.getElementById("urlInput").addEventListener("keydown", e => {
+        if (e.key === "Enter") addGameFromUrl();
     });
 
-    updateTexts();
-}
+    document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
+    document.getElementById("fsCardRight").addEventListener("click", chooseRight);
+    document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
-/* ---------- Events ---------- */
+    document.getElementById("btnExportGames")
+        .addEventListener("click", exportGamesOnly);
+    document.getElementById("btnImportGames")
+        .addEventListener("click", () => { importGamesOnly(); });
 
-document.getElementById("addButton").addEventListener("click", addGameFromUrl);
-document.getElementById("addManyButton").addEventListener("click", addGamesFromMultiInput);
-document.getElementById("clearButton").addEventListener("click", clearGames);
-document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
-document.getElementById("urlInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") addGameFromUrl();
-});
-
-document.getElementById("startTierExact").addEventListener("click", () => startTierlist("exact"));
-document.getElementById("startTierRough").addEventListener("click", () => startTierlist("rough"));
-
-document.getElementById("fsCardLeft").addEventListener("click", chooseLeft);
-document.getElementById("fsCardRight").addEventListener("click", chooseRight);
-document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
-
-document.getElementById("toggleManualButton").addEventListener("click", () => {
-    document.getElementById("manualPanel").classList.toggle("hidden");
-});
-document.getElementById("manualAddButton").addEventListener("click", () => {
-    addManualGame().catch(console.error);
-});
-
-document.getElementById("exportGamesButton").addEventListener("click", exportGamesOnly);
-document.getElementById("importGamesButton").addEventListener("click", () => {
-    importGamesOnly().catch(console.error);
-});
-
-/* ---------- Init ---------- */
-
-initLanguage();
-loadState();
-updateGameCount();
+    window.addEventListener("load", () => {
+        initLanguage();
+        initMode();
+        loadState();
+        refreshProgressInfoForCurrentState();
+        updateGameCount();
+    });
 </script>
 </body>
 </html>
