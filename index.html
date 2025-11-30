@@ -511,6 +511,9 @@ button[disabled] {
   align-items: flex-start;
   padding: 40px 24px;
   z-index: 55;
+  overflow-y: auto;
+  max-height: none;
+  height: 100vh;
 }
 
 .manual-inner {
@@ -533,7 +536,7 @@ button[disabled] {
 
 .manual-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 0.5fr) minmax(0, 1.5fr);
   gap: 20px;
 }
 
@@ -543,17 +546,21 @@ button[disabled] {
   }
 }
 
+.manual-grid > div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .manual-pool {
   border-radius: 16px;
   border: 1px solid #111827;
   padding: 12px;
   background: #020617;
-
-  /* WICHTIG: statt fester Höhe jetzt flex-basiert */
   flex: 1;
   min-height: 0;
-  max-height: none;      /* 520px entfernen */
-  overflow-y: auto;      /* Scroll bleibt, aber ganzes Panel wird genutzt */
+  max-height: none;
+  overflow-y: auto;
 }
 
 .manual-pool-title {
@@ -582,7 +589,7 @@ button[disabled] {
   background: #020617;
   cursor: grab;
   user-select: none;
-  max-width: 190px;
+  max-width: 230px;
 }
 
 .manual-card:active,
@@ -595,8 +602,8 @@ button[disabled] {
 .manual-tier-card-img,
 .manual-card-thumb,
 .manual-tier-card-thumb {
-  width: 170px;
-  height: 100px;
+  width: 210px;
+  height: 110px;
   border-radius: 10px;
   object-fit: cover;
   border: 1px solid #111827;
@@ -646,7 +653,11 @@ button[disabled] {
   color: #020617;
   padding: 4px 6px;
   text-align: center;
-  outline: none; /* für contentEditable */
+  outline: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  box-sizing: border-box;
 }
 
 .manual-tier-dropzone {
@@ -747,55 +758,8 @@ details.manual-details > summary::-webkit-details-marker {
 .hidden {
   display: none !important;
 }
-/* 1) Manuelle Tierlist Overlay scrollbar machen – bis ganz nach unten */
-.manual-overlay {
-  /* alles Alte bleibt, wir überschreiben nur die Höhe */
-  overflow-y: auto;
-  max-height: none;   /* alte Begrenzung weg */
-  height: 100vh;      /* immer volle Fensterhöhe */
-}
 
-/* 2) Rechte Tierlist-Tabelle etwas breiter machen */
-.manual-grid {
-  /* linke Spalte schmaler, rechte breiter */
-  grid-template-columns: minmax(0, 0.5fr) minmax(0, 1.5fr);
-}
-
-/* Karten etwas kompakter, damit mehr pro Zeile passen */
-.manual-card,
-.manual-tier-card {
-  max-width: 230px;        /* vorher 190px */
-}
-
-.manual-card-img,
-.manual-tier-card-img,
-.manual-card-thumb,
-.manual-tier-card-thumb {
-  width: 210px;            /* vorher 170px */
-  height: 110px;            /* leicht kleiner, damit es nicht zu hoch wird */
-}
-
-/* 3) Rang-Namen mit Innenabstand + Ellipsis */
-/* Rang-Label: kein Ellipsis mehr, Text normal */
-.manual-tier-label {
-  padding: 6px;          /* etwas Abstand innen */
-  white-space: normal;   /* darf umbrechen */
-  overflow: visible;
-  text-overflow: clip;   /* kein … */
-  box-sizing: border-box;
-}
-
-/* Eingabefeld für Rang-Namen (Schreibbox) – links/rechts Abstand */
-.manual-tier-label input {
-  width: 100%;
-  padding: 4px 10px;     /* links/rechts Abstand in der Box */
-  box-sizing: border-box;
-  border-radius: 8px;    /* optional, sieht schöner aus */
-  border: 1px solid #1f2937;
-  background: rgba(15,23,42,0.9);
-  color: #e5e7eb;
-}
-  /* Manueller Tierlist-Button soll aussehen wie der Auto-Button */
+/* Manueller Tierlist-Button wie Auto-Button */
 #startManualTierButton {
   background: linear-gradient(135deg, #a855f7, #22d3ee);
   color: #020617;
@@ -804,20 +768,17 @@ details.manual-details > summary::-webkit-details-marker {
   box-shadow: 0 16px 36px rgba(168, 85, 247, 0.45);
 }
 
-/* Hover-Style wie beim normalen Button */
 #startManualTierButton:hover {
   filter: brightness(1.07);
   transform: translateY(-2px);
   box-shadow: 0 22px 50px rgba(168, 85, 247, 0.6);
 }
 
-/* Active-Style */
 #startManualTierButton:active {
   transform: translateY(0);
   box-shadow: 0 10px 26px rgba(168, 85, 247, 0.35);
 }
 
-/* Disabled-Zustand wie beim Auto-Button */
 #startManualTierButton[disabled] {
   opacity: 0.55;
   cursor: default;
@@ -825,13 +786,6 @@ details.manual-details > summary::-webkit-details-marker {
   box-shadow: none;
   filter: none;
 }
-  /* Linke Spalte im manuellen Overlay: vertikal strecken */
-.manual-grid > div:first-child {
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* wichtig für flex + overflow */
-}
-
 </style>
 </head>
 <body>
@@ -1020,6 +974,9 @@ details.manual-details > summary::-webkit-details-marker {
         <button id="manualBackButton" type="button" class="btn-secondary">
           Zurück
         </button>
+        <button id="addManualTierButton" type="button" class="btn-secondary">
+          + Feld
+        </button>
         <button id="downloadManualTierImageButton" type="button" class="btn-secondary">
           Manuelle Tierlist als Bild
         </button>
@@ -1048,7 +1005,7 @@ details.manual-details > summary::-webkit-details-marker {
           </span>
         </div>
         <div id="manualTierWrapper" class="manual-tier-wrapper">
-          <!-- Reihen S/A/B/C/D werden per JS erzeugt -->
+          <!-- Reihen werden per JS erzeugt -->
         </div>
       </div>
     </div>
@@ -1178,6 +1135,7 @@ const I18N = {
     manual_back: "Назад",
     manual_download_btn: "Скачать ручной тир-лист",
     manual_save_error: "Не удалось сохранить ручной тир-лист.",
+    manual_add_tier_btn: "Добавить поле",
     // Edit
     edit_title: "Редактировать игру",
     edit_label_name: "Название",
@@ -1274,6 +1232,7 @@ const I18N = {
     manual_back: "Back",
     manual_download_btn: "Download manual tierlist",
     manual_save_error: "Could not save manual tierlist image.",
+    manual_add_tier_btn: "Add field",
     // Edit
     edit_title: "Edit game",
     edit_label_name: "Name",
@@ -1370,6 +1329,7 @@ const I18N = {
     manual_back: "Zurück",
     manual_download_btn: "Manuelle Tierlist als Bild",
     manual_save_error: "Manuelle Tierlist konnte nicht gespeichert werden.",
+    manual_add_tier_btn: "Neues Feld",
     // Edit
     edit_title: "Spiel bearbeiten",
     edit_label_name: "Name",
@@ -1467,14 +1427,16 @@ let mid = 0;
 let compareActive = false;
 let comparisonsDone = 0;
 
+// extra für Fast-Mode: Begrenzung pro Item
+let currentSteps = 0;
+let currentMaxSteps = Infinity;
+
 // Manueller Tierlist-Zustand
-const manualTiers = { S: [], A: [], B: [], C: [], D: [] };
+const manualTiers = {};
 let manualPool = [];
-let manualDragSourceIndex = null;
+let manualTierNames = {};
 
-// editierbare Namen der Ränge
-let manualTierNames = { S: "S", A: "A", B: "B", C: "C", D: "D" };
-
+// Auto-Tier-Konfiguration (S–D) für Auto-Tierlist
 const TIER_CONFIG = [
   { key: "S", defaultName: "S", color: "#f97316" },
   { key: "A", defaultName: "A", color: "#facc15" },
@@ -1482,6 +1444,14 @@ const TIER_CONFIG = [
   { key: "C", defaultName: "C", color: "#38bdf8" },
   { key: "D", defaultName: "D", color: "#a855f7" }
 ];
+
+// Separate, dynamische Konfiguration für manuellen Tierlist
+const DEFAULT_MANUAL_TIER_CONFIG = TIER_CONFIG.map(c => ({ ...c }));
+let manualTierConfig = DEFAULT_MANUAL_TIER_CONFIG.map(c => ({ ...c }));
+
+function getAllManualTierKeys() {
+  return manualTierConfig.map(cfg => cfg.key);
+}
 
 /* ---------- Helpers ---------- */
 
@@ -1526,6 +1496,8 @@ function resetTierResults() {
   low = high = mid = 0;
   compareActive = false;
   comparisonsDone = 0;
+  currentSteps = 0;
+  currentMaxSteps = Infinity;
 
   document.getElementById("finishedPanel").classList.add("hidden");
   document.getElementById("tierTableSection").classList.add("hidden");
@@ -1535,11 +1507,9 @@ function resetTierResults() {
 }
 
 function clearManualState() {
-  manualTiers.S = [];
-  manualTiers.A = [];
-  manualTiers.B = [];
-  manualTiers.C = [];
-  manualTiers.D = [];
+  getAllManualTierKeys().forEach(key => {
+    manualTiers[key] = [];
+  });
   manualPool = [];
 }
 
@@ -1552,8 +1522,8 @@ function filterIndicesForGames(arr) {
 
 function syncManualPoolWithGames() {
   const used = new Set();
-  for (const key of ["S", "A", "B", "C", "D"]) {
-    manualTiers[key] = filterIndicesForGames(manualTiers[key]);
+  for (const key of getAllManualTierKeys()) {
+    manualTiers[key] = filterIndicesForGames(manualTiers[key] || []);
     manualTiers[key].forEach(i => used.add(i));
   }
   manualPool = filterIndicesForGames(manualPool).filter(i => !used.has(i));
@@ -1645,6 +1615,8 @@ function applyLanguageStaticTexts() {
   document.getElementById("manual_tiers_hint").textContent = s.manual_tiers_hint;
   document.getElementById("manualBackButton").textContent = s.manual_back;
   document.getElementById("downloadManualTierImageButton").textContent = s.manual_download_btn;
+  const addTierBtn = document.getElementById("addManualTierButton");
+  if (addTierBtn) addTierBtn.textContent = s.manual_add_tier_btn;
 
   // Edit-Dialog
   document.getElementById("editDialogTitle").textContent = s.edit_title;
@@ -1990,9 +1962,9 @@ function deleteGame(index) {
   // Auto-Ranking ungültig → zurücksetzen
   resetTierResults();
 
-  // Manueller Tierlist anpassen
-  for (const key of ["S", "A", "B", "C", "D"]) {
-    manualTiers[key] = manualTiers[key]
+  // Manueller Tierlist anpassen (für alle existierenden Tiers)
+  for (const key of getAllManualTierKeys()) {
+    manualTiers[key] = (manualTiers[key] || [])
       .filter(i => i !== index)
       .map(i => (i > index ? i - 1 : i));
   }
@@ -2164,9 +2136,13 @@ function startTierlist() {
   for (let i = 1; i < games.length; i++) compareOrder.push(i);
   comparePos = 0;
   currentNewIndex = null;
-  low = high = mid = 0;
+  low = 0;
+  high = 0;
+  mid = 0;
   comparisonsDone = 0;
   compareActive = true;
+  currentSteps = 0;
+  currentMaxSteps = Infinity;
 
   document.getElementById("finishedPanel").classList.add("hidden");
   document.getElementById("tierTableSection").classList.add("hidden");
@@ -2182,6 +2158,21 @@ function startTierlist() {
   moveToNextNewGame();
 }
 
+function setupFastModeLimit() {
+  if (rankingMode !== "fast") {
+    currentMaxSteps = Infinity;
+    return;
+  }
+  const len = sortedIndices.length;
+  if (len <= 0) {
+    currentMaxSteps = Infinity;
+    return;
+  }
+  // halbe Tiefe des Binärbaums
+  currentMaxSteps = Math.max(1, Math.ceil(Math.log2(len + 1) / 2));
+  currentSteps = 0;
+}
+
 function moveToNextNewGame() {
   if (!compareOrder.length) {
     currentNewIndex = null;
@@ -2191,6 +2182,7 @@ function moveToNextNewGame() {
   currentNewIndex = compareOrder.shift();
   low = 0;
   high = sortedIndices.length;
+  setupFastModeLimit();
   showNextComparisonStep();
 }
 
@@ -2225,22 +2217,37 @@ function showNextComparisonStep() {
   fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
 }
 
+function maybeFinishFastEarly() {
+  if (rankingMode !== "fast") return;
+  if (currentMaxSteps === Infinity) return;
+  if (currentSteps < currentMaxSteps) return;
+
+  // wir brechen die Suche ab und setzen Einfüge-Position ungefähr in die Mitte von [low, high]
+  low = Math.max(0, Math.min(sortedIndices.length, Math.floor((low + high) / 2)));
+  high = low;
+  showNextComparisonStep();
+}
+
 function chooseLeft() {
   if (!compareActive || currentNewIndex === null) return;
   comparisonsDone++;
+  currentSteps++;
   high = mid;
   fsProgress.textContent = formatComparisonCount(comparisonsDone);
   saveState();
-  showNextComparisonStep();
+  maybeFinishFastEarly();
+  if (compareActive) showNextComparisonStep();
 }
 
 function chooseRight() {
   if (!compareActive || currentNewIndex === null) return;
   comparisonsDone++;
+  currentSteps++;
   low = mid + 1;
   fsProgress.textContent = formatComparisonCount(comparisonsDone);
   saveState();
-  showNextComparisonStep();
+  maybeFinishFastEarly();
+  if (compareActive) showNextComparisonStep();
 }
 
 function finishTierlist() {
@@ -2491,36 +2498,34 @@ async function importGamesOnly() {
   }
 }
 
-/* ---------- Manueller Tierlist (Drag & Drop) ---------- */
+/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers) ---------- */
 
 const manualOverlay = document.getElementById("manualOverlay");
 const manualPoolListEl = document.getElementById("manualPoolList");
 const manualTierWrapperEl = document.getElementById("manualTierWrapper");
 
-  // Auto-Scroll beim Draggen im manuellen Tierlist
+// Auto-Scroll beim Draggen im manuellen Tierlist
 const manualScrollContainer = document.querySelector(".manual-overlay");
 
 function handleManualOverlayDragOver(e) {
-    if (!manualScrollContainer) return;
+  if (!manualScrollContainer) return;
 
-    const rect = manualScrollContainer.getBoundingClientRect();
-    const offsetY = e.clientY - rect.top;
-    const threshold = 80;      // Bereich oben/unten, in dem gescrollt wird
-    const scrollSpeed = 18;    // Scroll-Geschwindigkeit pro Event
+  const rect = manualScrollContainer.getBoundingClientRect();
+  const offsetY = e.clientY - rect.top;
+  const threshold = 80;
+  const scrollSpeed = 18;
 
-    if (offsetY < threshold) {
-        // Maus nahe am oberen Rand -> nach oben scrollen
-        manualScrollContainer.scrollTop -= scrollSpeed;
-    } else if (offsetY > rect.height - threshold) {
-        // Maus nahe am unteren Rand -> nach unten scrollen
-        manualScrollContainer.scrollTop += scrollSpeed;
-    }
+  if (offsetY < threshold) {
+    manualScrollContainer.scrollTop -= scrollSpeed;
+  } else if (offsetY > rect.height - threshold) {
+    manualScrollContainer.scrollTop += scrollSpeed;
+  }
 }
 
 function removeGameFromAllManual(idx) {
   manualPool = manualPool.filter(i => i !== idx);
-  for (const key of ["S", "A", "B", "C", "D"]) {
-    manualTiers[key] = manualTiers[key].filter(i => i !== idx);
+  for (const key of getAllManualTierKeys()) {
+    manualTiers[key] = (manualTiers[key] || []).filter(i => i !== idx);
   }
 }
 
@@ -2563,6 +2568,8 @@ function manualCreateCard(gameIndex, inTier) {
 
   return card;
 }
+
+let manualDragSourceIndex = null;
 
 function manualDragStart(e) {
   manualDragSourceIndex = parseInt(this.dataset.index, 10);
@@ -2623,7 +2630,7 @@ function createManualTierRowsIfNeeded() {
   if (manualTierWrapperEl.children.length) return;
   manualTierWrapperEl.innerHTML = "";
 
-  TIER_CONFIG.forEach(cfg => {
+  manualTierConfig.forEach(cfg => {
     const row = document.createElement("div");
     row.className = "manual-tier-row";
 
@@ -2633,11 +2640,11 @@ function createManualTierRowsIfNeeded() {
     labelCell.dataset.tierkey = cfg.key;
     labelCell.contentEditable = "true";
     labelCell.spellcheck = false;
-    labelCell.textContent = manualTierNames[cfg.key] || cfg.defaultName;
+    labelCell.textContent = manualTierNames[cfg.key] || cfg.defaultName || cfg.key;
 
     labelCell.addEventListener("input", () => {
       const t = (labelCell.textContent || "").trim();
-      manualTierNames[cfg.key] = t || cfg.defaultName;
+      manualTierNames[cfg.key] = t || (cfg.defaultName || cfg.key);
       saveState();
     });
 
@@ -2717,6 +2724,8 @@ function openManualTierlist() {
 
   hideStatus();
   syncManualPoolWithGames();
+  manualTierWrapperEl.innerHTML = "";
+  createManualTierRowsIfNeeded();
   renderManualView();
 
   mainContainer.classList.add("hidden");
@@ -2728,6 +2737,36 @@ function openManualTierlist() {
 function closeManualOverlay() {
   manualOverlay.classList.add("hidden");
   mainContainer.classList.remove("hidden");
+  saveState();
+}
+
+function addManualTier() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let nextKey = null;
+  for (const ch of letters) {
+    if (!manualTierConfig.some(cfg => cfg.key === ch)) {
+      nextKey = ch;
+      break;
+    }
+  }
+  if (!nextKey) {
+    alert("Zu viele Felder.");
+    return;
+  }
+
+  const newCfg = {
+    key: nextKey,
+    defaultName: nextKey,
+    color: "#6b7280"
+  };
+
+  manualTierConfig.push(newCfg);
+  manualTiers[nextKey] = manualTiers[nextKey] || [];
+  manualTierNames[nextKey] = nextKey;
+
+  manualTierWrapperEl.innerHTML = "";
+  createManualTierRowsIfNeeded();
+  renderManualView();
   saveState();
 }
 
@@ -2747,7 +2786,8 @@ function saveState() {
       manual: {
         tiers: manualTiers,
         pool: manualPool,
-        tierNames: manualTierNames
+        tierNames: manualTierNames,
+        tierConfig: manualTierConfig
       }
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -2790,24 +2830,48 @@ function loadState() {
       ? state.comparisonsDone
       : 0;
 
-    clearManualState();
-    if (state.manual && state.manual.tiers) {
-      manualTiers.S = filterIndicesForGames(state.manual.tiers.S);
-      manualTiers.A = filterIndicesForGames(state.manual.tiers.A);
-      manualTiers.B = filterIndicesForGames(state.manual.tiers.B);
-      manualTiers.C = filterIndicesForGames(state.manual.tiers.C);
-      manualTiers.D = filterIndicesForGames(state.manual.tiers.D);
+    // --- manueller Tierlist wiederherstellen ---
+    manualTierConfig = DEFAULT_MANUAL_TIER_CONFIG.map(c => ({ ...c }));
+    manualPool = [];
+    for (const k in manualTiers) delete manualTiers[k];
+    manualTierNames = {};
+
+    if (state.manual && Array.isArray(state.manual.tierConfig) && state.manual.tierConfig.length) {
+      manualTierConfig = state.manual.tierConfig.map(cfg => ({
+        key: cfg.key,
+        defaultName: cfg.defaultName || cfg.key,
+        color: cfg.color || "#4b5563"
+      }));
     }
+
+    manualTierConfig.forEach(cfg => {
+      manualTiers[cfg.key] = [];
+      manualTierNames[cfg.key] = cfg.defaultName || cfg.key;
+    });
+
+    if (state.manual && state.manual.tiers) {
+      const storedTiers = state.manual.tiers;
+      for (const key in storedTiers) {
+        manualTiers[key] = filterIndicesForGames(storedTiers[key]);
+        if (!manualTierNames[key]) {
+          manualTierNames[key] = key;
+        }
+      }
+    }
+
     if (state.manual && Array.isArray(state.manual.pool)) {
       manualPool = filterIndicesForGames(state.manual.pool);
+    } else {
+      manualPool = [];
     }
+
     if (state.manual && state.manual.tierNames) {
       const tNames = state.manual.tierNames;
-      ["S", "A", "B", "C", "D"].forEach(key => {
+      for (const key in tNames) {
         if (typeof tNames[key] === "string" && tNames[key].trim()) {
           manualTierNames[key] = tNames[key];
         }
-      });
+      }
     }
 
     let maxId = 0;
@@ -2867,6 +2931,7 @@ document.getElementById("startManualTierButton").addEventListener("click", openM
 document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
 document.getElementById("downloadManualTierImageButton").addEventListener("click", downloadManualTierImage);
 document.getElementById("manualBackButton").addEventListener("click", closeManualOverlay);
+document.getElementById("addManualTierButton").addEventListener("click", addManualTier);
 
 document.getElementById("urlInput").addEventListener("keydown", e => {
   if (e.key === "Enter") addGameFromUrl();
@@ -2899,17 +2964,16 @@ document.getElementById("editOverlay").addEventListener("click", (e) => {
 });
 
 window.addEventListener("load", () => {
-    initLanguage();
-    initMode();
-    loadState();
-    refreshProgressInfoForCurrentState();
-    updateGameCount();
-    setupManualDropzones();
+  initLanguage();
+  initMode();
+  loadState();
+  refreshProgressInfoForCurrentState();
+  updateGameCount();
 
-    // Auto-Scroll beim Draggen im manuellen Tierlist aktivieren
-    if (manualScrollContainer) {
-        manualScrollContainer.addEventListener("dragover", handleManualOverlayDragOver);
-    }
+  // Auto-Scroll beim Draggen im manuellen Tierlist
+  if (manualScrollContainer) {
+    manualScrollContainer.addEventListener("dragover", handleManualOverlayDragOver);
+  }
 });
 </script>
 </body>
