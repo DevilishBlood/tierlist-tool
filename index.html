@@ -2487,6 +2487,26 @@ const manualOverlay = document.getElementById("manualOverlay");
 const manualPoolListEl = document.getElementById("manualPoolList");
 const manualTierWrapperEl = document.getElementById("manualTierWrapper");
 
+  // Auto-Scroll beim Draggen im manuellen Tierlist
+const manualScrollContainer = document.querySelector(".manual-overlay");
+
+function handleManualOverlayDragOver(e) {
+    if (!manualScrollContainer) return;
+
+    const rect = manualScrollContainer.getBoundingClientRect();
+    const offsetY = e.clientY - rect.top;
+    const threshold = 80;      // Bereich oben/unten, in dem gescrollt wird
+    const scrollSpeed = 18;    // Scroll-Geschwindigkeit pro Event
+
+    if (offsetY < threshold) {
+        // Maus nahe am oberen Rand -> nach oben scrollen
+        manualScrollContainer.scrollTop -= scrollSpeed;
+    } else if (offsetY > rect.height - threshold) {
+        // Maus nahe am unteren Rand -> nach unten scrollen
+        manualScrollContainer.scrollTop += scrollSpeed;
+    }
+}
+
 function removeGameFromAllManual(idx) {
   manualPool = manualPool.filter(i => i !== idx);
   for (const key of ["S", "A", "B", "C", "D"]) {
@@ -2869,11 +2889,17 @@ document.getElementById("editOverlay").addEventListener("click", (e) => {
 });
 
 window.addEventListener("load", () => {
-  initLanguage();
-  initMode();
-  loadState();
-  refreshProgressInfoForCurrentState();
-  updateGameCount();
+    initLanguage();
+    initMode();
+    loadState();
+    refreshProgressInfoForCurrentState();
+    updateGameCount();
+    setupManualDropzones();
+
+    // Auto-Scroll beim Draggen im manuellen Tierlist aktivieren
+    if (manualScrollContainer) {
+        manualScrollContainer.addEventListener("dragover", handleManualOverlayDragOver);
+    }
 });
 </script>
 </body>
