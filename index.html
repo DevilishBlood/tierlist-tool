@@ -2804,8 +2804,32 @@ async function downloadManualTierImage() {
     return;
   }
 
-  // --- NEU: im Bild statt Color-Picker den HEX-Code anzeigen ---
-  const colorInputs = wrapper.querySelectorAll(".manual-tier-color-input");
+  async function downloadManualTierImage() {
+  const wrapper = document.getElementById("manualTierWrapper");
+  if (!wrapper || !wrapper.children.length) {
+    alert(tr("tierlist_not_created"));
+    return;
+  }
+
+  try {
+    const canvas = await html2canvas(wrapper, {
+      backgroundColor: "#020617",
+      scale: 2,
+      useCORS: true
+    });
+
+    const link = document.createElement("a");
+    link.download = "tierlist_manual.png";
+    link.href = canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (e) {
+    console.error(e);
+    alert(tr("manual_save_error"));
+  }
+}
+
   const backup = [];
 
   colorInputs.forEach(input => {
