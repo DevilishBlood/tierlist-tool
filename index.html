@@ -20,7 +20,7 @@ body {
 
 .container {
   margin: 52px 30px;
-  max-width: 1400px;
+  max-width: 1700px;          /* breiter gemacht */
   width: 100%;
   background: #020617;
   border-radius: 24px;
@@ -359,6 +359,7 @@ button[disabled] {
   border: 1px solid #1f2937;
 }
 
+/* Overlay für Auto- und Manuelle Tierlists */
 .overlay {
   position: fixed;
   inset: 0;
@@ -371,7 +372,7 @@ button[disabled] {
 }
 
 .overlay-inner {
-  max-width: 1100px;
+  max-width: min(1700px, 100%);  /* breiter gemacht */
   width: 100%;
   background: #020617;
   border-radius: 22px;
@@ -380,7 +381,7 @@ button[disabled] {
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.9);
 }
 
-/* WICHTIG: manuelle Overlay soll scrollbar sein */
+/* Manuelle Overlay soll scrollbar sein */
 #manualOverlay .overlay-inner {
   max-height: calc(100vh - 80px);
   overflow-y: auto;
@@ -559,7 +560,7 @@ button[disabled] {
   width: 100%;
 }
 
-/* Bilder größer */
+/* Bilder breiter & höher */
 .manual-card-thumb,
 .manual-tier-card-thumb {
   width: 100%;
@@ -570,7 +571,7 @@ button[disabled] {
   background: #020617;
 }
 
-/* Titel kurz + ... */
+/* Titel hart auf eine Zeile mit ... gekürzt */
 .manual-card-name,
 .manual-tier-card-name {
   font-size: 0.9rem;
@@ -585,7 +586,7 @@ button[disabled] {
   display: none !important;
 }
 
-/* Pfeil im Details-Aufklapper links neben dem Text */
+/* Pfeil im Details-Aufklapper links vom Text */
 details > summary {
   display: flex;
   align-items: center;
