@@ -743,17 +743,18 @@ details.manual-details > summary::-webkit-details-marker {
 .hidden {
   display: none !important;
 }
-  /* 1) Manuelle Tierlist Overlay scrollbar machen */
+/* 1) Manuelle Tierlist Overlay scrollbar machen – bis ganz nach unten */
 .manual-overlay {
-  /* alte Eigenschaften bleiben, wir erweitern nur */
+  /* alles Alte bleibt, wir überschreiben nur die Höhe */
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: none;   /* alte Begrenzung weg */
+  height: 100vh;      /* immer volle Fensterhöhe */
 }
 
 /* 2) Rechte Tierlist-Tabelle etwas breiter machen */
 .manual-grid {
   /* linke Spalte schmaler, rechte breiter */
-  grid-template-columns: minmax(0, 0.5fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
 }
 
 /* Karten etwas kompakter, damit mehr pro Zeile passen */
@@ -789,6 +790,36 @@ details.manual-details > summary::-webkit-details-marker {
   border: 1px solid #1f2937;
   background: rgba(15,23,42,0.9);
   color: #e5e7eb;
+}
+  /* Manueller Tierlist-Button soll aussehen wie der Auto-Button */
+#startManualTierButton {
+  background: linear-gradient(135deg, #a855f7, #22d3ee);
+  color: #020617;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 16px 36px rgba(168, 85, 247, 0.45);
+}
+
+/* Hover-Style wie beim normalen Button */
+#startManualTierButton:hover {
+  filter: brightness(1.07);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px rgba(168, 85, 247, 0.6);
+}
+
+/* Active-Style */
+#startManualTierButton:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 26px rgba(168, 85, 247, 0.35);
+}
+
+/* Disabled-Zustand wie beim Auto-Button */
+#startManualTierButton[disabled] {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+  filter: none;
 }
 
 </style>
