@@ -302,9 +302,9 @@ button[disabled] {
 
 .rank-title {
   font-size: 1.03rem;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rank-badge {
@@ -655,8 +655,8 @@ button[disabled] {
   width: 100%;
   padding: 2px 4px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .manual-tier-dropzone {
