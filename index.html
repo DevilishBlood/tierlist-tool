@@ -753,7 +753,7 @@ details.manual-details > summary::-webkit-details-marker {
 /* 2) Rechte Tierlist-Tabelle etwas breiter machen */
 .manual-grid {
   /* linke Spalte schmaler, rechte breiter */
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
 }
 
 /* Karten etwas kompakter, damit mehr pro Zeile passen */
@@ -771,13 +771,26 @@ details.manual-details > summary::-webkit-details-marker {
 }
 
 /* 3) Rang-Namen mit Innenabstand + Ellipsis */
+/* Rang-Label: kein Ellipsis mehr, Text normal */
 .manual-tier-label {
-  padding: 8px 12px;       /* mehr Abstand zu den Rändern */
-  white-space: nowrap;     /* nicht umbrechen */
-  overflow: hidden;        /* alles was zu lang ist, verstecken */
-  text-overflow: ellipsis; /* "…" am Ende bei langen Texten */
-  box-sizing: border-box;  /* Padding sauber in die Breite einrechnen */
+  padding: 6px;          /* etwas Abstand innen */
+  white-space: normal;   /* darf umbrechen */
+  overflow: visible;
+  text-overflow: clip;   /* kein … */
+  box-sizing: border-box;
 }
+
+/* Eingabefeld für Rang-Namen (Schreibbox) – links/rechts Abstand */
+.manual-tier-label input {
+  width: 100%;
+  padding: 4px 10px;     /* links/rechts Abstand in der Box */
+  box-sizing: border-box;
+  border-radius: 8px;    /* optional, sieht schöner aus */
+  border: 1px solid #1f2937;
+  background: rgba(15,23,42,0.9);
+  color: #e5e7eb;
+}
+
 </style>
 </head>
 <body>
