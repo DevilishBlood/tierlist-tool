@@ -743,6 +743,41 @@ details.manual-details > summary::-webkit-details-marker {
 .hidden {
   display: none !important;
 }
+  /* 1) Manuelle Tierlist Overlay scrollbar machen */
+.manual-overlay {
+  /* alte Eigenschaften bleiben, wir erweitern nur */
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* 2) Rechte Tierlist-Tabelle etwas breiter machen */
+.manual-grid {
+  /* linke Spalte schmaler, rechte breiter */
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+}
+
+/* Karten etwas kompakter, damit mehr pro Zeile passen */
+.manual-card,
+.manual-tier-card {
+  max-width: 170px;        /* vorher 190px */
+}
+
+.manual-card-img,
+.manual-tier-card-img,
+.manual-card-thumb,
+.manual-tier-card-thumb {
+  width: 150px;            /* vorher 170px */
+  height: 90px;            /* leicht kleiner, damit es nicht zu hoch wird */
+}
+
+/* 3) Rang-Namen mit Innenabstand + Ellipsis */
+.manual-tier-label {
+  padding: 8px 12px;       /* mehr Abstand zu den Rändern */
+  white-space: nowrap;     /* nicht umbrechen */
+  overflow: hidden;        /* alles was zu lang ist, verstecken */
+  text-overflow: ellipsis; /* "…" am Ende bei langen Texten */
+  box-sizing: border-box;  /* Padding sauber in die Breite einrechnen */
+}
 </style>
 </head>
 <body>
