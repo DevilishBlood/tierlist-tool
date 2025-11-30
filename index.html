@@ -643,14 +643,14 @@ button[disabled] {
   border-bottom: none;
 }
 
-/* Label-Zelle mit Text + Color-Picker */
+/* Label-Zelle mit Text + Color-Picker + Delete */
 .manual-tier-label {
   width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   font-weight: 800;
   font-size: 1.1rem;
   color: #020617;
@@ -689,6 +689,32 @@ button[disabled] {
   border: none;
 }
 
+/* Delete-Button im Tier-Header */
+.manual-tier-delete-btn {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  font-size: 14px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,0.35);
+  background: rgba(15,23,42,0.15);
+  color: #020617;
+}
+
+.manual-tier-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.9);
+  border-color: #ef4444;
+  color: #020617;
+}
+
+/* Hex-Code nur für Screenshot (wird per JS erstellt) */
+.manual-tier-hex-text-for-export {
+  font-size: 0.7rem;
+  color: #020617;
+}
+
+/* Dropzone */
 .manual-tier-dropzone {
   flex: 1;
   padding: 10px 12px;
@@ -2527,7 +2553,7 @@ async function importGamesOnly() {
   }
 }
 
-/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers + Farbe) ---------- */
+/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers + Farbe + Löschen) ---------- */
 
 const manualOverlay = document.getElementById("manualOverlay");
 const manualPoolListEl = document.getElementById("manualPoolList");
@@ -2655,6 +2681,26 @@ function manualDropToPool(e) {
   saveState();
 }
 
+/* --- neues: Tier löschen --- */
+function deleteManualTier(tierKey) {
+  // Items dieses Tiers zurück in den Pool
+  const items = manualTiers[tierKey] || [];
+  items.forEach(idx => {
+    if (!manualPool.includes(idx)) {
+      manualPool.push(idx);
+    }
+  });
+
+  delete manualTiers[tierKey];
+  delete manualTierNames[tierKey];
+  manualTierConfig = manualTierConfig.filter(cfg => cfg.key !== tierKey);
+
+  manualTierWrapperEl.innerHTML = "";
+  createManualTierRowsIfNeeded();
+  renderManualView();
+  saveState();
+}
+
 function createManualTierRowsIfNeeded() {
   if (manualTierWrapperEl.children.length) return;
   manualTierWrapperEl.innerHTML = "";
@@ -2694,8 +2740,20 @@ function createManualTierRowsIfNeeded() {
       saveState();
     });
 
+    // Delete-Button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "manual-tier-delete-btn";
+    deleteBtn.textContent = "×";
+    deleteBtn.title = "Tier löschen";
+    deleteBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      deleteManualTier(cfg.key);
+    });
+
     labelCell.appendChild(labelText);
     labelCell.appendChild(colorInput);
+    labelCell.appendChild(deleteBtn);
 
     const dropzone = document.createElement("div");
     dropzone.className = "manual-tier-dropzone";
@@ -2746,6 +2804,30 @@ async function downloadManualTierImage() {
     return;
   }
 
+  // --- NEU: im Bild statt Color-Picker den HEX-Code anzeigen ---
+  const colorInputs = wrapper.querySelectorAll(".manual-tier-color-input");
+  const backup = [];
+
+  colorInputs.forEach(input => {
+    const labelCell = input.closest(".manual-tier-label");
+    if (!labelCell) return;
+    const hex = (input.value || "").toUpperCase();
+
+    const span = document.createElement("div");
+    span.className = "manual-tier-hex-text-for-export";
+    span.textContent = hex;
+
+    backup.push({
+      input,
+      prevDisplay: input.style.display || "",
+      span,
+      parent: labelCell
+    });
+
+    input.style.display = "none";
+    labelCell.appendChild(span);
+  });
+
   try {
     const canvas = await html2canvas(wrapper, {
       backgroundColor: "#020617",
@@ -2762,6 +2844,12 @@ async function downloadManualTierImage() {
   } catch (e) {
     console.error(e);
     alert(tr("manual_save_error"));
+  } finally {
+    // UI zurücksetzen
+    backup.forEach(({ input, prevDisplay, span, parent }) => {
+      input.style.display = prevDisplay;
+      if (span && parent && parent.contains(span)) parent.removeChild(span);
+    });
   }
 }
 
