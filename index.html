@@ -643,21 +643,50 @@ button[disabled] {
   border-bottom: none;
 }
 
+/* Label-Zelle mit Text + Color-Picker */
 .manual-tier-label {
   width: 120px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   font-weight: 800;
   font-size: 1.1rem;
   color: #020617;
-  padding: 4px 6px;
+  padding: 6px 6px 8px;
   text-align: center;
+  box-sizing: border-box;
+}
+
+/* nur der Text ist editierbar */
+.manual-tier-label-text {
   outline: none;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  box-sizing: border-box;
+}
+
+/* Color-Picker für Tier-Farbe */
+.manual-tier-color-input {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(15,23,42,0.2);
+}
+
+.manual-tier-color-input::-webkit-color-swatch {
+  border-radius: 999px;
+  border: none;
+}
+
+.manual-tier-color-input::-moz-color-swatch {
+  border-radius: 999px;
+  border: none;
 }
 
 .manual-tier-dropzone {
@@ -2498,7 +2527,7 @@ async function importGamesOnly() {
   }
 }
 
-/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers) ---------- */
+/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers + Farbe) ---------- */
 
 const manualOverlay = document.getElementById("manualOverlay");
 const manualPoolListEl = document.getElementById("manualPoolList");
@@ -2636,17 +2665,37 @@ function createManualTierRowsIfNeeded() {
 
     const labelCell = document.createElement("div");
     labelCell.className = "manual-tier-label";
-    labelCell.style.background = cfg.color;
     labelCell.dataset.tierkey = cfg.key;
-    labelCell.contentEditable = "true";
-    labelCell.spellcheck = false;
-    labelCell.textContent = manualTierNames[cfg.key] || cfg.defaultName || cfg.key;
+    labelCell.style.background = cfg.color || "#4b5563";
 
-    labelCell.addEventListener("input", () => {
-      const t = (labelCell.textContent || "").trim();
+    // Text-Container (editierbar)
+    const labelText = document.createElement("div");
+    labelText.className = "manual-tier-label-text";
+    labelText.contentEditable = "true";
+    labelText.spellcheck = false;
+    labelText.textContent = manualTierNames[cfg.key] || cfg.defaultName || cfg.key;
+
+    labelText.addEventListener("input", () => {
+      const t = (labelText.textContent || "").trim();
       manualTierNames[cfg.key] = t || (cfg.defaultName || cfg.key);
       saveState();
     });
+
+    // Color-Picker
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    colorInput.className = "manual-tier-color-input";
+    colorInput.value = cfg.color || "#4b5563";
+
+    colorInput.addEventListener("input", () => {
+      labelCell.style.background = colorInput.value;
+      const cfgRef = manualTierConfig.find(c => c.key === cfg.key);
+      if (cfgRef) cfgRef.color = colorInput.value;
+      saveState();
+    });
+
+    labelCell.appendChild(labelText);
+    labelCell.appendChild(colorInput);
 
     const dropzone = document.createElement("div");
     dropzone.className = "manual-tier-dropzone";
