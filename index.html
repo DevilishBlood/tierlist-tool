@@ -651,12 +651,14 @@ button[disabled] {
   box-sizing: border-box;
 }
 
+/* Nur der Rang-Titel selbst */
 .manual-tier-label-text {
   width: 100%;
   padding: 2px 4px;
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
+  white-space: normal;    /* darf umbrechen */
+  overflow: visible;      /* nichts abschneiden */
+  text-overflow: clip;    /* keine Ellipsis (…) */
+  word-break: break-word; /* lange Wörter ggf. umbrechen */
 }
 
 .manual-tier-dropzone {
