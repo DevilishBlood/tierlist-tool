@@ -368,7 +368,7 @@ button[disabled] {
   border: 1px solid #1f2937;
 }
 
-/* Allgemeines Overlay (Auto + Manuell) */
+/* ---------- Auto + Manuell Overlay ---------- */
 
 .overlay {
   position: fixed;
@@ -500,7 +500,7 @@ button[disabled] {
   font-size: 0.9rem;
 }
 
-/* --- Manueller Tierlist Overlay --- */
+/* ---------- Manueller Tierlist Overlay ---------- */
 
 .manual-overlay {
   position: fixed;
@@ -546,12 +546,6 @@ button[disabled] {
   }
 }
 
-.manual-grid > div:first-child {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .manual-pool {
   border-radius: 16px;
   border: 1px solid #111827;
@@ -575,7 +569,8 @@ button[disabled] {
   gap: 8px;
 }
 
-/* Karten im manuellen Tierlist: Bild oben, Titel unten, größer */
+/* Karten im manuellen Tierlist */
+
 .manual-card,
 .manual-tier-card {
   display: flex;
@@ -597,7 +592,6 @@ button[disabled] {
   cursor: grabbing;
 }
 
-/* Bildgröße – deutlich größer, breiter als hoch */
 .manual-card-img,
 .manual-tier-card-img,
 .manual-card-thumb,
@@ -610,7 +604,6 @@ button[disabled] {
   background: #020617;
 }
 
-/* Titel unter dem Bild, gekürzt */
 .manual-card-name,
 .manual-tier-card-name,
 .manual-card-title,
@@ -620,7 +613,7 @@ button[disabled] {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 220px;
 }
 
 /* Manuelle Tier-Tabelle */
@@ -635,6 +628,7 @@ button[disabled] {
 
 .manual-tier-row {
   display: flex;
+  align-items: stretch;
   min-height: 96px;
   border-bottom: 1px solid #111827;
 }
@@ -643,78 +637,28 @@ button[disabled] {
   border-bottom: none;
 }
 
-/* Label-Zelle mit Text + Color-Picker + Delete */
 .manual-tier-label {
   width: 120px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   font-weight: 800;
   font-size: 1.1rem;
   color: #020617;
-  padding: 6px 6px 8px;
+  padding: 4px 6px;
   text-align: center;
+  outline: none;
   box-sizing: border-box;
 }
 
-/* nur der Text ist editierbar */
 .manual-tier-label-text {
-  outline: none;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  width: 100%;
+  padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Color-Picker für Tier-Farbe */
-.manual-tier-color-input {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: none;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(15,23,42,0.2);
-}
-
-.manual-tier-color-input::-webkit-color-swatch {
-  border-radius: 999px;
-  border: none;
-}
-
-.manual-tier-color-input::-moz-color-swatch {
-  border-radius: 999px;
-  border: none;
-}
-
-/* Delete-Button im Tier-Header */
-.manual-tier-delete-btn {
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  font-size: 14px;
-  padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(15,23,42,0.35);
-  background: rgba(15,23,42,0.15);
-  color: #020617;
-}
-
-.manual-tier-delete-btn:hover {
-  background: rgba(248, 113, 113, 0.9);
-  border-color: #ef4444;
-  color: #020617;
-}
-
-/* Hex-Code nur für Screenshot (wird per JS erstellt) */
-.manual-tier-hex-text-for-export {
-  font-size: 0.7rem;
-  color: #020617;
-}
-
-/* Dropzone */
 .manual-tier-dropzone {
   flex: 1;
   padding: 10px 12px;
@@ -729,6 +673,43 @@ button[disabled] {
 #manualPoolList.over {
   outline: 2px dashed #38bdf8;
   outline-offset: 2px;
+}
+
+/* Tools (Farbe + Löschen) – werden beim Screenshot ausgeblendet */
+
+.manual-tier-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  min-width: 70px;
+}
+
+.manual-tier-color-input {
+  width: 42px;
+  height: 32px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #111827;
+  background: #020617;
+  cursor: pointer;
+}
+
+.manual-tier-delete-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: #e5e7eb;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.manual-tier-delete-btn:hover {
+  background: #7f1d1d;
+  border-color: #ef4444;
 }
 
 /* Edit-Dialog */
@@ -776,7 +757,7 @@ button[disabled] {
   margin-top: 16px;
 }
 
-/* Manueller Eintrag (aufklappbar) */
+/* Manueller Eintrag (einklappbar) */
 
 details.manual-details {
   margin-top: 24px;
@@ -814,7 +795,16 @@ details.manual-details > summary::-webkit-details-marker {
   display: none !important;
 }
 
-/* Manueller Tierlist-Button wie Auto-Button */
+/* Manuelle Overlay linke Spalte strecken */
+
+.manual-grid > div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Manueller Tierlist-Button optisch wie Auto-Button */
+
 #startManualTierButton {
   background: linear-gradient(135deg, #a855f7, #22d3ee);
   color: #020617;
@@ -840,6 +830,12 @@ details.manual-details > summary::-webkit-details-marker {
   transform: none;
   box-shadow: none;
   filter: none;
+}
+
+/* Klassen, die html2canvas ignorieren soll */
+
+.html2canvas-ignore {
+  /* keine optische Änderung nötig – nur Marker für JS */
 }
 </style>
 </head>
@@ -1029,8 +1025,8 @@ details.manual-details > summary::-webkit-details-marker {
         <button id="manualBackButton" type="button" class="btn-secondary">
           Zurück
         </button>
-        <button id="addManualTierButton" type="button" class="btn-secondary">
-          + Feld
+        <button id="manualAddTierButton" type="button" class="btn-secondary">
+          Tier-Reihe hinzufügen (E/F/…)
         </button>
         <button id="downloadManualTierImageButton" type="button" class="btn-secondary">
           Manuelle Tierlist als Bild
@@ -1189,8 +1185,8 @@ const I18N = {
     manual_tiers_hint: "Визуальный ручной тир-лист (S / A / B / C / D).",
     manual_back: "Назад",
     manual_download_btn: "Скачать ручной тир-лист",
+    manual_add_tier: "Добавить ряд (E/F/…)",
     manual_save_error: "Не удалось сохранить ручной тир-лист.",
-    manual_add_tier_btn: "Добавить поле",
     // Edit
     edit_title: "Редактировать игру",
     edit_label_name: "Название",
@@ -1286,8 +1282,8 @@ const I18N = {
     manual_tiers_hint: "Visual manual tierlist (S / A / B / C / D).",
     manual_back: "Back",
     manual_download_btn: "Download manual tierlist",
+    manual_add_tier: "Add tier row (E/F/…)",
     manual_save_error: "Could not save manual tierlist image.",
-    manual_add_tier_btn: "Add field",
     // Edit
     edit_title: "Edit game",
     edit_label_name: "Name",
@@ -1383,8 +1379,8 @@ const I18N = {
     manual_tiers_hint: "Visuelle manuelle Tierlist (S / A / B / C / D).",
     manual_back: "Zurück",
     manual_download_btn: "Manuelle Tierlist als Bild",
+    manual_add_tier: "Tier-Reihe hinzufügen (E/F/…)",
     manual_save_error: "Manuelle Tierlist konnte nicht gespeichert werden.",
-    manual_add_tier_btn: "Neues Feld",
     // Edit
     edit_title: "Spiel bearbeiten",
     edit_label_name: "Name",
@@ -1398,7 +1394,7 @@ const I18N = {
 
 const LANG_STORAGE_KEY = "tierlist_tool_lang";
 const MODE_STORAGE_KEY = "tierlist_tool_mode";
-const STORAGE_KEY = "tierlist_tool_state_v3";
+const STORAGE_KEY = "tierlist_tool_state_v4";
 
 let currentLang = "ru";
 let rankingMode = "exact";
@@ -1481,17 +1477,9 @@ let high = 0;
 let mid = 0;
 let compareActive = false;
 let comparisonsDone = 0;
+let comparisonsBudget = Infinity; // für Fast-Mode
 
-// extra für Fast-Mode: Begrenzung pro Item
-let currentSteps = 0;
-let currentMaxSteps = Infinity;
-
-// Manueller Tierlist-Zustand
-const manualTiers = {};
-let manualPool = [];
-let manualTierNames = {};
-
-// Auto-Tier-Konfiguration (S–D) für Auto-Tierlist
+// Auto-Tier Konfiguration (für Auto-Tabelle, NICHT für manuellen Tierlist)
 const TIER_CONFIG = [
   { key: "S", defaultName: "S", color: "#f97316" },
   { key: "A", defaultName: "A", color: "#facc15" },
@@ -1499,14 +1487,6 @@ const TIER_CONFIG = [
   { key: "C", defaultName: "C", color: "#38bdf8" },
   { key: "D", defaultName: "D", color: "#a855f7" }
 ];
-
-// Separate, dynamische Konfiguration für manuellen Tierlist
-const DEFAULT_MANUAL_TIER_CONFIG = TIER_CONFIG.map(c => ({ ...c }));
-let manualTierConfig = DEFAULT_MANUAL_TIER_CONFIG.map(c => ({ ...c }));
-
-function getAllManualTierKeys() {
-  return manualTierConfig.map(cfg => cfg.key);
-}
 
 /* ---------- Helpers ---------- */
 
@@ -1551,8 +1531,7 @@ function resetTierResults() {
   low = high = mid = 0;
   compareActive = false;
   comparisonsDone = 0;
-  currentSteps = 0;
-  currentMaxSteps = Infinity;
+  comparisonsBudget = Infinity;
 
   document.getElementById("finishedPanel").classList.add("hidden");
   document.getElementById("tierTableSection").classList.add("hidden");
@@ -1561,32 +1540,11 @@ function resetTierResults() {
   document.getElementById("progressInfo").textContent = tr("progress_not_started");
 }
 
-function clearManualState() {
-  getAllManualTierKeys().forEach(key => {
-    manualTiers[key] = [];
-  });
-  manualPool = [];
-}
-
 function filterIndicesForGames(arr) {
   if (!Array.isArray(arr)) return [];
   return arr
     .map(i => Number(i))
     .filter(i => Number.isInteger(i) && i >= 0 && i < games.length);
-}
-
-function syncManualPoolWithGames() {
-  const used = new Set();
-  for (const key of getAllManualTierKeys()) {
-    manualTiers[key] = filterIndicesForGames(manualTiers[key] || []);
-    manualTiers[key].forEach(i => used.add(i));
-  }
-  manualPool = filterIndicesForGames(manualPool).filter(i => !used.has(i));
-  for (let i = 0; i < games.length; i++) {
-    if (!used.has(i) && !manualPool.includes(i)) {
-      manualPool.push(i);
-    }
-  }
 }
 
 /* ---------- Language & Mode ---------- */
@@ -1670,8 +1628,7 @@ function applyLanguageStaticTexts() {
   document.getElementById("manual_tiers_hint").textContent = s.manual_tiers_hint;
   document.getElementById("manualBackButton").textContent = s.manual_back;
   document.getElementById("downloadManualTierImageButton").textContent = s.manual_download_btn;
-  const addTierBtn = document.getElementById("addManualTierButton");
-  if (addTierBtn) addTierBtn.textContent = s.manual_add_tier_btn;
+  document.getElementById("manualAddTierButton").textContent = s.manual_add_tier;
 
   // Edit-Dialog
   document.getElementById("editDialogTitle").textContent = s.edit_title;
@@ -1809,7 +1766,7 @@ function renderGameList() {
     listEl.appendChild(row);
   });
 
-  syncManualPoolWithGames();
+  syncManualDataWithGames();
   updateGameCount();
 }
 
@@ -1840,6 +1797,9 @@ async function fetchAndAddGame(rawUrl) {
     const image = data.image || "";
 
     games.push({ id: nextId++, title, image, url });
+    ensureManualDefaults();
+    manualPool.push(games.length - 1);
+
     resetTierResults();
     renderGameList();
     saveState();
@@ -1976,6 +1936,9 @@ function addManualGame() {
       url: ""
     });
 
+    ensureManualDefaults();
+    manualPool.push(games.length - 1);
+
     resetTierResults();
     renderGameList();
     showStatus(tr("status_manual_added", { title: rawTitle }), "success");
@@ -2017,15 +1980,16 @@ function deleteGame(index) {
   // Auto-Ranking ungültig → zurücksetzen
   resetTierResults();
 
-  // Manueller Tierlist anpassen (für alle existierenden Tiers)
-  for (const key of getAllManualTierKeys()) {
-    manualTiers[key] = (manualTiers[key] || [])
-      .filter(i => i !== index)
-      .map(i => (i > index ? i - 1 : i));
-  }
+  // Manueller Tierlist anpassen (Indices verschieben)
   manualPool = manualPool
     .filter(i => i !== index)
     .map(i => (i > index ? i - 1 : i));
+
+  for (const tierId in manualAssignments) {
+    manualAssignments[tierId] = manualAssignments[tierId]
+      .filter(i => i !== index)
+      .map(i => (i > index ? i - 1 : i));
+  }
 
   renderGameList();
   updateGameCount();
@@ -2191,13 +2155,10 @@ function startTierlist() {
   for (let i = 1; i < games.length; i++) compareOrder.push(i);
   comparePos = 0;
   currentNewIndex = null;
-  low = 0;
-  high = 0;
-  mid = 0;
+  low = high = mid = 0;
   comparisonsDone = 0;
+  comparisonsBudget = Infinity;
   compareActive = true;
-  currentSteps = 0;
-  currentMaxSteps = Infinity;
 
   document.getElementById("finishedPanel").classList.add("hidden");
   document.getElementById("tierTableSection").classList.add("hidden");
@@ -2213,21 +2174,6 @@ function startTierlist() {
   moveToNextNewGame();
 }
 
-function setupFastModeLimit() {
-  if (rankingMode !== "fast") {
-    currentMaxSteps = Infinity;
-    return;
-  }
-  const len = sortedIndices.length;
-  if (len <= 0) {
-    currentMaxSteps = Infinity;
-    return;
-  }
-  // halbe Tiefe des Binärbaums
-  currentMaxSteps = Math.max(1, Math.ceil(Math.log2(len + 1) / 2));
-  currentSteps = 0;
-}
-
 function moveToNextNewGame() {
   if (!compareOrder.length) {
     currentNewIndex = null;
@@ -2237,7 +2183,10 @@ function moveToNextNewGame() {
   currentNewIndex = compareOrder.shift();
   low = 0;
   high = sortedIndices.length;
-  setupFastModeLimit();
+  // Budget für Fast-Mode
+  comparisonsBudget = (rankingMode === "fast")
+    ? Math.max(1, Math.ceil(Math.log2(sortedIndices.length + 1) / 2))
+    : Infinity;
   showNextComparisonStep();
 }
 
@@ -2272,37 +2221,38 @@ function showNextComparisonStep() {
   fsProgress.textContent = formatComparisonCount(comparisonsDone || 0);
 }
 
-function maybeFinishFastEarly() {
-  if (rankingMode !== "fast") return;
-  if (currentMaxSteps === Infinity) return;
-  if (currentSteps < currentMaxSteps) return;
+function applyChoice(updateLow) {
+  if (!compareActive || currentNewIndex === null) return;
+  comparisonsDone++;
+  if (updateLow) {
+    low = mid + 1;
+  } else {
+    high = mid;
+  }
+  fsProgress.textContent = formatComparisonCount(comparisonsDone);
 
-  // wir brechen die Suche ab und setzen Einfüge-Position ungefähr in die Mitte von [low, high]
-  low = Math.max(0, Math.min(sortedIndices.length, Math.floor((low + high) / 2)));
-  high = low;
+  if (comparisonsBudget !== Infinity) {
+    comparisonsBudget--;
+    if (comparisonsBudget <= 0 && low < high) {
+      // Fast-Mode: approximate Position
+      const insertPos = Math.floor((low + high) / 2);
+      sortedIndices.splice(insertPos, 0, currentNewIndex);
+      saveState();
+      moveToNextNewGame();
+      return;
+    }
+  }
+
+  saveState();
   showNextComparisonStep();
 }
 
 function chooseLeft() {
-  if (!compareActive || currentNewIndex === null) return;
-  comparisonsDone++;
-  currentSteps++;
-  high = mid;
-  fsProgress.textContent = formatComparisonCount(comparisonsDone);
-  saveState();
-  maybeFinishFastEarly();
-  if (compareActive) showNextComparisonStep();
+  applyChoice(false);
 }
 
 function chooseRight() {
-  if (!compareActive || currentNewIndex === null) return;
-  comparisonsDone++;
-  currentSteps++;
-  low = mid + 1;
-  fsProgress.textContent = formatComparisonCount(comparisonsDone);
-  saveState();
-  maybeFinishFastEarly();
-  if (compareActive) showNextComparisonStep();
+  applyChoice(true);
 }
 
 function finishTierlist() {
@@ -2541,8 +2491,9 @@ async function importGamesOnly() {
     nextId = maxId + 1;
 
     resetTierResults();
-    clearManualState();
-    syncManualPoolWithGames();
+    clearManualStateCompletely();
+    ensureManualDefaults();
+    syncManualDataWithGames();
     renderGameList();
     saveState();
 
@@ -2553,64 +2504,93 @@ async function importGamesOnly() {
   }
 }
 
-/* ---------- Manueller Tierlist (Drag & Drop + dynamische Tiers + Farbe + Löschen) ---------- */
+/* ---------- Manueller Tierlist (Drag & Drop, dynamische Reihen) ---------- */
 
 const manualOverlay = document.getElementById("manualOverlay");
 const manualPoolListEl = document.getElementById("manualPoolList");
 const manualTierWrapperEl = document.getElementById("manualTierWrapper");
-
-// Auto-Scroll beim Draggen im manuellen Tierlist
 const manualScrollContainer = document.querySelector(".manual-overlay");
 
-function handleManualOverlayDragOver(e) {
-  if (!manualScrollContainer) return;
+let manualTierDefs = [];       // [{id, name, color}, ...]
+let manualAssignments = {};    // tierId -> [gameIndex]
+let manualPool = [];           // gameIndex[]
+let manualDragSourceIndex = null;
 
-  const rect = manualScrollContainer.getBoundingClientRect();
-  const offsetY = e.clientY - rect.top;
-  const threshold = 80;
-  const scrollSpeed = 18;
-
-  if (offsetY < threshold) {
-    manualScrollContainer.scrollTop -= scrollSpeed;
-  } else if (offsetY > rect.height - threshold) {
-    manualScrollContainer.scrollTop += scrollSpeed;
+function getDefaultColorForLabel(label) {
+  switch ((label || "").toUpperCase()) {
+    case "S": return "#f97316";
+    case "A": return "#facc15";
+    case "B": return "#22c55e";
+    case "C": return "#38bdf8";
+    case "D": return "#a855f7";
+    default:  return "#6b7280";
   }
 }
 
-function removeGameFromAllManual(idx) {
-  manualPool = manualPool.filter(i => i !== idx);
-  for (const key of getAllManualTierKeys()) {
-    manualTiers[key] = (manualTiers[key] || []).filter(i => i !== idx);
+function ensureManualDefaults() {
+  if (manualTierDefs.length > 0) return;
+
+  manualTierDefs = [
+    { id: "tier_S", name: "S", color: getDefaultColorForLabel("S") },
+    { id: "tier_A", name: "A", color: getDefaultColorForLabel("A") },
+    { id: "tier_B", name: "B", color: getDefaultColorForLabel("B") },
+    { id: "tier_C", name: "C", color: getDefaultColorForLabel("C") },
+    { id: "tier_D", name: "D", color: getDefaultColorForLabel("D") }
+  ];
+
+  manualAssignments = {};
+  manualTierDefs.forEach(def => {
+    manualAssignments[def.id] = [];
+  });
+  manualPool = [];
+  for (let i = 0; i < games.length; i++) manualPool.push(i);
+}
+
+function clearManualStateCompletely() {
+  manualTierDefs = [];
+  manualAssignments = {};
+  manualPool = [];
+}
+
+function syncManualDataWithGames() {
+  ensureManualDefaults();
+
+  const used = new Set();
+
+  // vorhandene Zuordnungen bereinigen
+  for (const tierId in manualAssignments) {
+    manualAssignments[tierId] = filterIndicesForGames(manualAssignments[tierId]);
+    manualAssignments[tierId].forEach(i => used.add(i));
+  }
+
+  // Pool bereinigen
+  manualPool = filterIndicesForGames(manualPool).filter(i => !used.has(i));
+
+  // fehlende Spiele in den Pool
+  for (let i = 0; i < games.length; i++) {
+    if (!used.has(i) && !manualPool.includes(i)) {
+      manualPool.push(i);
+    }
   }
 }
 
-function moveGameToPool(idx) {
-  removeGameFromAllManual(idx);
-  if (!manualPool.includes(idx)) manualPool.push(idx);
-}
-
-function moveGameToTier(idx, tierKey) {
-  removeGameFromAllManual(idx);
-  if (!manualTiers[tierKey].includes(idx)) manualTiers[tierKey].push(idx);
-}
-
-function manualCreateCard(gameIndex, inTier) {
+function manualCreateCard(gameIndex) {
   const g = games[gameIndex];
   if (!g) return null;
 
   const card = document.createElement("div");
   card.draggable = true;
   card.dataset.index = String(gameIndex);
-  card.className = inTier ? "manual-tier-card" : "manual-card";
+  card.className = "manual-card";
 
   const img = document.createElement("img");
   img.src = g.image || "";
   img.alt = g.title || "";
   img.crossOrigin = "anonymous";
-  img.className = inTier ? "manual-tier-card-thumb" : "manual-card-thumb";
+  img.className = "manual-card-thumb";
 
   const title = document.createElement("div");
-  title.className = inTier ? "manual-tier-card-name" : "manual-card-name";
+  title.className = "manual-card-name";
   const fullTitle = g.title || "(no title)";
   title.textContent = shortenManualTitle(fullTitle);
   title.title = fullTitle;
@@ -2623,8 +2603,6 @@ function manualCreateCard(gameIndex, inTier) {
 
   return card;
 }
-
-let manualDragSourceIndex = null;
 
 function manualDragStart(e) {
   manualDragSourceIndex = parseInt(this.dataset.index, 10);
@@ -2654,8 +2632,17 @@ function manualDropToTier(e) {
   e.preventDefault();
   this.classList.remove("over");
   if (manualDragSourceIndex === null) return;
-  const tierKey = this.dataset.tier;
-  moveGameToTier(manualDragSourceIndex, tierKey);
+  const tierId = this.dataset.tierId;
+  if (!manualAssignments[tierId]) manualAssignments[tierId] = [];
+
+  // aus Pool und allen Tiers entfernen
+  manualPool = manualPool.filter(i => i !== manualDragSourceIndex);
+  for (const id in manualAssignments) {
+    manualAssignments[id] = manualAssignments[id].filter(i => i !== manualDragSourceIndex);
+  }
+  // in Ziel-Tier einfügen
+  manualAssignments[tierId].push(manualDragSourceIndex);
+
   renderManualView();
   saveState();
 }
@@ -2676,125 +2663,151 @@ function manualDropToPool(e) {
   e.preventDefault();
   manualPoolListEl.classList.remove("over");
   if (manualDragSourceIndex === null) return;
-  moveGameToPool(manualDragSourceIndex);
+
+  // aus allen Tiers entfernen
+  for (const id in manualAssignments) {
+    manualAssignments[id] = manualAssignments[id].filter(i => i !== manualDragSourceIndex);
+  }
+  // in Pool (falls nicht schon drin)
+  if (!manualPool.includes(manualDragSourceIndex)) {
+    manualPool.push(manualDragSourceIndex);
+  }
+
   renderManualView();
   saveState();
 }
 
-/* --- neues: Tier löschen --- */
-function deleteManualTier(tierKey) {
-  // Items dieses Tiers zurück in den Pool
-  const items = manualTiers[tierKey] || [];
-  items.forEach(idx => {
-    if (!manualPool.includes(idx)) {
-      manualPool.push(idx);
+function deleteManualTier(tierId) {
+  if (!manualAssignments[tierId]) return;
+  if (manualTierDefs.length <= 1) return; // mindestens eine Reihe behalten
+
+  const idx = manualTierDefs.findIndex(d => d.id === tierId);
+  if (idx === -1) return;
+
+  // Spiele zurück in den Pool
+  const assigned = manualAssignments[tierId] || [];
+  assigned.forEach(i => {
+    if (!manualPool.includes(i)) manualPool.push(i);
+  });
+
+  delete manualAssignments[tierId];
+  manualTierDefs.splice(idx, 1);
+
+  syncManualDataWithGames();
+}
+
+function addManualTierRow() {
+  const labelsOrder = ["S","A","B","C","D","E","F","G","H","I","J"];
+  const usedLabels = new Set(manualTierDefs.map(d => (d.name || "").toUpperCase()));
+  let label = "E";
+  for (const l of labelsOrder) {
+    if (!usedLabels.has(l)) {
+      label = l;
+      break;
     }
-  });
-
-  delete manualTiers[tierKey];
-  delete manualTierNames[tierKey];
-  manualTierConfig = manualTierConfig.filter(cfg => cfg.key !== tierKey);
-
-  manualTierWrapperEl.innerHTML = "";
-  createManualTierRowsIfNeeded();
-  renderManualView();
-  saveState();
-}
-
-function createManualTierRowsIfNeeded() {
-  if (manualTierWrapperEl.children.length) return;
-  manualTierWrapperEl.innerHTML = "";
-
-  manualTierConfig.forEach(cfg => {
-    const row = document.createElement("div");
-    row.className = "manual-tier-row";
-
-    const labelCell = document.createElement("div");
-    labelCell.className = "manual-tier-label";
-    labelCell.dataset.tierkey = cfg.key;
-    labelCell.style.background = cfg.color || "#4b5563";
-
-    // Text-Container (editierbar)
-    const labelText = document.createElement("div");
-    labelText.className = "manual-tier-label-text";
-    labelText.contentEditable = "true";
-    labelText.spellcheck = false;
-    labelText.textContent = manualTierNames[cfg.key] || cfg.defaultName || cfg.key;
-
-    labelText.addEventListener("input", () => {
-      const t = (labelText.textContent || "").trim();
-      manualTierNames[cfg.key] = t || (cfg.defaultName || cfg.key);
-      saveState();
-    });
-
-    // Color-Picker
-    const colorInput = document.createElement("input");
-    colorInput.type = "color";
-    colorInput.className = "manual-tier-color-input";
-    colorInput.value = cfg.color || "#4b5563";
-
-    colorInput.addEventListener("input", () => {
-      labelCell.style.background = colorInput.value;
-      const cfgRef = manualTierConfig.find(c => c.key === cfg.key);
-      if (cfgRef) cfgRef.color = colorInput.value;
-      saveState();
-    });
-
-    // Delete-Button
-    const deleteBtn = document.createElement("button");
-    deleteBtn.type = "button";
-    deleteBtn.className = "manual-tier-delete-btn";
-    deleteBtn.textContent = "×";
-    deleteBtn.title = "Tier löschen";
-    deleteBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      deleteManualTier(cfg.key);
-    });
-
-    labelCell.appendChild(labelText);
-    labelCell.appendChild(colorInput);
-    labelCell.appendChild(deleteBtn);
-
-    const dropzone = document.createElement("div");
-    dropzone.className = "manual-tier-dropzone";
-    dropzone.dataset.tier = cfg.key;
-
-    dropzone.addEventListener("dragover", manualDropzoneDragOver);
-    dropzone.addEventListener("dragleave", manualDropzoneDragLeave);
-    dropzone.addEventListener("drop", manualDropToTier);
-
-    row.appendChild(labelCell);
-    row.appendChild(dropzone);
-    manualTierWrapperEl.appendChild(row);
-  });
-
-  manualPoolListEl.addEventListener("dragover", manualPoolDragOver);
-  manualPoolListEl.addEventListener("dragleave", manualPoolDragLeave);
-  manualPoolListEl.addEventListener("drop", manualDropToPool);
+  }
+  const color = getDefaultColorForLabel(label);
+  const id = "tier_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+  manualTierDefs.push({ id, name: label, color });
+  manualAssignments[id] = [];
 }
 
 function renderManualView() {
-  createManualTierRowsIfNeeded();
+  ensureManualDefaults();
+  syncManualDataWithGames();
 
   // Pool
   manualPoolListEl.innerHTML = "";
   manualPool.forEach(idx => {
     if (idx < 0 || idx >= games.length) return;
-    const card = manualCreateCard(idx, false);
+    const card = manualCreateCard(idx);
     if (card) manualPoolListEl.appendChild(card);
   });
 
   // Tiers
-  const dropzones = manualTierWrapperEl.querySelectorAll(".manual-tier-dropzone");
-  dropzones.forEach(dz => {
-    const tier = dz.dataset.tier;
-    dz.innerHTML = "";
-    (manualTiers[tier] || []).forEach(idx => {
-      if (idx < 0 || idx >= games.length) return;
-      const card = manualCreateCard(idx, true);
-      if (card) dz.appendChild(card);
+  manualTierWrapperEl.innerHTML = "";
+  manualTierDefs.forEach(def => {
+    const row = document.createElement("div");
+    row.className = "manual-tier-row";
+    row.dataset.tierId = def.id;
+
+    const labelCell = document.createElement("div");
+    labelCell.className = "manual-tier-label";
+    labelCell.style.background = def.color || getDefaultColorForLabel(def.name);
+
+    const labelText = document.createElement("div");
+    labelText.className = "manual-tier-label-text";
+    labelText.contentEditable = "true";
+    labelText.spellcheck = false;
+    labelText.textContent = def.name || "Tier";
+    labelText.addEventListener("input", () => {
+      const t = (labelText.textContent || "").trim();
+      def.name = t || "Tier";
+      saveState();
     });
+    labelCell.appendChild(labelText);
+
+    const dropzone = document.createElement("div");
+    dropzone.className = "manual-tier-dropzone";
+    dropzone.dataset.tierId = def.id;
+    dropzone.addEventListener("dragover", manualDropzoneDragOver);
+    dropzone.addEventListener("dragleave", manualDropzoneDragLeave);
+    dropzone.addEventListener("drop", manualDropToTier);
+
+    const tools = document.createElement("div");
+    tools.className = "manual-tier-tools html2canvas-ignore";
+
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    colorInput.className = "manual-tier-color-input";
+    colorInput.value = def.color || getDefaultColorForLabel(def.name);
+    colorInput.addEventListener("input", () => {
+      def.color = colorInput.value;
+      labelCell.style.background = def.color;
+      saveState();
+    });
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "manual-tier-delete-btn";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener("click", () => {
+      deleteManualTier(def.id);
+      renderManualView();
+      saveState();
+    });
+
+    tools.appendChild(colorInput);
+    tools.appendChild(delBtn);
+
+    // Karten in diesem Tier
+    const assigned = manualAssignments[def.id] || [];
+    assigned.forEach(idx => {
+      if (idx < 0 || idx >= games.length) return;
+      const card = manualCreateCard(idx);
+      if (card) {
+        card.className = "manual-tier-card";
+        const img = card.querySelector("img");
+        const title = card.querySelector("div");
+        if (img) img.className = "manual-tier-card-thumb";
+        if (title) title.className = "manual-tier-card-name";
+        dropzone.appendChild(card);
+      }
+    });
+
+    row.appendChild(labelCell);
+    row.appendChild(dropzone);
+    row.appendChild(tools);
+    manualTierWrapperEl.appendChild(row);
   });
+
+  // Pool Drop-Target
+  manualPoolListEl.removeEventListener("dragover", manualPoolDragOver);
+  manualPoolListEl.removeEventListener("dragleave", manualPoolDragLeave);
+  manualPoolListEl.removeEventListener("drop", manualDropToPool);
+  manualPoolListEl.addEventListener("dragover", manualPoolDragOver);
+  manualPoolListEl.addEventListener("dragleave", manualPoolDragLeave);
+  manualPoolListEl.addEventListener("drop", manualDropToPool);
 }
 
 async function downloadManualTierImage() {
@@ -2804,18 +2817,17 @@ async function downloadManualTierImage() {
     return;
   }
 
-  async function downloadManualTierImage() {
-  const wrapper = document.getElementById("manualTierWrapper");
-  if (!wrapper || !wrapper.children.length) {
-    alert(tr("tierlist_not_created"));
-    return;
-  }
-
   try {
     const canvas = await html2canvas(wrapper, {
       backgroundColor: "#020617",
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      ignoreElements: (el) => {
+        if (!el) return false;
+        if (el.classList && el.classList.contains("html2canvas-ignore")) return true;
+        if (el.closest && el.closest(".html2canvas-ignore")) return true;
+        return false;
+      }
     });
 
     const link = document.createElement("a");
@@ -2827,53 +2839,6 @@ async function downloadManualTierImage() {
   } catch (e) {
     console.error(e);
     alert(tr("manual_save_error"));
-  }
-}
-
-  const backup = [];
-
-  colorInputs.forEach(input => {
-    const labelCell = input.closest(".manual-tier-label");
-    if (!labelCell) return;
-    const hex = (input.value || "").toUpperCase();
-
-    const span = document.createElement("div");
-    span.className = "manual-tier-hex-text-for-export";
-    span.textContent = hex;
-
-    backup.push({
-      input,
-      prevDisplay: input.style.display || "",
-      span,
-      parent: labelCell
-    });
-
-    input.style.display = "none";
-    labelCell.appendChild(span);
-  });
-
-  try {
-    const canvas = await html2canvas(wrapper, {
-      backgroundColor: "#020617",
-      scale: 2,
-      useCORS: true
-    });
-
-    const link = document.createElement("a");
-    link.download = "tierlist_manual.png";
-    link.href = canvas.toDataURL("image/png");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (e) {
-    console.error(e);
-    alert(tr("manual_save_error"));
-  } finally {
-    // UI zurücksetzen
-    backup.forEach(({ input, prevDisplay, span, parent }) => {
-      input.style.display = prevDisplay;
-      if (span && parent && parent.contains(span)) parent.removeChild(span);
-    });
   }
 }
 
@@ -2884,9 +2849,8 @@ function openManualTierlist() {
   }
 
   hideStatus();
-  syncManualPoolWithGames();
-  manualTierWrapperEl.innerHTML = "";
-  createManualTierRowsIfNeeded();
+  ensureManualDefaults();
+  syncManualDataWithGames();
   renderManualView();
 
   mainContainer.classList.add("hidden");
@@ -2901,34 +2865,20 @@ function closeManualOverlay() {
   saveState();
 }
 
-function addManualTier() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let nextKey = null;
-  for (const ch of letters) {
-    if (!manualTierConfig.some(cfg => cfg.key === ch)) {
-      nextKey = ch;
-      break;
-    }
+// Auto-Scroll beim Draggen im manuellen Tierlist
+function handleManualOverlayDragOver(e) {
+  if (!manualScrollContainer) return;
+
+  const rect = manualScrollContainer.getBoundingClientRect();
+  const offsetY = e.clientY - rect.top;
+  const threshold = 80;
+  const scrollSpeed = 18;
+
+  if (offsetY < threshold) {
+    manualScrollContainer.scrollTop -= scrollSpeed;
+  } else if (offsetY > rect.height - threshold) {
+    manualScrollContainer.scrollTop += scrollSpeed;
   }
-  if (!nextKey) {
-    alert("Zu viele Felder.");
-    return;
-  }
-
-  const newCfg = {
-    key: nextKey,
-    defaultName: nextKey,
-    color: "#6b7280"
-  };
-
-  manualTierConfig.push(newCfg);
-  manualTiers[nextKey] = manualTiers[nextKey] || [];
-  manualTierNames[nextKey] = nextKey;
-
-  manualTierWrapperEl.innerHTML = "";
-  createManualTierRowsIfNeeded();
-  renderManualView();
-  saveState();
 }
 
 /* ---------- Speichern / Laden ---------- */
@@ -2939,17 +2889,18 @@ function saveState() {
       .getElementById("finishedPanel")
       .classList.contains("hidden");
 
+    const manualState = {
+      tierDefs: manualTierDefs,
+      assignments: manualAssignments,
+      pool: manualPool
+    };
+
     const state = {
       games: games,
       sortedIndices: sortedIndices,
       comparisonsDone: comparisonsDone,
       finished: !finishedPanelHidden,
-      manual: {
-        tiers: manualTiers,
-        pool: manualPool,
-        tierNames: manualTierNames,
-        tierConfig: manualTierConfig
-      }
+      manual: manualState
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
@@ -2965,11 +2916,17 @@ function loadState() {
     console.error("Fehler beim Lesen aus localStorage", e);
     return;
   }
-  if (!raw) return;
+  if (!raw) {
+    ensureManualDefaults();
+    return;
+  }
 
   try {
     const state = JSON.parse(raw);
-    if (!state || !Array.isArray(state.games)) return;
+    if (!state || !Array.isArray(state.games)) {
+      ensureManualDefaults();
+      return;
+    }
 
     games.length = 0;
     state.games.forEach((g, i) => {
@@ -2991,48 +2948,28 @@ function loadState() {
       ? state.comparisonsDone
       : 0;
 
-    // --- manueller Tierlist wiederherstellen ---
-    manualTierConfig = DEFAULT_MANUAL_TIER_CONFIG.map(c => ({ ...c }));
-    manualPool = [];
-    for (const k in manualTiers) delete manualTiers[k];
-    manualTierNames = {};
-
-    if (state.manual && Array.isArray(state.manual.tierConfig) && state.manual.tierConfig.length) {
-      manualTierConfig = state.manual.tierConfig.map(cfg => ({
-        key: cfg.key,
-        defaultName: cfg.defaultName || cfg.key,
-        color: cfg.color || "#4b5563"
+    // manuellen Zustand laden
+    clearManualStateCompletely();
+    if (state.manual && Array.isArray(state.manual.tierDefs)) {
+      manualTierDefs = state.manual.tierDefs.map(def => ({
+        id: def.id || ("tier_" + Math.random().toString(16).slice(2)),
+        name: def.name || "Tier",
+        color: def.color || getDefaultColorForLabel(def.name || "Tier")
       }));
-    }
-
-    manualTierConfig.forEach(cfg => {
-      manualTiers[cfg.key] = [];
-      manualTierNames[cfg.key] = cfg.defaultName || cfg.key;
-    });
-
-    if (state.manual && state.manual.tiers) {
-      const storedTiers = state.manual.tiers;
-      for (const key in storedTiers) {
-        manualTiers[key] = filterIndicesForGames(storedTiers[key]);
-        if (!manualTierNames[key]) {
-          manualTierNames[key] = key;
-        }
-      }
-    }
-
-    if (state.manual && Array.isArray(state.manual.pool)) {
-      manualPool = filterIndicesForGames(state.manual.pool);
+      manualAssignments = {};
+      manualTierDefs.forEach(def => {
+        const arr = state.manual.assignments && Array.isArray(state.manual.assignments[def.id])
+          ? state.manual.assignments[def.id]
+          : [];
+        manualAssignments[def.id] = filterIndicesForGames(arr);
+      });
+      manualPool = state.manual.pool
+        ? filterIndicesForGames(state.manual.pool)
+        : [];
+      syncManualDataWithGames();
     } else {
-      manualPool = [];
-    }
-
-    if (state.manual && state.manual.tierNames) {
-      const tNames = state.manual.tierNames;
-      for (const key in tNames) {
-        if (typeof tNames[key] === "string" && tNames[key].trim()) {
-          manualTierNames[key] = tNames[key];
-        }
-      }
+      ensureManualDefaults();
+      syncManualDataWithGames();
     }
 
     let maxId = 0;
@@ -3069,6 +3006,8 @@ function loadState() {
     }
   } catch (e) {
     console.error("Fehler beim Parsen des gespeicherten Zustands", e);
+    clearManualStateCompletely();
+    ensureManualDefaults();
   }
 }
 
@@ -3081,7 +3020,8 @@ document.getElementById("clearButton").addEventListener("click", () => {
   games.length = 0;
   nextId = 1;
   resetTierResults();
-  clearManualState();
+  clearManualStateCompletely();
+  ensureManualDefaults();
   renderGameList();
   hideStatus();
   try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
@@ -3092,7 +3032,11 @@ document.getElementById("startManualTierButton").addEventListener("click", openM
 document.getElementById("downloadTierImageButton").addEventListener("click", downloadTierImage);
 document.getElementById("downloadManualTierImageButton").addEventListener("click", downloadManualTierImage);
 document.getElementById("manualBackButton").addEventListener("click", closeManualOverlay);
-document.getElementById("addManualTierButton").addEventListener("click", addManualTier);
+document.getElementById("manualAddTierButton").addEventListener("click", () => {
+  addManualTierRow();
+  renderManualView();
+  saveState();
+});
 
 document.getElementById("urlInput").addEventListener("keydown", e => {
   if (e.key === "Enter") addGameFromUrl();
@@ -3131,7 +3075,6 @@ window.addEventListener("load", () => {
   refreshProgressInfoForCurrentState();
   updateGameCount();
 
-  // Auto-Scroll beim Draggen im manuellen Tierlist
   if (manualScrollContainer) {
     manualScrollContainer.addEventListener("dragover", handleManualOverlayDragOver);
   }
