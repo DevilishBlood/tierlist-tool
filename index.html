@@ -961,6 +961,25 @@ details.manual-details > summary::-webkit-details-marker {
         </button>
       </div>
     </div>
+
+    <!-- Tierlist + Ranking sichern / laden -->
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #1f2937;">
+      <div class="section-title">
+        <span id="state_share_title">Tierlist + Ranking sichern</span>
+      </div>
+      <span class="small-hint" id="state_share_hint">
+        Speichert Spiele, Auto-Tierlist und manuelle Tierlist als einen Code,
+        mit dem du deinen Fortschritt wiederherstellen und später weiterbearbeiten kannst.
+      </span>
+      <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap;">
+        <button id="btnExportState" type="button" class="btn-secondary">
+          Tierlist-Exportcode erzeugen
+        </button>
+        <button id="btnImportState" type="button" class="btn-secondary">
+          Tierlist-Exportcode einfügen
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Rechte Seite -->
@@ -1196,7 +1215,17 @@ const I18N = {
     edit_label_image_file: "Файл картинки (опционально)",
     edit_cancel: "Отмена",
     edit_save: "Сохранить",
-    status_edit_saved: "Игра обновлена."
+    status_edit_saved: "Игра обновлена.",
+    // Voller Zustand
+    state_share_title: "Сохранить тир-лист + ранкинг",
+    state_share_hint: "Сохраняет игры, авто-тир-лист и ручной тир-лист в один код, чтобы можно было восстановить прогресс.",
+    btn_export_state: "Создать экспорт-код тир-листа",
+    btn_import_state: "Вставить экспорт-код тир-листа",
+    state_share_export_copied: "Экспорт-код тир-листа скопирован в буфер обмена.",
+    state_share_export_copy_manual: "Скопируйте экспорт-код тир-листа вручную из окна.",
+    state_share_import_prompt: "Вставьте сюда экспорт-код тир-листа:",
+    state_share_import_success: "Состояние тир-листа успешно импортировано.",
+    state_share_import_fail: "Импорт не удался: {error}"
   },
   en: {
     page_title: "Tierlist by Game Links",
@@ -1293,7 +1322,17 @@ const I18N = {
     edit_label_image_file: "Image file (optional)",
     edit_cancel: "Cancel",
     edit_save: "Save",
-    status_edit_saved: "Game updated."
+    status_edit_saved: "Game updated.",
+    // Full state export
+    state_share_title: "Save tierlist + ranking",
+    state_share_hint: "Saves games, auto tierlist and manual tierlist into a single code so you can restore your progress later.",
+    btn_export_state: "Create tierlist export code",
+    btn_import_state: "Paste tierlist export code",
+    state_share_export_copied: "Tierlist export code copied to clipboard.",
+    state_share_export_copy_manual: "Copy the tierlist export code manually from the window.",
+    state_share_import_prompt: "Paste the tierlist export code here:",
+    state_share_import_success: "Tierlist state imported successfully.",
+    state_share_import_fail: "Import failed: {error}"
   },
   de: {
     page_title: "Tierlist aus Spiele-Links",
@@ -1390,7 +1429,17 @@ const I18N = {
     edit_label_image_file: "Bild-Datei (optional)",
     edit_cancel: "Abbrechen",
     edit_save: "Speichern",
-    status_edit_saved: "Spiel aktualisiert."
+    status_edit_saved: "Spiel aktualisiert.",
+    // Voller Zustand
+    state_share_title: "Tierlist + Ranking sichern",
+    state_share_hint: "Speichert Spiele, Auto-Tierlist und manuelle Tierlist als einen Code, mit dem du deinen Fortschritt wiederherstellen kannst.",
+    btn_export_state: "Tierlist-Exportcode erzeugen",
+    btn_import_state: "Tierlist-Exportcode einfügen",
+    state_share_export_copied: "Tierlist-Exportcode in die Zwischenablage kopiert.",
+    state_share_export_copy_manual: "Kopiere den Tierlist-Exportcode manuell aus dem Fenster.",
+    state_share_import_prompt: "Füge hier den Tierlist-Exportcode ein:",
+    state_share_import_success: "Tierlist-Zustand erfolgreich importiert.",
+    state_share_import_fail: "Import fehlgeschlagen: {error}"
   }
 };
 
@@ -1639,6 +1688,12 @@ function applyLanguageStaticTexts() {
   document.getElementById("editLabelImageFile").textContent = s.edit_label_image_file;
   document.getElementById("editCancelButton").textContent = s.edit_cancel;
   document.getElementById("editSaveButton").textContent = s.edit_save;
+
+  // Full state share
+  document.getElementById("state_share_title").textContent = s.state_share_title;
+  document.getElementById("state_share_hint").textContent = s.state_share_hint;
+  document.getElementById("btnExportState").textContent = s.btn_export_state;
+  document.getElementById("btnImportState").textContent = s.btn_import_state;
 
   updateClickStatsDisplay();
 }
@@ -2506,6 +2561,166 @@ async function importGamesOnly() {
   }
 }
 
+/* ---------- Voller Zustand: Spiele + Auto + Manuell als Exportcode ---------- */
+
+function exportFullState() {
+  if (!games.length) {
+    showStatus(tr("share_no_games"), "error");
+    return;
+  }
+
+  const finishedPanelHidden = document
+    .getElementById("finishedPanel")
+    .classList.contains("hidden");
+
+  const exportObj = {
+    version: 1,
+    games: games.map((g, i) => ({
+      id: typeof g.id === "number" ? g.id : i + 1,
+      title: g.title || "",
+      image: g.image || "",
+      url: g.url || ""
+    })),
+    auto: {
+      sortedIndices: sortedIndices.slice(),
+      comparisonsDone: comparisonsDone || 0,
+      finished: !finishedPanelHidden
+    },
+    manual: {
+      tierDefs: manualTierDefs,
+      assignments: manualAssignments,
+      pool: manualPool
+    }
+  };
+
+  const json = JSON.stringify(exportObj);
+  const base64 = btoa(unescape(encodeURIComponent(json)));
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(base64).then(() => {
+      showStatus(tr("state_share_export_copied"), "success");
+    }).catch(() => {
+      showStatus(tr("state_share_export_copy_manual"), "info");
+      alert(base64);
+    });
+  } else {
+    showStatus(tr("state_share_export_copy_manual"), "info");
+    alert(base64);
+  }
+}
+
+async function importFullState() {
+  const input = prompt(tr("state_share_import_prompt"));
+  if (!input) return;
+
+  const trimmed = input.trim();
+
+  let data;
+  try {
+    const json = decodeURIComponent(escape(atob(trimmed)));
+    data = JSON.parse(json);
+  } catch (e) {
+    console.error(e);
+    showStatus(tr("state_share_import_fail", { error: e.message }), "error");
+    return;
+  }
+
+  try {
+    if (!data || !Array.isArray(data.games)) {
+      throw new Error("Invalid format (games missing).");
+    }
+
+    // Spiele setzen
+    games.length = 0;
+    data.games.forEach((g, i) => {
+      games.push({
+        id: typeof g.id === "number" ? g.id : i + 1,
+        title: g.title || "",
+        image: g.image || "",
+        url: g.url || ""
+      });
+    });
+
+    // nextId neu bestimmen
+    let maxId = 0;
+    games.forEach(g => {
+      if (typeof g.id === "number" && g.id > maxId) maxId = g.id;
+    });
+    nextId = maxId + 1;
+
+    // Auto-Tierlist
+    if (data.auto) {
+      sortedIndices = filterIndicesForGames(data.auto.sortedIndices || []);
+      comparisonsDone = typeof data.auto.comparisonsDone === "number"
+        ? data.auto.comparisonsDone
+        : 0;
+    } else {
+      sortedIndices = [];
+      comparisonsDone = 0;
+    }
+
+    // Manueller Tierlist
+    clearManualStateCompletely();
+    if (data.manual && Array.isArray(data.manual.tierDefs)) {
+      manualTierDefs = data.manual.tierDefs.map(def => ({
+        id: def.id || ("tier_" + Math.random().toString(16).slice(2)),
+        name: def.name || "Tier",
+        color: def.color || getDefaultColorForLabel(def.name || "Tier")
+      }));
+      manualAssignments = {};
+      manualTierDefs.forEach(def => {
+        const arr = data.manual.assignments && Array.isArray(data.manual.assignments[def.id])
+          ? data.manual.assignments[def.id]
+          : [];
+        manualAssignments[def.id] = filterIndicesForGames(arr);
+      });
+      manualPool = data.manual.pool
+        ? filterIndicesForGames(data.manual.pool)
+        : [];
+      syncManualDataWithGames();
+    } else {
+      ensureManualDefaults();
+      syncManualDataWithGames();
+    }
+
+    // UI aktualisieren
+    renderGameList();
+    updateGameCount();
+
+    const finishedPanel = document.getElementById("finishedPanel");
+    const tierTableSection = document.getElementById("tierTableSection");
+    const progressInfo = document.getElementById("progressInfo");
+
+    if (sortedIndices.length > 0) {
+      finishedPanel.classList.remove("hidden");
+      tierTableSection.classList.remove("hidden");
+      renderRankList();
+      renderTierTable();
+      progressInfo.textContent = tr("progress_finished", {
+        count: formatComparisonCount(comparisonsDone || 0)
+      });
+    } else {
+      finishedPanel.classList.add("hidden");
+      tierTableSection.classList.add("hidden");
+      progressInfo.textContent =
+        games.length < 5
+          ? tr("progress_need_n")
+          : tr("progress_not_started");
+    }
+
+    // Overlays zu
+    mainContainer.classList.remove("hidden");
+    overlay.classList.add("hidden");
+    manualOverlay.classList.add("hidden");
+
+    saveState();
+    showStatus(tr("state_share_import_success"), "success");
+  } catch (e) {
+    console.error(e);
+    showStatus(tr("state_share_import_fail", { error: e.message }), "error");
+  }
+}
+
 /* ---------- Manueller Tierlist (Drag & Drop, dynamische Reihen) ---------- */
 
 const manualOverlay = document.getElementById("manualOverlay");
@@ -3050,6 +3265,10 @@ document.getElementById("fsCancel").addEventListener("click", cancelTierlist);
 
 document.getElementById("btnExportGames").addEventListener("click", exportGamesOnly);
 document.getElementById("btnImportGames").addEventListener("click", importGamesOnly);
+
+// Voller Zustand
+document.getElementById("btnExportState").addEventListener("click", exportFullState);
+document.getElementById("btnImportState").addEventListener("click", importFullState);
 
 document.getElementById("toggleManualSection").addEventListener("click", () => {
   const body = document.getElementById("manualSectionBody");
